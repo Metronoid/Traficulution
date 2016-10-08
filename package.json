@@ -1,0 +1,13 @@
+{
+  "name": "Traficulution",
+  "version": "0.0.1",
+  "description"  : "A traffic neural evolution.",
+  "main"         : "app.js",
+  "author"       : "Wander van der Wal, Mark de Jong",
+  "dependencies" : {
+    "express"    : "latest",
+    "three"      : "latest",
+    "synaptic"   : "latest",
+    "genetic-js"    : "latest"
+  }
+}
