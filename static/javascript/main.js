@@ -3,14 +3,7 @@
  */
 var Neuron = synaptic.Neuron,
     Layer = synaptic.Layer,
-    Network = synaptic.Network,
-    Trainer = synaptic.Trainer,
-    Architect = synaptic.Architect;
-
-
-var genetic = Genetic.create();
-genetic.select1 = Genetic.Select1.Tournament2;
-genetic.select2 = Genetic.Select2.Tournament2;
+    Network = synaptic.Network;
 
 
 var scene = new THREE.Scene();
@@ -52,16 +45,8 @@ function Perceptron(input, hidden, output)
 Perceptron.prototype = new Network();
 Perceptron.prototype.constructor = Perceptron;
 
-genetic.seed = function() {
-    return new Perceptron(2,1,2);
-};
 
-genetic.mutate = function(entity){
-
-}
-;
-
-class GameObject {
+class Car {
     constructor(mesh) {
         this.mesh = mesh;
         this.brain = new Perceptron(2,2,2);
@@ -73,8 +58,21 @@ class GameObject {
     }
 }
 
-
 var collisionList = [];
+
+var seed = function() {
+    var car = new Car(Cube(0.5,0.25,1,0x47475b));
+    car.mesh.position.set(0,0.3,-2);
+    collisionList.push(car.mesh);
+    scene.add(car.mesh);
+    return new car;
+};
+
+var fitness = function(entity) {
+    var moral = 0;
+    moral = entity.mesh.position.z;
+    return moral;
+};
 
 var floor = new Cube(6,0.25,11,0x0078dc);
 floor.position.set(0,0,0);
@@ -99,7 +97,7 @@ table.add(back);
 
 scene.add( table );
 
-var car = new GameObject(Cube(0.5,0.25,1,0x47475b));
+var car = new Car(Cube(0.5,0.25,1,0x47475b));
 car.mesh.position.set(0,0.3,-2);
 collisionList.push(car.mesh);
 scene.add(car.mesh);
@@ -146,6 +144,8 @@ function moveCar(object)
     var input = [];
     input.push(object.velocity);
     input.push(((object.mesh.rotation.y + 1.6) / 3.2));
+    // TODO: Add the positive and negative rotation axis.
+    //input.push((Math.abs(object.mesh.rotation.x / Math.PI)));
     var output = object.brain.activate(input);
     object.velocity = output[0];
     object.mesh.translateZ(output[0] * delta);
@@ -157,8 +157,9 @@ function moveCar(object)
     // Some sort of output for checking on our neural network
     // TODO: This should be generated but because we don't really know how we want it to look like this will function as a prototype.
     // TODO: Make some variables so that these sentences can become shorter.. right now they are there so we can fully understand how it works.
-    outLog.innerHTML =  "<h5> Input:" + input[0].toFixed(2) + " Bias:" + object.brain.layers.input.list[0].bias.toFixed(2)  + " | " + " Weight:" + object.brain.layers.hidden[0].list[0].connections.inputs[6].weight.toFixed(2) + " and " + object.brain.layers.hidden[0].list[0].connections.inputs[8].weight.toFixed(2) + " Bias:" + object.brain.layers.hidden[0].list[0].bias.toFixed(2) + " | " + " Weight:" + object.brain.layers.output.list[0].connections.inputs[10].weight.toFixed(2) + " and " + object.brain.layers.output.list[0].connections.inputs[12].weight.toFixed(2) + " Bias:" + object.brain.layers.output.list[0].bias.toFixed(2) + " Output:" + output[0].toFixed(2) + "</h5>" +
-        "<h5> Input:" + input[1].toFixed(2) + " Bias:" + object.brain.layers.input.list[1].bias.toFixed(2)  + " | " + " Weight:" + object.brain.layers.hidden[0].list[1].connections.inputs[7].weight.toFixed(2) + " and " + object.brain.layers.hidden[0].list[1].connections.inputs[9].weight.toFixed(2) + " Bias:" + object.brain.layers.hidden[0].list[1].bias.toFixed(2)  + " | " + " Weight:" + object.brain.layers.output.list[1].connections.inputs[11].weight.toFixed(2) + " and " + object.brain.layers.output.list[1].connections.inputs[13].weight.toFixed(2) + " Bias:" + object.brain.layers.output.list[1].bias.toFixed(2) + " Output:" + output[1].toFixed(2) + "</h5>";
+    outLog.innerHTML =
+        "<h5> Input:" + input[0].toFixed(2) + " Bias:" + object.brain.layers.input.list[0].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.hidden[0].list[0].connections.inputs[6].weight.toFixed(2) + " and " + object.brain.layers.hidden[0].list[0].connections.inputs[8].weight.toFixed(2) + " Bias:" + object.brain.layers.hidden[0].list[0].bias.toFixed(2) + " | " + " Weights:" + object.brain.layers.output.list[0].connections.inputs[10].weight.toFixed(2) + " and " + object.brain.layers.output.list[0].connections.inputs[12].weight.toFixed(2) + " Bias:" + object.brain.layers.output.list[0].bias.toFixed(2) + " Output:" + output[0].toFixed(2) + "</h5>" +
+        "<h5> Input:" + input[1].toFixed(2) + " Bias:" + object.brain.layers.input.list[1].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.hidden[0].list[1].connections.inputs[7].weight.toFixed(2) + " and " + object.brain.layers.hidden[0].list[1].connections.inputs[9].weight.toFixed(2) + " Bias:" + object.brain.layers.hidden[0].list[1].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.output.list[1].connections.inputs[11].weight.toFixed(2) + " and " + object.brain.layers.output.list[1].connections.inputs[13].weight.toFixed(2) + " Bias:" + object.brain.layers.output.list[1].bias.toFixed(2) + " Output:" + output[1].toFixed(2) + "</h5>";
     // console.log(object.brain);
     object.brain.layers.input.list[0].bias = (mouse.x/2)+0.5;
     // ISSUE: https://github.com/Metronoid/Traficulution/issues/1
