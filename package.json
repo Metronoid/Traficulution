@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description"  : "A traffic neural evolution.",
   "main"         : "app.js",
-  "author"       : "Wander van der Wal, Mark de Jong",
+  "author"       : "Wander van der Wal, Mark Snijder",
   "dependencies" : {
     "express"    : "latest",
     "three"      : "latest",
