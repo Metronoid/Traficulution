@@ -33,10 +33,6 @@ function Perceptron(input, hidden, output)
     inputLayer.project(hiddenLayer);
     hiddenLayer.project(outputLayer);
 
-    outputLayer.set({
-        squash: null
-    });
-
     // set the layers
     this.set({
         input: inputLayer,
@@ -53,9 +49,9 @@ Perceptron.prototype.constructor = Perceptron;
 
 
 class Car {
-    constructor(mesh) {
+    constructor(mesh,brain) {
         this.mesh = mesh;
-        this.brain = new Perceptron(2,2,2);
+        this.brain = brain ? brain : new Perceptron(2,2,2);
         this.velocity = 1;
         //You want to log out the object file so we can explore it, just once per session though.
         //TODO: remove this when no longer needed.
@@ -90,91 +86,63 @@ var fitness = function(entity) {
 
 var copy = function(entity)
 {
-    //TODO: Remove the new Car because we do not want to add the mesh in this.
-    var newEntity = new Car(Cube(0.5,0.25,1,0x47475b));
-    newEntity.brain = entity.brain.clone();
+    var newEntity = new Car(Cube(0.5,0.25,1,0x47475b),entity.brain.clone());
     return newEntity;
 }
 
 var crossoverRandom = function(father,mother)
 {
-    //TODO: Remove the new Car because we do not want to add the mesh in this.
     var son = new Car(Cube(0.5,0.25,1,0x47475b));
     var daughter = new Car(Cube(0.5,0.25,1,0x47475b));
-    var slice = 0.5;
 
-    var entity = function () {
-        var r = Math.random();
-        return r > slice ? [father,mother] : [mother,father];
+    var dadNeurons = father.brain.neurons();
+    var dadWeights = [];
+    for(let s in dadNeurons){
+        for(let i in dadNeurons[s].neuron.connections.inputs){
+            var input = dadNeurons[s].neuron.connections.inputs[i];
+            dadWeights.push(input);
+        }
     }
 
-    var inputSon = son.brain.layers.input.list;
-    var inputDaughter = daughter.brain.layers.input.list;
-    for (var i=0;i<inputSon.length;++i) {
-        var inputGenes = entity();
-        inputSon[i].bias = inputGenes[0].brain.layers.input.list[i].bias;
-        inputDaughter[i].bias = inputGenes[1].brain.layers.input.list[i].bias;
-    }
-    son.brain.layers.input.list = inputSon;
-    daughter.brain.layers.input.list = inputDaughter;
-
-    for (var h=0;h<son.brain.layers.hidden.length;++h) {
-        var hiddenSon = son.brain.layers.hidden[h].list;
-        var hiddenDaughter = son.brain.layers.hidden[h].list;
-        for (var i = 0; i < hiddenSon.length; ++i) {
-            var hiddenGenes = entity();
-            hiddenSon[i].bias = hiddenGenes[0].brain.layers.hidden[h].list[i].bias;
-            hiddenDaughter[i].bias = hiddenGenes[1].brain.layers.hidden[h].list[i].bias;
-            var newWeights = [];
-            for(var o in hiddenGenes[0].brain.layers.hidden[h].list[i].connections.inputs) {
-                newWeights.push(hiddenGenes[0].brain.layers.hidden[h].list[i].connections.inputs[o].weight);
-            }
-            var l = 0;
-            for(var n in hiddenSon[i].connections.inputs) {
-                hiddenSon[i].connections.inputs[n].weight = newWeights[l];
-                l++;
-            }
-            newWeights = [];
-            for(var o in hiddenGenes[1].brain.layers.hidden[h].list[i].connections.inputs) {
-                newWeights.push(hiddenGenes[1].brain.layers.hidden[h].list[i].connections.inputs[o].weight);
-            }
-            var l = 0;
-            for(var n in hiddenDaughter[i].connections.inputs) {
-                hiddenDaughter[i].connections.inputs[n].weight = newWeights[l];
-                l++;
-            }
+    var momNeurons = mother.brain.neurons();
+    var momWeights = [];
+    for(let s in momNeurons){
+        for(let i in momNeurons[s].neuron.connections.inputs){
+            var input = momNeurons[s].neuron.connections.inputs[i];
+            momWeights.push(input);
         }
-        son.brain.layers.hidden[h].list = hiddenSon;
-        daughter.brain.layers.hidden[h].list = hiddenDaughter;
     }
 
-    var outputSon = son.brain.layers.output.list;
-    var outputDaughter = daughter.brain.layers.output.list;
-    for (var i=0;i<outputSon.length;++i) {
-        var outputGenes = entity();
-        outputSon[i].bias = outputGenes[0].brain.layers.output.list[i].bias;
-        outputDaughter[i].bias = outputGenes[1].brain.layers.output.list[i].bias;
-        var newWeights = [];
-        for(var o in outputGenes[0].brain.layers.output.list[i].connections.inputs) {
-            newWeights.push(outputGenes[0].brain.layers.output.list[i].connections.inputs[o].weight);
+    var splice = function (dad,mom) {
+        var slice = Math.random().toFixed(2);
+        var son = [];
+        var daughter = [];
+
+        for(let i = 0; i <= dad.length;i++){
+            var len = dad.length * slice;
+
+            son.push(i <= len ? dad[i] : mom[i]);
+            daughter.push(i <= len ? mom[i] : dad[i]);
         }
-        var l = 0;
-        for(var n in outputSon[i].connections.inputs) {
-            outputSon[i].connections.inputs[n].weight = newWeights[l];
-            l++;
-        }
-        newWeights = [];
-        for(var o in outputGenes[1].brain.layers.output.list[i].connections.inputs) {
-            newWeights.push(outputGenes[1].brain.layers.output.list[i].connections.inputs[o].weight);
-        }
-        var l = 0;
-        for(var n in outputDaughter[i].connections.inputs) {
-            outputDaughter[i].connections.inputs[n].weight = newWeights[l];
-            l++;
+
+        return [son,daughter];
+    }
+
+    var newWeights = splice(dadWeights,momWeights);
+
+    var sonNeurons = son.brain.neurons();
+    for(let s in sonNeurons){
+        for(let i in sonNeurons[s].neuron.connections.inputs){
+            son.brain.neurons()[s].neuron.connections.inputs[i].weight = newWeights[0][s].weight;
         }
     }
-    son.brain.layers.output.list = outputSon;
-    daughter.brain.layers.output.list = outputDaughter;
+
+    var daughterNeurons = daughter.brain.neurons();
+    for(let s in daughterNeurons){
+        for(let i in daughterNeurons[s].neuron.connections.inputs){
+            daughter.brain.neurons()[s].neuron.connections.inputs[i].weight = newWeights[1][s].weight;
+        }
+    }
 
     return [son,daughter];
 }
@@ -283,7 +251,7 @@ function onMouseDown( event ) {
 
 function moveCar(object,delta)
 {
-    var objDistance = point.distanceTo(object.mesh.position);
+    //var objDistance = point.distanceTo(object.mesh.position);
     var input = [];
     input.push(object.velocity);
     input.push(((object.mesh.rotation.y + 1.6) / 3.2));
