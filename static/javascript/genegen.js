@@ -1,17 +1,19 @@
 class Genegen {
 
-	constructor(seed,fitness)
+	constructor(seed,fitness,copy)
 	{
 		this.fitness = fitness;
 		this.seed = seed;
 		this.mutate = null;
 		this.select1 = this.Tournament2;
-		this.select2 = null;
+		this.select2 = this.Reproduction;
 		this.optimize = this.Optimize;
 		this.generation = null;
+		this.crossover = null;
+		this.copy = copy;
 
 		this.size = 4;
-		this.crossover = 0.9;
+		this.crossoverRate = 0.9;
 		this.mutation = 0.2;
 		this.iterations = 5;
 		this.fittestAlwaysSurvives = true;
@@ -47,6 +49,10 @@ class Genegen {
 		return pop[Math.floor(Math.random() * pop.length)].entity;
 	}
 
+	Reproduction(pop) {
+		return [this.select1.call(this, pop), this.select1.call(this, pop)];
+	}
+
 	Start () {
 
 		var i;
@@ -71,53 +77,7 @@ function Iterate(){
 		// applies mutation based on mutation probability
 		return Math.random() <= self.mutation && self.mutate ? self.mutate(entity) : entity;
 	}
-	function copy(entity){
-		var newEntity = this.seed();
-		// TODO: Go through all the weights and change them.
-		var inputNew = newEntity.brain.layers.input.list;
-		var inputOld = entity.brain.layers.input.list;
-		for (var i=0;i<inputNew.length;++i) {
-			inputNew[i].bias = inputOld[i].bias;
-		}
-		newEntity.brain.layers.input.list = inputNew;
 
-		for (var h=0;h<newEntity.brain.layers.hidden.length;++h) {
-			var hiddenNew = newEntity.brain.layers.hidden[h].list;
-			var hiddenOld = entity.brain.layers.hidden[h].list;
-			for (var i = 0; i < hiddenNew.length; ++i) {
-				hiddenNew[i].bias = hiddenOld[i].bias;
-				var newWeights = [];
-				for(var o in hiddenOld[i].connections.inputs) {
-					newWeights.push(hiddenOld[i].connections.inputs[o].weight);
-				}
-				var l = 0;
-				for(var n in hiddenNew[i].connections.inputs) {
-					hiddenNew[i].connections.inputs[n].weight = newWeights[l];
-					l++;
-				}
-			}
-			newEntity.brain.layers.hidden[h].list = hiddenNew;
-		}
-
-		var outputNew = newEntity.brain.layers.output.list;
-		var outputOld = entity.brain.layers.output.list;
-		for (var i=0;i<outputNew.length;++i) {
-			outputNew[i].bias = outputOld[i].bias;
-			var newWeights = [];
-			for(var o in outputOld[i].connections.inputs) {
-				newWeights.push(outputOld[i].connections.inputs[o].weight);
-			}
-			var l = 0;
-			for(var n in outputNew[i].connections.inputs) {
-				outputNew[i].connections.inputs[n].weight = newWeights[l];
-				l++;
-			}
-		}
-		newEntity.brain.layers.output.list = outputNew;
-
-		return newEntity;
-
-	}
 	// score and sort
 	var pop = this.entities
 		.map(function (entity) {
@@ -131,7 +91,7 @@ function Iterate(){
 	var newPop = [];
 
 	if (this.fittestAlwaysSurvives) // lets the best solution fall through
-		newPop.push(copy(pop[0].entity));
+		newPop.push(this.copy(pop[0].entity));
 
 	while (newPop.length < self.size) {
 		if (
@@ -144,7 +104,7 @@ function Iterate(){
 			var children = this.crossover(parents[0], parents[1]).map(mutateOrNot);
 			newPop.push(children[0], children[1]);
 		} else {
-			newPop.push(mutateOrNot(copy(self.select1(pop))));
+			newPop.push(mutateOrNot(this.copy(self.select1(pop))));
 		}
 	}
 

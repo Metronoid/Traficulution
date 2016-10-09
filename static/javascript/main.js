@@ -82,7 +82,57 @@ var fitness = function(entity) {
     return moral;
 };
 
-var pool = new Genegen(seed,fitness);
+var copy = function(entity)
+{
+    var newEntity = seed();
+    console.log(entity);
+    // TODO: Go through all the weights and change them.
+    var inputNew = newEntity.brain.layers.input.list;
+    var inputOld = entity.brain.layers.input.list;
+    for (var i=0;i<inputNew.length;++i) {
+        inputNew[i].bias = inputOld[i].bias;
+    }
+    newEntity.brain.layers.input.list = inputNew;
+
+    for (var h=0;h<newEntity.brain.layers.hidden.length;++h) {
+        var hiddenNew = newEntity.brain.layers.hidden[h].list;
+        var hiddenOld = entity.brain.layers.hidden[h].list;
+        for (var i = 0; i < hiddenNew.length; ++i) {
+            hiddenNew[i].bias = hiddenOld[i].bias;
+            var newWeights = [];
+            for(var o in hiddenOld[i].connections.inputs) {
+                newWeights.push(hiddenOld[i].connections.inputs[o].weight);
+            }
+            var l = 0;
+            for(var n in hiddenNew[i].connections.inputs) {
+                hiddenNew[i].connections.inputs[n].weight = newWeights[l];
+                l++;
+            }
+        }
+        newEntity.brain.layers.hidden[h].list = hiddenNew;
+    }
+
+    var outputNew = newEntity.brain.layers.output.list;
+    var outputOld = entity.brain.layers.output.list;
+    for (var i=0;i<outputNew.length;++i) {
+        outputNew[i].bias = outputOld[i].bias;
+        var newWeights = [];
+        for(var o in outputOld[i].connections.inputs) {
+            newWeights.push(outputOld[i].connections.inputs[o].weight);
+        }
+        var l = 0;
+        for(var n in outputNew[i].connections.inputs) {
+            outputNew[i].connections.inputs[n].weight = newWeights[l];
+            l++;
+        }
+    }
+    newEntity.brain.layers.output.list = outputNew;
+
+    return newEntity;
+}
+
+
+var pool = new Genegen(seed,fitness,copy);
 pool.Start();
 
 var floor = new Cube(6,0.25,11,0x0078dc);
