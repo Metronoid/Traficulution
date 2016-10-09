@@ -33,6 +33,16 @@ function Perceptron(input, hidden, output)
     inputLayer.project(hiddenLayer);
     hiddenLayer.project(outputLayer);
 
+    inputLayer.set({
+        squash: Neuron.squash.LOGISTIC
+    })
+    hiddenLayer.set({
+        squash: Neuron.squash.LOGISTIC
+    })
+    outputLayer.set({
+        squash: Neuron.squash.LOGISTIC
+    })
+
     // set the layers
     this.set({
         input: inputLayer,
