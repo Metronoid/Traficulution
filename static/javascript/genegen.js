@@ -1,6 +1,6 @@
 class Genegen {
 
-	constructor(seed,fitness,copy)
+	constructor(seed,fitness,copy,crossover)
 	{
 		this.fitness = fitness;
 		this.seed = seed;
@@ -9,13 +9,13 @@ class Genegen {
 		this.select2 = this.Reproduction;
 		this.optimize = this.Optimize;
 		this.generation = null;
-		this.crossover = null;
+		this.crossover = crossover;
 		this.copy = copy;
 
-		this.size = 4;
+		this.size = 100;
 		this.crossoverRate = 0.9;
 		this.mutation = 0.2;
-		this.iterations = 5;
+		this.iterations = 100;
 		this.fittestAlwaysSurvives = true;
 		this.entities = [];
 	}
@@ -65,7 +65,7 @@ class Genegen {
 		for (i=0;i<this.iterations;++i) {
 
 			// Wait a while
-			setTimeout(Iterate.bind(this), 2000 * (i+1))
+			setTimeout(Iterate.bind(this), 4000 * (i+1))
 
 		}
 	}
@@ -96,7 +96,7 @@ function Iterate(){
 	while (newPop.length < self.size) {
 		if (
 			this.crossover // if there is a crossover function
-			&& Math.random() <= this.crossover // base crossover on specified probability
+			&& Math.random() <= this.crossoverRate // base crossover on specified probability
 			&& newPop.length+1 < self.size // keeps us from going 1 over the max population size
 			&& this.select2
 		) {

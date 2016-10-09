@@ -78,15 +78,13 @@ var seed = function() {
 
 var fitness = function(entity) {
     var moral = 0;
-    moral = entity.mesh.position.z;
+    moral = entity.mesh.position.x;
     return moral;
 };
 
 var copy = function(entity)
 {
     var newEntity = seed();
-    console.log(entity);
-    // TODO: Go through all the weights and change them.
     var inputNew = newEntity.brain.layers.input.list;
     var inputOld = entity.brain.layers.input.list;
     for (var i=0;i<inputNew.length;++i) {
@@ -131,8 +129,90 @@ var copy = function(entity)
     return newEntity;
 }
 
+var crossoverRandom = function(father,mother)
+{
+    var son = seed();
+    var daughter = seed();
+    var slice = 0.5;
 
-var pool = new Genegen(seed,fitness,copy);
+    var entity = function () {
+        var r = Math.random();
+        return r > slice ? [father,mother] : [mother,father];
+    }
+
+    var inputSon = son.brain.layers.input.list;
+    var inputDaughter = daughter.brain.layers.input.list;
+    for (var i=0;i<inputSon.length;++i) {
+        var inputGenes = entity();
+        inputSon[i].bias = inputGenes[0].brain.layers.input.list[i].bias;
+        inputDaughter[i].bias = inputGenes[1].brain.layers.input.list[i].bias;
+    }
+    son.brain.layers.input.list = inputSon;
+    daughter.brain.layers.input.list = inputDaughter;
+
+    for (var h=0;h<son.brain.layers.hidden.length;++h) {
+        var hiddenSon = son.brain.layers.hidden[h].list;
+        var hiddenDaughter = son.brain.layers.hidden[h].list;
+        for (var i = 0; i < hiddenSon.length; ++i) {
+            var hiddenGenes = entity();
+            hiddenSon[i].bias = hiddenGenes[0].brain.layers.hidden[h].list[i].bias;
+            hiddenDaughter[i].bias = hiddenGenes[1].brain.layers.hidden[h].list[i].bias;
+            var newWeights = [];
+            for(var o in hiddenGenes[0].brain.layers.hidden[h].list[i].connections.inputs) {
+                newWeights.push(hiddenGenes[0].brain.layers.hidden[h].list[i].connections.inputs[o].weight);
+            }
+            var l = 0;
+            for(var n in hiddenSon[i].connections.inputs) {
+                hiddenSon[i].connections.inputs[n].weight = newWeights[l];
+                l++;
+            }
+            newWeights = [];
+            for(var o in hiddenGenes[1].brain.layers.hidden[h].list[i].connections.inputs) {
+                newWeights.push(hiddenGenes[1].brain.layers.hidden[h].list[i].connections.inputs[o].weight);
+            }
+            var l = 0;
+            for(var n in hiddenDaughter[i].connections.inputs) {
+                hiddenDaughter[i].connections.inputs[n].weight = newWeights[l];
+                l++;
+            }
+        }
+        son.brain.layers.hidden[h].list = hiddenSon;
+        daughter.brain.layers.hidden[h].list = hiddenDaughter;
+    }
+
+    var outputSon = son.brain.layers.output.list;
+    var outputDaughter = daughter.brain.layers.output.list;
+    for (var i=0;i<outputSon.length;++i) {
+        var outputGenes = entity();
+        outputSon[i].bias = outputGenes[0].brain.layers.output.list[i].bias;
+        outputDaughter[i].bias = outputGenes[1].brain.layers.output.list[i].bias;
+        var newWeights = [];
+        for(var o in outputGenes[0].brain.layers.output.list[i].connections.inputs) {
+            newWeights.push(outputGenes[0].brain.layers.output.list[i].connections.inputs[o].weight);
+        }
+        var l = 0;
+        for(var n in outputSon[i].connections.inputs) {
+            outputSon[i].connections.inputs[n].weight = newWeights[l];
+            l++;
+        }
+        newWeights = [];
+        for(var o in outputGenes[1].brain.layers.output.list[i].connections.inputs) {
+            newWeights.push(outputGenes[1].brain.layers.output.list[i].connections.inputs[o].weight);
+        }
+        var l = 0;
+        for(var n in outputDaughter[i].connections.inputs) {
+            outputDaughter[i].connections.inputs[n].weight = newWeights[l];
+            l++;
+        }
+    }
+    son.brain.layers.output.list = outputSon;
+    daughter.brain.layers.output.list = outputDaughter;
+
+    return [son,daughter];
+}
+
+
+var pool = new Genegen(seed,fitness,copy,crossoverRandom);
 pool.Start();
 
 var floor = new Cube(6,0.25,11,0x0078dc);
