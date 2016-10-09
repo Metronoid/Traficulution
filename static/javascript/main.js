@@ -258,7 +258,7 @@ var mutate = function (oldEntity) {
             }
         }
     }
-
+    return entity;
 }
 
 var pool = new Genegen(seed,fitness,copy,crossoverRandom,mutate);

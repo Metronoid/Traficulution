@@ -4,19 +4,18 @@ class Genegen {
 	{
 		this.fitness = fitness;
 		this.seed = seed;
-		this.mutate = null;
+		this.mutate = mutate;
 		this.select1 = this.Tournament2;
 		this.select2 = this.Reproduction;
 		this.optimize = this.Optimize;
 		this.generation = null;
 		this.crossover = crossover;
 		this.copy = copy;
-		this.mutate = mutate;
 
-		this.size = 100;
+		this.size = 10;
 		this.crossoverRate = 0.9;
-		this.mutationRate = 0.2;
-		this.iterations = 100;
+		this.mutation = 0.2;
+		this.iterations = 5;
 		this.fittestAlwaysSurvives = true;
 		this.entities = [];
 	}
