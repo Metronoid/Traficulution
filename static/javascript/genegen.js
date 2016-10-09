@@ -5,17 +5,18 @@ class Genegen {
 		this.fitness = fitness;
 		this.seed = seed;
 		this.mutate = mutate;
-		this.select1 = this.Tournament2;
+		this.select1 = this.Fittest;
 		this.select2 = this.Reproduction;
 		this.optimize = this.Optimize;
 		this.generation = null;
 		this.crossover = crossover;
 		this.copy = copy;
 
-		this.size = 10;
+		this.size = 100;
 		this.crossoverRate = 0.9;
 		this.mutation = 0.2;
-		this.iterations = 5;
+		this.iterations = 1000;
+		this.timer = 4000;
 		this.fittestAlwaysSurvives = true;
 		this.entities = [];
 	}
@@ -65,7 +66,7 @@ class Genegen {
 		for (i=0;i<this.iterations;++i) {
 
 			// Wait a while
-			setTimeout(Iterate.bind(this), 4000 * (i+1))
+			setTimeout(Iterate.bind(this), this.timer * (i+1))
 
 		}
 	}
@@ -91,7 +92,11 @@ function Iterate(){
 	var newPop = [];
 
 	if (this.fittestAlwaysSurvives) // lets the best solution fall through
+	{
+		console.log(pop[0]);
+		console.log(this.copy(pop[0].entity));
 		newPop.push(this.copy(pop[0].entity));
+	}
 
 	while (newPop.length < self.size) {
 		if (

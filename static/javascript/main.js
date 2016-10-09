@@ -33,12 +33,18 @@ function Perceptron(input, hidden, output)
     inputLayer.project(hiddenLayer);
     hiddenLayer.project(outputLayer);
 
+    outputLayer.set({
+        squash: null
+    });
+
     // set the layers
     this.set({
         input: inputLayer,
         hidden: [hiddenLayer],
-        output: outputLayer,
+        output: outputLayer
     });
+
+    //var standalone = this.standalone();
 }
 
 // extend the prototype chain
@@ -78,61 +84,23 @@ var seed = function() {
 
 var fitness = function(entity) {
     var moral = 0;
-    moral = entity.mesh.position.x;
+    moral = entity.mesh.position.z;
     return moral;
 };
 
 var copy = function(entity)
 {
-    var newEntity = seed();
-    var inputNew = newEntity.brain.layers.input.list;
-    var inputOld = entity.brain.layers.input.list;
-    for (var i=0;i<inputNew.length;++i) {
-        inputNew[i].bias = inputOld[i].bias;
-    }
-    newEntity.brain.layers.input.list = inputNew;
-
-    for (var h=0;h<newEntity.brain.layers.hidden.length;++h) {
-        var hiddenNew = newEntity.brain.layers.hidden[h].list;
-        var hiddenOld = entity.brain.layers.hidden[h].list;
-        for (var i = 0; i < hiddenNew.length; ++i) {
-            hiddenNew[i].bias = hiddenOld[i].bias;
-            var newWeights = [];
-            for(var o in hiddenOld[i].connections.inputs) {
-                newWeights.push(hiddenOld[i].connections.inputs[o].weight);
-            }
-            var l = 0;
-            for(var n in hiddenNew[i].connections.inputs) {
-                hiddenNew[i].connections.inputs[n].weight = newWeights[l];
-                l++;
-            }
-        }
-        newEntity.brain.layers.hidden[h].list = hiddenNew;
-    }
-
-    var outputNew = newEntity.brain.layers.output.list;
-    var outputOld = entity.brain.layers.output.list;
-    for (var i=0;i<outputNew.length;++i) {
-        outputNew[i].bias = outputOld[i].bias;
-        var newWeights = [];
-        for(var o in outputOld[i].connections.inputs) {
-            newWeights.push(outputOld[i].connections.inputs[o].weight);
-        }
-        var l = 0;
-        for(var n in outputNew[i].connections.inputs) {
-            outputNew[i].connections.inputs[n].weight = newWeights[l];
-            l++;
-        }
-    }
-    newEntity.brain.layers.output.list = outputNew;
-
+    //TODO: Remove the new Car because we do not want to add the mesh in this.
+    var newEntity = new Car(Cube(0.5,0.25,1,0x47475b));
+    newEntity.brain = entity.brain.clone();
     return newEntity;
 }
 
 var crossoverRandom = function(father,mother)
 {
-    var son = seed();
-    var daughter = seed();
+    //TODO: Remove the new Car because we do not want to add the mesh in this.
+    var son = new Car(Cube(0.5,0.25,1,0x47475b));
+    var daughter = new Car(Cube(0.5,0.25,1,0x47475b));
     var slice = 0.5;
 
     var entity = function () {
@@ -212,18 +180,14 @@ var crossoverRandom = function(father,mother)
 }
 
 var mutate = function (oldEntity) {
-    var entity = copy(oldEntity);
-    var randomEntity = seed();
-    // 0 to 1, this value determines how likely it is for a connection or bias to change.
-    var mutatePercentage = 0.5;
+    var entity = oldEntity;
+    var randomEntity = new Car(Cube(0.5,0.25,1,0x47475b));
 
     var inputConn = entity.brain.layers.input.connectedTo;
     var randomInputConn = randomEntity.brain.layers.input.connectedTo;
 
     for(let idx = 0; idx < Object.keys(inputConn[0].connections).length; idx++) {
-        if(Math.random().toFixed(1) <= mutatePercentage) {
-            inputConn[0].connections[Object.keys(inputConn[0].connections)[idx]].weight = randomInputConn[0].connections[Object.keys(randomInputConn[0].connections)[idx]].weight;
-        }
+        inputConn[0].connections[Object.keys(inputConn[0].connections)[idx]].weight = randomInputConn[0].connections[Object.keys(randomInputConn[0].connections)[idx]].weight;
     }
 
 
@@ -233,9 +197,7 @@ var mutate = function (oldEntity) {
         var randomHiddenConn = randomEntity.brain.layers.hidden[depth].connectedTo;
 
         for(let idx = 0; idx < Object.keys(inputConn[0].connections).length; idx++) {
-            if(Math.random().toFixed(1) <= mutatePercentage) {
-                hiddenConn[0].connections[Object.keys(hiddenConn[0].connections)[idx]].weight = randomHiddenConn[0].connections[Object.keys(randomHiddenConn[0].connections)[idx]].weight;
-            }
+            hiddenConn[0].connections[Object.keys(hiddenConn[0].connections)[idx]].weight = randomHiddenConn[0].connections[Object.keys(randomHiddenConn[0].connections)[idx]].weight;
         }
     }
 
@@ -243,9 +205,7 @@ var mutate = function (oldEntity) {
     var randomInputNeurons = entity.brain.layers.input.list;
 
     for(let idx = 0; idx < inputNeurons.length; idx++) {
-        if(Math.random().toFixed(1) <= mutatePercentage) {
-            inputNeurons[0].bias = randomInputNeurons[0].bias;
-        }
+        inputNeurons[0].bias = randomInputNeurons[0].bias;
     }
 
     for(let depth = 0; depth < hiddenLayerAmt; depth++) {
@@ -253,9 +213,7 @@ var mutate = function (oldEntity) {
         var randomHiddenNeurons = entity.brain.layers.hidden[depth].list;
 
         for(let idx = 0; idx < inputNeurons.length; idx++) {
-            if(Math.random().toFixed(1) <= mutatePercentage) {
-                hiddenNeurons[0].bias = randomHiddenNeurons[0].bias;
-            }
+            hiddenNeurons[0].bias = randomHiddenNeurons[0].bias;
         }
     }
     return entity;
@@ -332,9 +290,11 @@ function moveCar(object,delta)
     // TODO: Add the positive and negative rotation axis.
     //input.push((Math.abs(object.mesh.rotation.x / Math.PI)));
     var output = object.brain.activate(input);
+    object.brain.restore();
+    var speed = 5;
     object.velocity = output[0];
-    object.mesh.translateZ(output[0] * delta);
-    object.mesh.rotateY((output[1] - 0.5) * delta);
+    object.mesh.translateZ(output[0] * speed * delta);
+    object.mesh.rotateY((output[1] - 0.5) * speed * delta);
 
     var learningRate = 0.01;
     var target = [(mouse.y/2)+0.5,(mouse.x/2)+0.5];
