@@ -170,21 +170,6 @@ var mutate = function (oldEntity) {
         }
     }
 
-    var inputNeurons = entity.brain.layers.input.list;
-    var randomInputNeurons = entity.brain.layers.input.list;
-
-    for(let idx = 0; idx < inputNeurons.length; idx++) {
-        inputNeurons[0].bias = randomInputNeurons[0].bias;
-    }
-
-    for(let depth = 0; depth < hiddenLayerAmt; depth++) {
-        var hiddenNeurons = entity.brain.layers.hidden[depth].list;
-        var randomHiddenNeurons = entity.brain.layers.hidden[depth].list;
-
-        for(let idx = 0; idx < inputNeurons.length; idx++) {
-            hiddenNeurons[0].bias = randomHiddenNeurons[0].bias;
-        }
-    }
     return entity;
 }
 
