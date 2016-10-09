@@ -92,7 +92,7 @@ var copy = function(entity)
 {
     //TODO: Remove the new Car because we do not want to add the mesh in this.
     var newEntity = new Car(Cube(0.5,0.25,1,0x47475b));
-    newEntity.brain = entity.brain.clone();
+    newEntity.brain = jQuery.extend(true, {}, entity.brain);
     return newEntity;
 }
 
