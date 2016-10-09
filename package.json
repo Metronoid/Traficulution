@@ -1,6 +1,6 @@
 {
   "name": "Traficulution",
-  "version": "0.0.1a",
+  "version": "0.0.1b",
   "description"  : "A traffic neural evolution.",
   "main"         : "app.js",
   "author"       : "Wander van der Wal, Mark Snijder",
