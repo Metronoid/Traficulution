@@ -51,8 +51,8 @@ Perceptron.prototype.constructor = Perceptron;
 class Car {
     constructor(mesh,brain) {
         this.mesh = mesh;
-        this.brain = brain ? brain : new Perceptron(2,2,2);
-        this.velocity = 1;
+        this.brain = brain ? brain : new Perceptron(2,3,2);
+        this.output = [0,0];
         //You want to log out the object file so we can explore it, just once per session though.
         //TODO: remove this when no longer needed.
        // console.log(this.brain.layers);
@@ -80,7 +80,7 @@ var seed = function() {
 
 var fitness = function(entity) {
     var moral = 0;
-    moral = entity.mesh.position.z;
+    moral = -entity.mesh.position.z;
     return moral;
 };
 
@@ -254,14 +254,15 @@ function moveCar(object,delta)
 {
     //var objDistance = point.distanceTo(object.mesh.position);
     var input = [];
-    input.push(object.velocity);
+    input.push(object.output[0]);
     input.push(((object.mesh.rotation.y + 1.6) / 3.2));
     // TODO: Add the positive and negative rotation axis.
     //input.push((Math.abs(object.mesh.rotation.x / Math.PI)));
     var output = object.brain.activate(input);
     object.brain.restore();
     var speed = 5;
-    object.velocity = output[0];
+    object.output[0] = output[0];
+    object.output[1] = output[1];
     object.mesh.translateZ(output[0] * speed * delta);
     object.mesh.rotateY((output[1] - 0.5) * speed * delta);
 

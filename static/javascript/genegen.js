@@ -5,7 +5,7 @@ class Genegen {
 		this.fitness = fitness;
 		this.seed = seed;
 		this.mutate = mutate;
-		this.select1 = this.Fittest;
+		this.select1 = this.Tournament3;
 		this.select2 = this.Reproduction;
 		this.optimize = this.Optimize;
 		this.generation = null;
@@ -14,7 +14,7 @@ class Genegen {
 
 		this.size = 4;
 		this.crossoverRate = 0.9;
-		this.mutation = 0;
+		this.mutation = 0.2;
 		this.iterations = 1000;
 		this.timer = 4000;
 		this.fittestAlwaysSurvives = true;
