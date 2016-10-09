@@ -132,6 +132,57 @@ var copy = function(entity)
 }
 
 
+var mutate = function (oldEntity) {
+    var entity = copy(oldEntity);
+    var randomEntity = seed();
+    // 0 to 1, this value determines how likely it is for a connection or bias to change.
+    var mutatePercentage = 0.5;
+
+    var inputConn = entity.brain.layers.input.connectedTo;
+    var randomInputConn = randomEntity.brain.layers.input.connectedTo;
+
+    for(let idx = 0; idx < Object.keys(inputConn[0].connections).length; idx++) {
+        if(Math.random().toFixed(1) <= mutatePercentage) {
+            inputConn[0].connections[Object.keys(inputConn[0].connections)[idx]].weight = randomInputConn[0].connections[Object.keys(randomInputConn[0].connections)[idx]].weight;
+        }
+    }
+
+
+    var hiddenLayerAmt = entity.brain.layers.hidden.length;
+    for(let depth = 0; depth < hiddenLayerAmt; depth++) {
+        var hiddenConn = entity.brain.layers.hidden[depth].connectedTo;
+        var randomHiddenConn = randomEntity.brain.layers.hidden[depth].connectedTo;
+
+        for(let idx = 0; idx < Object.keys(inputConn[0].connections).length; idx++) {
+            if(Math.random().toFixed(1) <= mutatePercentage) {
+                hiddenConn[0].connections[Object.keys(hiddenConn[0].connections)[idx]].weight = randomHiddenConn[0].connections[Object.keys(randomHiddenConn[0].connections)[idx]].weight;
+            }
+        }
+    }
+
+    var inputNeurons = entity.brain.layers.input.list;
+    var randomInputNeurons = entity.brain.layers.input.list;
+
+    for(let idx = 0; idx < inputNeurons.length; idx++) {
+        if(Math.random().toFixed(1) <= mutatePercentage) {
+            inputNeurons[0].bias = randomInputNeurons[0].bias;
+        }
+    }
+
+    for(let depth = 0; depth < hiddenLayerAmt; depth++) {
+        var hiddenNeurons = entity.brain.layers.hidden[depth].list;
+        var randomHiddenNeurons = entity.brain.layers.hidden[depth].list;
+
+        for(let idx = 0; idx < inputNeurons.length; idx++) {
+            if(Math.random().toFixed(1) <= mutatePercentage) {
+                hiddenNeurons[0].bias = randomHiddenNeurons[0].bias;
+            }
+        }
+    }
+
+}
+
+
 var pool = new Genegen(seed,fitness,copy);
 pool.Start();
 
