@@ -189,12 +189,13 @@ function onMouseDown( event ) {
     var intersects = raycaster.intersectObjects( collisionList );
     if(intersects[0] != undefined)
     {
-        point = intersects[0].position;
+        point = intersects[0].point;
     }
 }
 
 function moveCar(object,delta)
 {
+    var objDistance = point.distanceTo(object.mesh.position);
     var input = [];
     input.push(object.velocity);
     input.push(((object.mesh.rotation.y + 1.6) / 3.2));
@@ -217,8 +218,8 @@ function moveCar(object,delta)
     //    "<h5> Input:" + input[0].toFixed(2) + " Bias:" + object.brain.layers.input.list[0].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.hidden[0].list[0].connections.inputs[6].weight.toFixed(2) + " and " + object.brain.layers.hidden[0].list[0].connections.inputs[8].weight.toFixed(2) + " Bias:" + object.brain.layers.hidden[0].list[0].bias.toFixed(2) + " | " + " Weights:" + object.brain.layers.output.list[0].connections.inputs[10].weight.toFixed(2) + " and " + object.brain.layers.output.list[0].connections.inputs[12].weight.toFixed(2) + " Bias:" + object.brain.layers.output.list[0].bias.toFixed(2) + " Output:" + output[0].toFixed(2) + "</h5>" +
     //    "<h5> Input:" + input[1].toFixed(2) + " Bias:" + object.brain.layers.input.list[1].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.hidden[0].list[1].connections.inputs[7].weight.toFixed(2) + " and " + object.brain.layers.hidden[0].list[1].connections.inputs[9].weight.toFixed(2) + " Bias:" + object.brain.layers.hidden[0].list[1].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.output.list[1].connections.inputs[11].weight.toFixed(2) + " and " + object.brain.layers.output.list[1].connections.inputs[13].weight.toFixed(2) + " Bias:" + object.brain.layers.output.list[1].bias.toFixed(2) + " Output:" + output[1].toFixed(2) + "</h5>";
     // console.log(object.brain);
-    //object.brain.propagate(learningRate, target);
-    //object.brain.restore();
+    // object.brain.propagate(learningRate, target);
+    // object.brain.restore();
 };
 
 var update = function () {
