@@ -1,6 +1,6 @@
 class Genegen {
 
-	constructor(seed,fitness,copy,crossover)
+	constructor(seed,fitness,copy,crossover,mutate)
 	{
 		this.fitness = fitness;
 		this.seed = seed;
@@ -11,10 +11,11 @@ class Genegen {
 		this.generation = null;
 		this.crossover = crossover;
 		this.copy = copy;
+		this.mutate = mutate;
 
 		this.size = 100;
 		this.crossoverRate = 0.9;
-		this.mutation = 0.2;
+		this.mutationRate = 0.2;
 		this.iterations = 100;
 		this.fittestAlwaysSurvives = true;
 		this.entities = [];
