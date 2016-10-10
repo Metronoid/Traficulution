@@ -33,14 +33,21 @@ function Perceptron(input, hidden, output)
     inputLayer.project(hiddenLayer);
     hiddenLayer.project(outputLayer);
 
+    var customSquash = function(x, derivate) {
+        return x;
+    };
+
     inputLayer.set({
-        squash: Neuron.squash.LOGISTIC
+        squash: customSquash,
+
     })
     hiddenLayer.set({
-        squash: Neuron.squash.LOGISTIC
+        squash: customSquash,
+        bias: 1
     })
     outputLayer.set({
-        squash: Neuron.squash.LOGISTIC
+        squash: customSquash,
+        bias: 0.00
     })
 
     // set the layers
@@ -62,6 +69,7 @@ class Car {
     constructor(mesh,brain) {
         this.mesh = mesh;
         this.brain = brain ? brain : new Perceptron(2,3,2);
+        this.brain.setOptimize(false);
         this.output = [0,0];
         //You want to log out the object file so we can explore it, just once per session though.
         //TODO: remove this when no longer needed.
@@ -90,7 +98,7 @@ var seed = function() {
 
 var fitness = function(entity) {
     var moral = 0;
-    moral = -entity.mesh.position.z;
+    moral = entity.mesh.position.z;
     return moral;
 };
 
@@ -254,7 +262,7 @@ function moveCar(object,delta)
     // TODO: Add the positive and negative rotation axis.
     //input.push((Math.abs(object.mesh.rotation.x / Math.PI)));
     var output = object.brain.activate(input);
-    object.brain.restore();
+    //object.brain.restore();
     var speed = 5;
     object.output[0] = output[0];
     object.output[1] = output[1];

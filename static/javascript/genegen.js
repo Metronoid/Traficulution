@@ -12,7 +12,7 @@ class Genegen {
 		this.crossover = crossover;
 		this.copy = copy;
 
-		this.size = 4;
+		this.size = 60;
 		this.crossoverRate = 0.9;
 		this.mutation = 0.2;
 		this.iterations = 1000;
@@ -88,12 +88,13 @@ function Iterate(){
 			return self.optimize(a.fitness, b.fitness) ? -1 : 1;
 		});
 
+	console.log(pop[0]);
+
 	// crossover and mutate
 	var newPop = [];
 
 	if (this.fittestAlwaysSurvives) // lets the best solution fall through
 	{
-		console.log(pop[0]);
 		newPop.push(this.copy(pop[0].entity));
 	}
 
