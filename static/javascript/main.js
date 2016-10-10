@@ -69,6 +69,7 @@ class Car {
         this.mesh = mesh;
         this.brain = brain ? brain : new Perceptron(2,3,2);
         this.brain.setOptimize(false);
+        if(!brain) this.brain = mutate(this).brain;
         this.output = [0,0];
         //You want to log out the object file so we can explore it, just once per session though.
         //TODO: remove this when no longer needed.
@@ -97,15 +98,14 @@ var seed = function() {
 
 var fitness = function(entity) {
     var moral = 0;
-
-    // moral = entity.mesh.position.z;
     moral = entity.mesh.position.z;
+    // moral = entity.mesh.position.x;
     return moral;
 };
 
 var copy = function(entity)
 {
-    var newEntity = new Car(Cube(0.5,0.25,1,0x47475b),entity.brain.clone());
+    var newEntity = new Car(Cube(0.5,0.25,1,0x47475b), jQuery.extend(true, {}, entity.brain));
     newEntity.brain = jQuery.extend(true, {}, entity.brain);
     return newEntity;
 }
@@ -169,20 +169,15 @@ var crossoverRandom = function(father,mother)
 
 var mutate = function (oldEntity) {
     var entity = oldEntity;
-    var randomEntity = new Car(Cube(0.5,0.25,1,0x47475b));
 
     var inputConn = entity.brain.layers.input.connectedTo;
-    var randomInputConn = randomEntity.brain.layers.input.connectedTo;
-
     for(let idx = 0; idx < Object.keys(inputConn[0].connections).length; idx++) {
         inputConn[0].connections[Object.keys(inputConn[0].connections)[idx]].weight = Math.random()*2-1;
     }
 
-
     var hiddenLayerAmt = entity.brain.layers.hidden.length;
     for(let depth = 0; depth < hiddenLayerAmt; depth++) {
         var hiddenConn = entity.brain.layers.hidden[depth].connectedTo;
-        var randomHiddenConn = randomEntity.brain.layers.hidden[depth].connectedTo;
 
         for(let idx = 0; idx < Object.keys(inputConn[0].connections).length; idx++) {
             hiddenConn[0].connections[Object.keys(hiddenConn[0].connections)[idx]].weight = Math.random()*2-1;

@@ -12,9 +12,9 @@ class Genegen {
 		this.crossover = crossover;
 		this.copy = copy;
 
-		this.size = 4;
-		this.crossoverRate = 1;
-		this.mutation = 0.1;
+		this.size = 60;
+		this.crossoverRate = 0.9;
+		this.mutation = 0.2;
 		this.iterations = 1000;
 		this.timer = 4000;
 		this.fittestAlwaysSurvives = true;
