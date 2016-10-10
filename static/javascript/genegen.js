@@ -6,15 +6,15 @@ class Genegen {
 		this.seed = seed;
 		this.mutate = mutate;
 		this.select1 = this.Tournament3;
-		this.select2 = this.Reproduction;
+		this.select2 = this.RouleteReproduction;
 		this.optimize = this.Optimize;
 		this.generation = null;
 		this.crossover = crossover;
 		this.copy = copy;
 
-		this.size = 60;
-		this.crossoverRate = 0.9;
-		this.mutation = 0.2;
+		this.size = 4;
+		this.crossoverRate = 1;
+		this.mutation = 0.1;
 		this.iterations = 1000;
 		this.timer = 4000;
 		this.fittestAlwaysSurvives = true;
@@ -37,9 +37,19 @@ class Genegen {
 		var a = pop[Math.floor(Math.random()*n)];
 		var b = pop[Math.floor(Math.random()*n)];
 		var c = pop[Math.floor(Math.random()*n)];
-		var best = this.optimize(a.fitness, b.fitness) ? a : b;
-		best = this.optimize(best.fitness, c.fitness) ? best : c;
+		var best = this.Optimize(a.fitness, b.fitness) ? a : b;
+		best = this.Optimize(best.fitness, c.fitness) ? best : c;
 		return best.entity;
+	}
+
+	Roulete2 (pop) {
+		var tickets = [];
+		for(let p in pop){
+			for(var i = 0; i <= pop[p].fitness/pop[0].fitness; i++) {
+				tickets.push(pop[p])
+			}
+		}
+		return tickets;
 	}
 
 	Fittest (pop) {
@@ -52,6 +62,10 @@ class Genegen {
 
 	Reproduction(pop) {
 		return [this.select1.call(this, pop), this.select1.call(this, pop)];
+	}
+
+	RouleteReproduction(pop) {
+		return [this.select1.call(this, this.Roulete2(pop)), this.select1.call(this, this.Roulete2(pop))];
 	}
 
 	Start () {

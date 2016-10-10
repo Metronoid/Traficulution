@@ -34,20 +34,19 @@ function Perceptron(input, hidden, output)
     hiddenLayer.project(outputLayer);
 
     var customSquash = function(x, derivate) {
-        return x;
+        return derivate ? 1 : x;
     };
 
     inputLayer.set({
-        squash: customSquash,
+        squash: Neuron.squash.LOGISTIC
 
     })
     hiddenLayer.set({
-        squash: customSquash,
+        squash: Neuron.squash.LOGISTIC,
         bias: 1
     })
     outputLayer.set({
-        squash: customSquash,
-        bias: 0.00
+        squash: Neuron.squash.LOGISTIC
     })
 
     // set the layers
@@ -98,6 +97,8 @@ var seed = function() {
 
 var fitness = function(entity) {
     var moral = 0;
+
+    // moral = entity.mesh.position.z;
     moral = entity.mesh.position.z;
     return moral;
 };
@@ -174,7 +175,7 @@ var mutate = function (oldEntity) {
     var randomInputConn = randomEntity.brain.layers.input.connectedTo;
 
     for(let idx = 0; idx < Object.keys(inputConn[0].connections).length; idx++) {
-        inputConn[0].connections[Object.keys(inputConn[0].connections)[idx]].weight = randomInputConn[0].connections[Object.keys(randomInputConn[0].connections)[idx]].weight;
+        inputConn[0].connections[Object.keys(inputConn[0].connections)[idx]].weight = Math.random()*2-1;
     }
 
 
@@ -184,7 +185,7 @@ var mutate = function (oldEntity) {
         var randomHiddenConn = randomEntity.brain.layers.hidden[depth].connectedTo;
 
         for(let idx = 0; idx < Object.keys(inputConn[0].connections).length; idx++) {
-            hiddenConn[0].connections[Object.keys(hiddenConn[0].connections)[idx]].weight = randomHiddenConn[0].connections[Object.keys(randomHiddenConn[0].connections)[idx]].weight;
+            hiddenConn[0].connections[Object.keys(hiddenConn[0].connections)[idx]].weight = Math.random()*2-1;
         }
     }
 
