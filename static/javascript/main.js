@@ -92,7 +92,7 @@ var seed = function() {
 
 var fitness = function(entity) {
     var moral = 0;
-    moral = entity.mesh.position.x;
+    moral = -entity.mesh.position.z;
     // moral = entity.mesh.position.x;
     return moral;
 };
@@ -260,7 +260,7 @@ function moveCar(object,delta)
     var speed = 5;
     object.output[0] = output[0];
     object.output[1] = output[1];
-    object.mesh.translateZ(output[0] * speed * delta);
+    object.mesh.translateZ((output[0] - 0.40) * speed * delta);
     object.mesh.rotateY((output[1] - 0.5) * speed * delta);
 
     var learningRate = 0.01;

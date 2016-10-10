@@ -6,19 +6,19 @@ class Genegen {
 		this.seed = seed;
 		this.mutate = mutate;
 		this.mutationType = slideMutate;
-		this.select1 = this.Tournament2;
+		this.select1 = this.Tournament3;
 		this.select2 = this.RouleteReproduction;
 		this.optimize = this.Optimize;
 		this.generation = null;
 		this.crossover = crossover;
 		this.copy = copy;
 
-		this.size = 6;
-		this.crossoverRate = 0.9; //0..1
+		this.size = 60;
+		this.crossoverRate = 1; //0..1
 		this.mutation = 0.3; //0..1
-		this.iterations = 1000;
+		this.iterations = 25;
 		this.timer = 4000;
-		this.fittestPercentageAlwaysSurvives = 0.1; //0..1
+		this.fittestPercentageAlwaysSurvives = 0.2; //0..1
 		this.fittestEntities = [];
 		this.entities = [];
 	}

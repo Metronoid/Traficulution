@@ -9,11 +9,11 @@ var randomMutate = function (weight) {
 }
 
 var superMutate = function (weight) {
-    return Math.random() * 2 - 1;
+    return Math.random() * 4 - 2;
 }
 
 var slideMutate = function (weight) {
     if (Math.random() >= 0.75) {
-        return (weight + Math.random() - 0.5);
+        return (weight + Math.random() * 2 - 1);
     }
 }
