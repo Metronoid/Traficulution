@@ -14,11 +14,11 @@ class Genegen {
 		this.copy = copy;
 
 		this.size = 6;
-		this.crossoverRate = 0; //0..1
-		this.mutation = 0.3; //0..1
-		this.iterations = 3;
+		this.crossoverRate = 1; //0..1
+		this.mutation = 0.1; //0..1
+		this.iterations = 25;
 		this.timer = 4000;
-		this.fittestPercentageAlwaysSurvives = 0; //0..1
+		this.fittestPercentageAlwaysSurvives = 0.2; //0..1
 		this.fittestEntities = [];
 		this.entities = [];
 	}
@@ -139,14 +139,13 @@ function Iterate(){
 			&& newPop.length+1 < self.size // keeps us from going 1 over the max population size
 			&& this.select2
 		) {
-			var parents = this.select2(pop);
-			var children = this.crossover(parents[0], parents[1]).map(mutateOrNot);
+			let parents = this.select2(pop);
+			let children = this.crossover(parents[0], parents[1]).map(mutateOrNot);
 			newPop.push(children[0], children[1]);
 		} else {
 			newPop.push(mutateOrNot(this.copy(self.select1(pop))));
 		}
 	}
-	console.log(newPop);
 
 	// Remove the previous entities from the game.
 	for (var e = 0; e < this.entities.length; e++) {

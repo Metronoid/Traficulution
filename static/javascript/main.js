@@ -313,7 +313,7 @@ function moveCar(object,delta)
     // TODO: Add the positive and negative rotation axis.
     //input.push((Math.abs(object.mesh.rotation.x / Math.PI)));
     var output = object.brain.activate(input);
-    var speed = 20;
+    var speed = 5;
     object.output[0] = output[0];
     object.output[1] = output[1];
     object.mesh.translateZ((output[0] - 0.40) * speed * delta);
