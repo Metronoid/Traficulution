@@ -22,6 +22,7 @@ function Cube (xSize,ySize,zSize,color) {
     return new THREE.Mesh(this.geometry, this.material);
 }
 
+
 function Perceptron(input, hidden, output)
 {
     // create the layers
@@ -75,38 +76,40 @@ class Car {
     }
 
     Create() {
-        this.mesh.position.set(0,0.3,-2);
+        this.mesh.position.set(0,0.3,-4);
         scene.add(this.mesh);
+        this.raycaster = new THREE.Raycaster();
+        this.raycaster.set(this.mesh.position, new THREE.Vector3(0, -1, 0))
     }
 }
 
 var collisionList = [];
 
 var seed = function() {
-    var car = new Car(Cube(0.5,0.25,1,0x47475b));
+    var car = new Car(Cube(1,0.25,2,0x47475b));
     car.Create();
     //collisionList.push(car.mesh);
-    return car
+    return car;
 };
 
 var fitness = function(entity) {
     var moral = 0;
-    moral = entity.mesh.position.z;
-    // moral = entity.mesh.position.x;
+    // moral = entity.mesh.position.z;
+    moral = entity.mesh.position.x;
     return moral;
 };
 
 var copy = function(entity)
 {
-    var newEntity = new Car(Cube(0.5,0.25,1,0x47475b), jQuery.extend(true, {}, entity.brain));
+    var newEntity = new Car(Cube(1,0.25,2,0x47475b), jQuery.extend(true, {}, entity.brain));
     newEntity.brain = jQuery.extend(true, {}, entity.brain);
     return newEntity;
 }
 
 var crossoverRandom = function(father,mother)
 {
-    var son = new Car(Cube(0.5,0.25,1,0x47475b));
-    var daughter = new Car(Cube(0.5,0.25,1,0x47475b));
+    var son = new Car(Cube(1,0.25,2,0x47475b));
+    var daughter = new Car(Cube(1,0.25,2,0x47475b));
 
     var dadNeurons = father.brain.neurons();
     var dadWeights = [];
@@ -183,37 +186,26 @@ var mutate = function (oldEntity) {
 var pool = new Genegen(seed,fitness,copy,crossoverRandom,mutate);
 
 pool.Start();
+var loader = new THREE.TextureLoader();
+var iTexture = loader.load("img/texture/intersection.png");
+var intersectionFloorGeometry = new THREE.BoxGeometry(30,0.25,30);
+var intersectionFloorMaterial = new THREE.MeshLambertMaterial({ map:  iTexture});
+var intersectionFloor = new THREE.Mesh(intersectionFloorGeometry, intersectionFloorMaterial);
+intersectionFloor.position.set(0,0,0);
 
-var floor = new Cube(6,0.25,11,0x0078dc);
-floor.position.set(0,0,0);
-var left = new Cube(0.5,0.5,10,0x47475b);
-left.position.set(-2.75,0.3,0);
-collisionList.push(left);
-var right = new Cube(0.5,0.5,10,0x47475b);
-right.position.set(2.75,0.3,0);
-collisionList.push(right);
-var front = new Cube(6,0.5,0.5,0x47475b);
-front.position.set(0,0.3,-5.25);
-collisionList.push(front);
-var back = new Cube(6,0.5,0.5,0x47475b);
-back.position.set(0,0.3,5.25);
-collisionList.push(back);
-table = new THREE.Group();
-table.add(floor);
-table.add(left);
-table.add(right);
-table.add(front);
-table.add(back);
 
-scene.add( table );
+var intersection = new THREE.Group();
+intersection.add(intersectionFloor);
 
-camera.position.z = 10;
-camera.position.y = 5
-camera.lookAt(table.position);
+collisionList.push(intersectionFloor);
+scene.add(intersection);
+
+camera.position.z = 15;
+camera.position.y = 20
+camera.lookAt(new THREE.Vector3(0, 0, 4));
 
 // create a point light
-var pointLight =
-    new THREE.PointLight(0xcdcde7);
+var pointLight = new THREE.PointLight(0xcdcde7);
 
 // set its position
 pointLight.position.x = 10;
@@ -242,6 +234,51 @@ function onMouseDown( event ) {
     }
 }
 
+class ColorMap {
+
+    constructor() {
+        var self = this;
+        self.canvas = document.createElement('canvas');
+        self.context = self.canvas.getContext('2d');
+        self.img = new Image();
+        self.img.src = "img/texture/intersection.png";
+
+        this.img.onload = function() {
+            console.log("loaded");
+            self.canvas.width = self.img.width;
+            self.canvas.height = self.img.height;
+            self.context.drawImage(self.img, 0, 0);
+            self.data = self.context.getImageData(0, 0, self.canvas.width, self.canvas.height).data;
+        }
+
+
+    }
+
+    getPixel(x, y) {
+        if(this.img.complete); // Image is loaded
+        x = Math.round(x);
+        y = Math.round(y);
+        let pos = (this.canvas.width * y) + x*4;
+        return [this.data[pos], this.data[pos + 1], this.data[pos + 2], this.data[pos + 3]];
+    }
+
+    getRGBPixel(x, y) {
+        let arr = this.getPixel(x, y);
+        return "#" + ("000000" + this.RGBToHex(arr[0], arr[1], arr[2])).slice(-6)
+    }
+
+    RGBToHex(r, g, b) {
+        if (r > 255 || g > 255 || b > 255)
+            throw "Invalid color component";
+        return ((r << 16) | (g << 8) | b).toString(16);
+    }
+
+}
+var map = new ColorMap();
+
+// document.body.appendChild(canvas);
+
+
 function moveCar(object,delta)
 {
     //var objDistance = point.distanceTo(object.mesh.position);
@@ -262,6 +299,17 @@ function moveCar(object,delta)
     var target = [(mouse.y/2)+0.5,(mouse.x/2)+0.5];
     var outLog = document.getElementById("outLog");
 
+    var intersects = object.raycaster.intersectObjects( collisionList );
+
+
+    if(intersects.length != 0) {
+        var intersect = intersects[0];
+        if(intersect.object.material.map.image && intersect.object.material.map.image.complete) {
+            var posX = map.img.width / 30 * (object.mesh.position.x + 15);
+            var posY = map.img.height / 30 * (object.mesh.position.z + 15);
+            console.log(map.getRGBPixel(posX, posY));
+        }
+    }
 
     // Some sort of output for checking on our neural network
     // TODO: This should be generated but because we don't really know how we want it to look like this will function as a prototype.
