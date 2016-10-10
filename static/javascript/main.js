@@ -36,13 +36,16 @@ function Perceptron(input, hidden, output)
 
     inputLayer.set({
         squash: Neuron.squash.LOGISTIC
-    })
+    });
+
     hiddenLayer.set({
-        squash: Neuron.squash.LOGISTIC
-    })
+        squash: Neuron.squash.LOGISTIC,
+    });
+
     outputLayer.set({
         squash: Neuron.squash.LOGISTIC
-    })
+    });
+
 
     // set the layers
     this.set({
@@ -63,11 +66,9 @@ class Car {
     constructor(mesh,brain) {
         this.mesh = mesh;
         this.brain = brain ? brain : new Perceptron(2,3,2);
-        if(!brain) this.brain = mutate(this).brain;
+        this.brain.setOptimize(false);
+        if(!brain) this.brain = mutate(this,superMutate).brain;
         this.output = [0,0];
-        //You want to log out the object file so we can explore it, just once per session though.
-        //TODO: remove this when no longer needed.
-       // console.log(this.brain.layers);
     }
 
     Destroy() {
@@ -94,15 +95,15 @@ var seed = function() {
 
 var fitness = function(entity) {
     var moral = 0;
-    // moral = entity.mesh.position.z;
-    moral = entity.mesh.position.x;
+    moral = -entity.mesh.position.z;
+    // moral = entity.mesh.position.x;
     return moral;
 };
 
 var copy = function(entity)
 {
-    var newEntity = new Car(Cube(1,0.25,2,0x47475b), jQuery.extend(true, {}, entity.brain));
-    newEntity.brain = jQuery.extend(true, {}, entity.brain);
+    var newEntity = new Car(Cube(0.5,0.25,1,0x47475b));
+    newEntity.brain = entity.brain.clone();
     return newEntity;
 }
 
@@ -163,20 +164,24 @@ var crossoverRandom = function(father,mother)
     return [son,daughter];
 }
 
-var mutate = function (oldEntity) {
+//TODO: Fix all the mutations depending on this new varaible
+var mutate = function (oldEntity,mutationType) {
     var entity = oldEntity;
 
-    var inputConn = entity.brain.layers.input.connectedTo;
-    for(let idx = 0; idx < Object.keys(inputConn[0].connections).length; idx++) {
-        inputConn[0].connections[Object.keys(inputConn[0].connections)[idx]].weight = Math.random();
+    var inputConn = entity.brain.layers.input.list;
+    for(let n in inputConn){
+        for(let c in inputConn[n].connections.projected) {
+            inputConn[n].connections.projected[c].weight = mutationType(inputConn[n].connections.projected[c].weight);
+        }
     }
-
-    var hiddenLayerAmt = entity.brain.layers.hidden.length;
-    for(let depth = 0; depth < hiddenLayerAmt; depth++) {
-        var hiddenConn = entity.brain.layers.hidden[depth].connectedTo;
-
-        for(let idx = 0; idx < Object.keys(inputConn[0].connections).length; idx++) {
-            hiddenConn[0].connections[Object.keys(hiddenConn[0].connections)[idx]].weight = Math.random();
+    var hiddenLayerAmt = entity.brain.layers.hidden;
+    for (let depth = 0; depth < hiddenLayerAmt.length; depth++) {
+        for (let n in hiddenLayerAmt[depth].list) {
+            for (let c in hiddenLayerAmt[depth].list[n].connections.projected) {
+                if (Math.random() >= 0.75) {
+                    hiddenLayerAmt[depth].list[n].connections.projected[c].weight = mutationType(hiddenLayerAmt[depth].list[n].connections.projected[c].weight);
+                }
+            }
         }
     }
 
@@ -292,7 +297,7 @@ function moveCar(object,delta)
     var speed = 5;
     object.output[0] = output[0];
     object.output[1] = output[1];
-    object.mesh.translateZ(output[0] * speed * delta);
+    object.mesh.translateZ((output[0] - 0.40) * speed * delta);
     object.mesh.rotateY((output[1] - 0.5) * speed * delta);
 
     var learningRate = 0.01;
@@ -305,9 +310,10 @@ function moveCar(object,delta)
     if(intersects.length != 0) {
         var intersect = intersects[0];
         if(intersect.object.material.map.image && intersect.object.material.map.image.complete) {
-            var posX = map.img.width / 30 * (object.mesh.position.x + 15);
-            var posY = map.img.height / 30 * (object.mesh.position.z + 15);
-            console.log(map.getRGBPixel(posX, posY));
+            // Code for getting the pixel the car is driving on
+            // var posX = map.img.width / 30 * (object.mesh.position.x + 15);
+            // var posY = map.img.height / 30 * (object.mesh.position.z + 15);
+            // console.log(map.getRGBPixel(posX, posY));
         }
     }
 
@@ -317,7 +323,6 @@ function moveCar(object,delta)
     //    outLog.innerHTML =
     //    "<h5> Input:" + input[0].toFixed(2) + " Bias:" + object.brain.layers.input.list[0].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.hidden[0].list[0].connections.inputs[6].weight.toFixed(2) + " and " + object.brain.layers.hidden[0].list[0].connections.inputs[8].weight.toFixed(2) + " Bias:" + object.brain.layers.hidden[0].list[0].bias.toFixed(2) + " | " + " Weights:" + object.brain.layers.output.list[0].connections.inputs[10].weight.toFixed(2) + " and " + object.brain.layers.output.list[0].connections.inputs[12].weight.toFixed(2) + " Bias:" + object.brain.layers.output.list[0].bias.toFixed(2) + " Output:" + output[0].toFixed(2) + "</h5>" +
     //    "<h5> Input:" + input[1].toFixed(2) + " Bias:" + object.brain.layers.input.list[1].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.hidden[0].list[1].connections.inputs[7].weight.toFixed(2) + " and " + object.brain.layers.hidden[0].list[1].connections.inputs[9].weight.toFixed(2) + " Bias:" + object.brain.layers.hidden[0].list[1].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.output.list[1].connections.inputs[11].weight.toFixed(2) + " and " + object.brain.layers.output.list[1].connections.inputs[13].weight.toFixed(2) + " Bias:" + object.brain.layers.output.list[1].bias.toFixed(2) + " Output:" + output[1].toFixed(2) + "</h5>";
-    // console.log(object.brain);
     // object.brain.propagate(learningRate, target);
     // object.brain.restore();
 };

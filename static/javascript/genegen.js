@@ -5,19 +5,21 @@ class Genegen {
 		this.fitness = fitness;
 		this.seed = seed;
 		this.mutate = mutate;
+		this.mutationType = slideMutate;
 		this.select1 = this.Tournament3;
-		this.select2 = this.Reproduction;
+		this.select2 = this.RouleteReproduction;
 		this.optimize = this.Optimize;
 		this.generation = null;
 		this.crossover = crossover;
 		this.copy = copy;
 
-		this.size = 1;
-		this.crossoverRate = 0.9;
-		this.mutation = 0.2;
-		this.iterations = 1000;
+		this.size = 60;
+		this.crossoverRate = 1; //0..1
+		this.mutation = 0.3; //0..1
+		this.iterations = 25;
 		this.timer = 4000;
-		this.fittestAlwaysSurvives = true;
+		this.fittestPercentageAlwaysSurvives = 0.2; //0..1
+		this.fittestEntities = [];
 		this.entities = [];
 	}
 
@@ -37,9 +39,19 @@ class Genegen {
 		var a = pop[Math.floor(Math.random()*n)];
 		var b = pop[Math.floor(Math.random()*n)];
 		var c = pop[Math.floor(Math.random()*n)];
-		var best = this.optimize(a.fitness, b.fitness) ? a : b;
-		best = this.optimize(best.fitness, c.fitness) ? best : c;
+		var best = this.Optimize(a.fitness, b.fitness) ? a : b;
+		best = this.Optimize(best.fitness, c.fitness) ? best : c;
 		return best.entity;
+	}
+
+	Roulete2 (pop) {
+		var tickets = [];
+		for(let p in pop){
+			for(var i = 0; i <= pop[p].fitness/pop[0].fitness; i++) {
+				tickets.push(pop[p])
+			}
+		}
+		return tickets;
 	}
 
 	Fittest (pop) {
@@ -52,6 +64,10 @@ class Genegen {
 
 	Reproduction(pop) {
 		return [this.select1.call(this, pop), this.select1.call(this, pop)];
+	}
+
+	RouleteReproduction(pop) {
+		return [this.select1.call(this, this.Roulete2(pop)), this.select1.call(this, this.Roulete2(pop))];
 	}
 
 	Start () {
@@ -76,7 +92,7 @@ function Iterate(){
 	var self = this;
 	function mutateOrNot(entity) {
 		// applies mutation based on mutation probability
-		return Math.random() <= self.mutation && self.mutate ? self.mutate(entity) : entity;
+		return Math.random() <= self.mutation && self.mutate ? self.mutate(entity,self.mutationType) : entity;
 	}
 
 	// score and sort
@@ -88,14 +104,32 @@ function Iterate(){
 			return self.optimize(a.fitness, b.fitness) ? -1 : 1;
 		});
 
+
 	// crossover and mutate
 	var newPop = [];
-
-	if (this.fittestAlwaysSurvives) // lets the best solution fall through
+	for (let i = 0; i < pop.length*this.fittestPercentageAlwaysSurvives; i++) // lets the best solution fall through
 	{
-		console.log(pop[0]);
-		newPop.push(this.copy(pop[0].entity));
+		this.fittestEntities.push(pop[i].entity);
 	}
+	var greatest = this.fittestEntities
+		.map(function (entity) {
+			return {"fitness": self.fitness(entity), "entity": entity };
+		})
+		.sort(function (a, b) {
+			return self.optimize(a.fitness, b.fitness) ? -1 : 1;
+		});
+
+	console.log(greatest[0]);
+	this.fittestEntities = [];
+	for (let g = 0; g < greatest.length; g++) // lets the best solution fall through
+	{
+		if(g < pop.length*this.fittestPercentageAlwaysSurvives){
+			newPop.push(this.mutate(this.copy(greatest[g].entity),this.mutationType));
+			this.fittestEntities.push(greatest[g].entity);
+		}
+	}
+
+
 
 	while (newPop.length < self.size) {
 		if (
