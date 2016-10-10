@@ -5,19 +5,20 @@ class Genegen {
 		this.fitness = fitness;
 		this.seed = seed;
 		this.mutate = mutate;
-		this.select1 = this.Tournament3;
-		this.select2 = this.RouleteReproduction;
+		this.select1 = this.Tournament2;
+		this.select2 = this.Reproduction;
 		this.optimize = this.Optimize;
 		this.generation = null;
 		this.crossover = crossover;
 		this.copy = copy;
 
-		this.size = 60;
-		this.crossoverRate = 0.9;
-		this.mutation = 0.2;
+		this.size = 6;
+		this.crossoverRate = 0.1;
+		this.mutation = 0.1;
 		this.iterations = 1000;
 		this.timer = 4000;
-		this.fittestAlwaysSurvives = true;
+		this.fittestPercentageAlwaysSurvives = 0.2; //0..1
+		this.fittestEntities = [];
 		this.entities = [];
 	}
 
@@ -102,15 +103,32 @@ function Iterate(){
 			return self.optimize(a.fitness, b.fitness) ? -1 : 1;
 		});
 
-	console.log(pop[0]);
+	console.log(pop[1]);
 
 	// crossover and mutate
 	var newPop = [];
-
-	if (this.fittestAlwaysSurvives) // lets the best solution fall through
+	for (let i = 0; i < pop.length*this.fittestPercentageAlwaysSurvives; i++) // lets the best solution fall through
 	{
-		newPop.push(this.copy(pop[0].entity));
+		this.fittestEntities.push(pop[i].entity);
 	}
+	var greatest = this.fittestEntities
+		.map(function (entity) {
+			return {"fitness": self.fitness(entity), "entity": entity };
+		})
+		.sort(function (a, b) {
+			return self.optimize(a.fitness, b.fitness) ? -1 : 1;
+		});
+
+	for (let g = 0; g < greatest.length; g++) // lets the best solution fall through
+	{
+		if(g < pop.length*this.fittestPercentageAlwaysSurvives){
+			newPop.push(this.copy(greatest[g].entity));
+		}else {
+			this.fittestEntities.pop();
+		}
+	}
+
+
 
 	while (newPop.length < self.size) {
 		if (

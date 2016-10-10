@@ -33,21 +33,18 @@ function Perceptron(input, hidden, output)
     inputLayer.project(hiddenLayer);
     hiddenLayer.project(outputLayer);
 
-    var customSquash = function(x, derivate) {
-        return derivate ? 1 : x;
-    };
-
     inputLayer.set({
-        squash: Neuron.squash.LOGISTIC
+        squash: Neuron.squash.IDENTITY
+    });
 
-    })
     hiddenLayer.set({
-        squash: Neuron.squash.LOGISTIC,
-        bias: 1
-    })
+        squash: Neuron.squash.IDENTITY
+    });
+
     outputLayer.set({
         squash: Neuron.squash.LOGISTIC
-    })
+    });
+
 
     // set the layers
     this.set({
@@ -105,8 +102,8 @@ var fitness = function(entity) {
 
 var copy = function(entity)
 {
-    var newEntity = new Car(Cube(0.5,0.25,1,0x47475b), jQuery.extend(true, {}, entity.brain));
-    newEntity.brain = jQuery.extend(true, {}, entity.brain);
+    var newEntity = new Car(Cube(0.5,0.25,1,0x47475b));
+    newEntity.brain = entity.brain.clone();
     return newEntity;
 }
 
@@ -170,17 +167,23 @@ var crossoverRandom = function(father,mother)
 var mutate = function (oldEntity) {
     var entity = oldEntity;
 
-    var inputConn = entity.brain.layers.input.connectedTo;
-    for(let idx = 0; idx < Object.keys(inputConn[0].connections).length; idx++) {
-        inputConn[0].connections[Object.keys(inputConn[0].connections)[idx]].weight = Math.random()*2-1;
+    var inputConn = entity.brain.layers.input.list;
+    for(let n in inputConn){
+        for(let c in inputConn[n].projected) {
+            if(Math.random() >= 0.5) {
+                inputConn[n].projected[c].weight = Math.random() * 2 - 1;
+            }
+        }
     }
 
-    var hiddenLayerAmt = entity.brain.layers.hidden.length;
-    for(let depth = 0; depth < hiddenLayerAmt; depth++) {
-        var hiddenConn = entity.brain.layers.hidden[depth].connectedTo;
-
-        for(let idx = 0; idx < Object.keys(inputConn[0].connections).length; idx++) {
-            hiddenConn[0].connections[Object.keys(hiddenConn[0].connections)[idx]].weight = Math.random()*2-1;
+    var hiddenLayerAmt = entity.brain.layers.hidden;
+    for (let depth = 0; depth < hiddenLayerAmt.length; depth++) {
+        for (let n in hiddenLayerAmt[depth].list) {
+            for (let c in hiddenLayerAmt[depth].list[n].projected) {
+                if (Math.random() >= 0.5) {
+                    hiddenLayerAmt[depth].list[n].projected[c].weight = Math.random() * 2 - 1;
+                }
+            }
         }
     }
 
@@ -258,7 +261,7 @@ function moveCar(object,delta)
     // TODO: Add the positive and negative rotation axis.
     //input.push((Math.abs(object.mesh.rotation.x / Math.PI)));
     var output = object.brain.activate(input);
-    //object.brain.restore();
+    object.brain.restore();
     var speed = 5;
     object.output[0] = output[0];
     object.output[1] = output[1];
