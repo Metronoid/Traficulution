@@ -169,19 +169,18 @@ var mutate = function (oldEntity) {
 
     var inputConn = entity.brain.layers.input.list;
     for(let n in inputConn){
-        for(let c in inputConn[n].projected) {
+        for(let c in inputConn[n].connections.projected) {
             if(Math.random() >= 0.5) {
-                inputConn[n].projected[c].weight = Math.random() * 2 - 1;
+                inputConn[n].connections.projected[c].weight = Math.random() * 2 - 1;
             }
         }
     }
-
     var hiddenLayerAmt = entity.brain.layers.hidden;
     for (let depth = 0; depth < hiddenLayerAmt.length; depth++) {
         for (let n in hiddenLayerAmt[depth].list) {
-            for (let c in hiddenLayerAmt[depth].list[n].projected) {
+            for (let c in hiddenLayerAmt[depth].list[n].connections.projected) {
                 if (Math.random() >= 0.5) {
-                    hiddenLayerAmt[depth].list[n].projected[c].weight = Math.random() * 2 - 1;
+                    hiddenLayerAmt[depth].list[n].connections.projected[c].weight = Math.random() * 2 - 1;
                 }
             }
         }

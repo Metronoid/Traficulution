@@ -13,8 +13,8 @@ class Genegen {
 		this.copy = copy;
 
 		this.size = 6;
-		this.crossoverRate = 0.1;
-		this.mutation = 0.1;
+		this.crossoverRate = 0.9;
+		this.mutation = 0.2;
 		this.iterations = 1000;
 		this.timer = 4000;
 		this.fittestPercentageAlwaysSurvives = 0.2; //0..1
