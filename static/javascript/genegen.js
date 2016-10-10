@@ -13,12 +13,12 @@ class Genegen {
 		this.crossover = crossover;
 		this.copy = copy;
 
-		this.size = 60;
-		this.crossoverRate = 1; //0..1
+		this.size = 6;
+		this.crossoverRate = 0; //0..1
 		this.mutation = 0.3; //0..1
-		this.iterations = 1000;
+		this.iterations = 3;
 		this.timer = 4000;
-		this.fittestPercentageAlwaysSurvives = 0.2; //0..1
+		this.fittestPercentageAlwaysSurvives = 0; //0..1
 		this.fittestEntities = [];
 		this.entities = [];
 	}
@@ -107,28 +107,29 @@ function Iterate(){
 
 	// crossover and mutate
 	var newPop = [];
-	for (let i = 0; i < pop.length*this.fittestPercentageAlwaysSurvives; i++) // lets the best solution fall through
-	{
-		this.fittestEntities.push(pop[i].entity);
-	}
-	var greatest = this.fittestEntities
-		.map(function (entity) {
-			return {"fitness": self.fitness(entity), "entity": entity };
-		})
-		.sort(function (a, b) {
-			return self.optimize(a.fitness, b.fitness) ? -1 : 1;
-		});
+	if(this.fittestPercentageAlwaysSurvives > 0) {
+		for (let i = 0; i < pop.length * this.fittestPercentageAlwaysSurvives; i++) // lets the best solution fall through
+		{
+			this.fittestEntities.push(pop[i].entity);
+		}
+		var greatest = this.fittestEntities
+			.map(function (entity) {
+				return {"fitness": self.fitness(entity), "entity": entity};
+			})
+			.sort(function (a, b) {
+				return self.optimize(a.fitness, b.fitness) ? -1 : 1;
+			});
 
-	console.log(greatest[0]);
-	this.fittestEntities = [];
-	for (let g = 0; g < greatest.length; g++) // lets the best solution fall through
-	{
-		if(g < pop.length*this.fittestPercentageAlwaysSurvives){
-			newPop.push(this.mutate(this.copy(greatest[g].entity),this.mutationType));
-			this.fittestEntities.push(greatest[g].entity);
+		console.log(greatest[0]);
+		this.fittestEntities = [];
+		for (let g = 0; g < greatest.length; g++) // lets the best solution fall through
+		{
+			if (g < pop.length * this.fittestPercentageAlwaysSurvives) {
+				newPop.push(this.mutate(this.copy(greatest[g].entity), this.mutationType));
+				this.fittestEntities.push(this.copy(greatest[g].entity));
+			}
 		}
 	}
-
 
 
 	while (newPop.length < self.size) {
@@ -145,6 +146,7 @@ function Iterate(){
 			newPop.push(mutateOrNot(this.copy(self.select1(pop))));
 		}
 	}
+	console.log(newPop);
 
 	// Remove the previous entities from the game.
 	for (var e = 0; e < this.entities.length; e++) {

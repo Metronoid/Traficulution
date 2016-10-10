@@ -65,9 +65,9 @@ Perceptron.prototype.constructor = Perceptron;
 class Car {
     constructor(mesh,brain) {
         this.mesh = mesh;
-        this.brain = brain ? brain : new Perceptron(2,3,2);
+        this.brain = brain ? brain : new Perceptron(3,5,2);
         this.brain.setOptimize(false);
-        if(!brain) this.brain = mutate(this,superMutate).brain;
+        this.brain = mutate(this,superMutate).brain;
         this.output = [0,0];
     }
 
@@ -78,6 +78,7 @@ class Car {
 
     Create() {
         this.mesh.position.set(0,0.3,-4);
+        this.brain.restore();
         scene.add(this.mesh);
         this.raycaster = new THREE.Raycaster();
         this.raycaster.set(this.mesh.position, new THREE.Vector3(0, -1, 0))
@@ -96,7 +97,7 @@ var seed = function() {
 var point = new THREE.Vector3(-5,0,7);
 var fitness = function(entity) {
     var moral = 0;
-    moral = - point.distanceTo(entity.mesh.position);
+    moral = - entity.mesh.position.distanceTo(point);
     // moral = -entity.mesh.position.z;
     // moral = entity.mesh.position.x;
     return moral;
@@ -106,6 +107,7 @@ var copy = function(entity)
 {
     var newEntity = new Car(Cube(1,0.25,2,0x47475b));
     newEntity.brain = entity.brain.clone();
+    newEntity.brain.setOptimize(false);
     return newEntity;
 }
 
@@ -118,7 +120,10 @@ var crossoverRandom = function(father,mother)
     var dadWeights = [];
     for(let s in dadNeurons){
         for(let i in dadNeurons[s].neuron.connections.inputs){
-            var input = dadNeurons[s].neuron.connections.inputs[i];
+            let input = dadNeurons[s].neuron.connections.inputs[i].weight;
+            if(input == undefined) {
+                console.error("Error: Undefined weight");
+            }
             dadWeights.push(input);
         }
     }
@@ -127,10 +132,14 @@ var crossoverRandom = function(father,mother)
     var momWeights = [];
     for(let s in momNeurons){
         for(let i in momNeurons[s].neuron.connections.inputs){
-            var input = momNeurons[s].neuron.connections.inputs[i];
+            let input = momNeurons[s].neuron.connections.inputs[i].weight;
+            if(input == undefined) {
+                console.error("Error: Undefined weight");
+            }
             momWeights.push(input);
         }
     }
+
 
     var splice = function (dad,mom) {
         var slice = Math.random().toFixed(2);
@@ -152,17 +161,22 @@ var crossoverRandom = function(father,mother)
     var sonNeurons = son.brain.neurons();
     for(let s in sonNeurons){
         for(let i in sonNeurons[s].neuron.connections.inputs){
-            son.brain.neurons()[s].neuron.connections.inputs[i].weight = newWeights[0][s].weight;
+            if(newWeights[0][s] == undefined) {
+                console.error("Error: Undefined weight");
+            }
+            son.brain.neurons()[s].neuron.connections.inputs[i].weight = newWeights[0][s];
         }
     }
 
     var daughterNeurons = daughter.brain.neurons();
     for(let s in daughterNeurons){
         for(let i in daughterNeurons[s].neuron.connections.inputs){
-            daughter.brain.neurons()[s].neuron.connections.inputs[i].weight = newWeights[1][s].weight;
+            if(newWeights[1][s] == undefined) {
+                console.error("Error: Undefined weight");
+            }
+            daughter.brain.neurons()[s].neuron.connections.inputs[i].weight = newWeights[1][s];
         }
     }
-
     return [son,daughter];
 }
 
@@ -295,11 +309,11 @@ function moveCar(object,delta)
     var input = [];
     input.push(object.output[0]);
     input.push(((object.mesh.rotation.y + 1.6) / 3.2));
+    input.push(Math.abs(object.mesh.position.distanceTo(point))/20);
     // TODO: Add the positive and negative rotation axis.
     //input.push((Math.abs(object.mesh.rotation.x / Math.PI)));
     var output = object.brain.activate(input);
-    object.brain.restore();
-    var speed = 5;
+    var speed = 20;
     object.output[0] = output[0];
     object.output[1] = output[1];
     object.mesh.translateZ((output[0] - 0.40) * speed * delta);
