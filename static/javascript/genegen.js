@@ -6,7 +6,7 @@ class Genegen {
 		this.seed = seed;
 		this.mutate = mutate;
 		this.mutationType = slideMutate;
-		this.select1 = this.Tournament3;
+		this.select1 = this.Tournament2;
 		this.select2 = this.RouleteReproduction;
 		this.optimize = this.Optimize;
 		this.generation = null;
@@ -16,7 +16,7 @@ class Genegen {
 		this.size = 6;
 		this.crossoverRate = 1; //0..1
 		this.mutation = 0.1; //0..1
-		this.iterations = 25;
+		this.iterations = 10000;
 		this.timer = 4000;
 		this.fittestPercentageAlwaysSurvives = 0.2; //0..1
 		this.fittestEntities = [];
@@ -121,14 +121,14 @@ function Iterate(){
 			});
 
 		console.log(greatest[0]);
-		this.fittestEntities = [];
-		for (let g = 0; g < greatest.length; g++) // lets the best solution fall through
+
+		for (let g = 0; g < greatest.length; g++) // lets the best solutions fall through
 		{
 			if (g < pop.length * this.fittestPercentageAlwaysSurvives) {
 				newPop.push(this.mutate(this.copy(greatest[g].entity), this.mutationType));
-				this.fittestEntities.push(this.copy(greatest[g].entity));
 			}
 		}
+		greatest = greatest.slice(0,10);
 	}
 
 
