@@ -102,7 +102,7 @@ var fitness = function(entity) {
 
 var copy = function(entity)
 {
-    var newEntity = new Car(Cube(0.5,0.25,1,0x47475b));
+    var newEntity = new Car(Cube(1,0.25,2,0x47475b));
     newEntity.brain = entity.brain.clone();
     return newEntity;
 }
