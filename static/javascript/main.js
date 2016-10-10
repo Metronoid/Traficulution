@@ -93,9 +93,11 @@ var seed = function() {
     return car;
 };
 
+var point = new THREE.Vector3(-5,0,7);
 var fitness = function(entity) {
     var moral = 0;
-    moral = -entity.mesh.position.z;
+    moral = - point.distanceTo(entity.mesh.position);
+    // moral = -entity.mesh.position.z;
     // moral = entity.mesh.position.x;
     return moral;
 };
@@ -198,6 +200,10 @@ var intersectionFloorMaterial = new THREE.MeshLambertMaterial({ map:  iTexture})
 var intersectionFloor = new THREE.Mesh(intersectionFloorGeometry, intersectionFloorMaterial);
 intersectionFloor.position.set(0,0,0);
 
+var targetBox = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshLambertMaterial({color:0xFFFFFF}));
+targetBox.position.set(point.x, 0.3, point.z);
+scene.add(targetBox);
+
 
 var intersection = new THREE.Group();
 intersection.add(intersectionFloor);
@@ -222,7 +228,6 @@ scene.add(pointLight);
 
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
-var point = new THREE.Vector3();
 
 function onMouseDown( event ) {
     event.preventDefault();
@@ -235,7 +240,7 @@ function onMouseDown( event ) {
     var intersects = raycaster.intersectObjects( collisionList );
     if(intersects[0] != undefined)
     {
-        point = intersects[0].point;
+        // point = intersects[0].point;
     }
 }
 

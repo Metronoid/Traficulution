@@ -16,7 +16,7 @@ class Genegen {
 		this.size = 60;
 		this.crossoverRate = 1; //0..1
 		this.mutation = 0.3; //0..1
-		this.iterations = 25;
+		this.iterations = 1000;
 		this.timer = 4000;
 		this.fittestPercentageAlwaysSurvives = 0.2; //0..1
 		this.fittestEntities = [];
