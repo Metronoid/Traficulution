@@ -92,7 +92,7 @@ var seed = function() {
 
 var fitness = function(entity) {
     var moral = 0;
-    moral = entity.mesh.position.z;
+    moral = entity.mesh.position.x;
     // moral = entity.mesh.position.x;
     return moral;
 };

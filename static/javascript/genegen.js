@@ -18,7 +18,7 @@ class Genegen {
 		this.mutation = 0.3; //0..1
 		this.iterations = 1000;
 		this.timer = 4000;
-		this.fittestPercentageAlwaysSurvives = 0.2; //0..1
+		this.fittestPercentageAlwaysSurvives = 0.1; //0..1
 		this.fittestEntities = [];
 		this.entities = [];
 	}
@@ -104,7 +104,6 @@ function Iterate(){
 			return self.optimize(a.fitness, b.fitness) ? -1 : 1;
 		});
 
-	console.log(pop[1]);
 
 	// crossover and mutate
 	var newPop = [];
@@ -120,12 +119,13 @@ function Iterate(){
 			return self.optimize(a.fitness, b.fitness) ? -1 : 1;
 		});
 
+	console.log(greatest[0]);
+	this.fittestEntities = [];
 	for (let g = 0; g < greatest.length; g++) // lets the best solution fall through
 	{
 		if(g < pop.length*this.fittestPercentageAlwaysSurvives){
 			newPop.push(this.mutate(this.copy(greatest[g].entity),this.mutationType));
-		}else {
-			this.fittestEntities.pop();
+			this.fittestEntities.push(greatest[g].entity);
 		}
 	}
 
