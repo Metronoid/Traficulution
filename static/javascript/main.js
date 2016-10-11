@@ -35,15 +35,18 @@ function Perceptron(input, hidden, output)
     hiddenLayer.project(outputLayer);
 
     inputLayer.set({
-        squash: Neuron.squash.LOGISTIC
+        squash: Neuron.squash.LOGISTIC,
+        bias: 0
     });
 
     hiddenLayer.set({
         squash: Neuron.squash.LOGISTIC,
+        bias: 0
     });
 
     outputLayer.set({
-        squash: Neuron.squash.LOGISTIC
+        squash: Neuron.squash.LOGISTIC,
+        bias: 0
     });
 
 
@@ -65,7 +68,7 @@ Perceptron.prototype.constructor = Perceptron;
 class Car {
     constructor(mesh,brain) {
         this.mesh = mesh;
-        this.brain = brain ? brain : new Perceptron(3,5,2);
+        this.brain = brain ? brain : new Perceptron(3,8,2);
         this.brain.setOptimize(false);
         this.brain = mutate(this,superMutate).brain;
         this.output = [0,0];
@@ -77,7 +80,7 @@ class Car {
     }
 
     Create() {
-        this.mesh.position.set(0,0.3,-4);
+        this.mesh.position.set(0,0.3,-12);
         this.brain.restore();
         scene.add(this.mesh);
         this.raycaster = new THREE.Raycaster();
@@ -94,11 +97,13 @@ var seed = function() {
     return car;
 };
 
-var point = new THREE.Vector3(-5,0,7);
+var point = new THREE.Vector3(-13,0,5);
 var fitness = function(entity) {
     var moral = 0;
     moral = - entity.mesh.position.distanceTo(point);
-    // moral = -entity.mesh.position.z;
+    //moral -= (Math.abs(0.5 - entity.output[1]) * 4);
+    //moral -= (Math.abs(0 - entity.output[0]) * 4);
+    // moral = entity.mesh.position.z;
     // moral = entity.mesh.position.x;
     return moral;
 };

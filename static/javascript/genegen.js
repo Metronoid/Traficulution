@@ -7,15 +7,15 @@ class Genegen {
 		this.mutate = mutate;
 		this.mutationType = slideMutate;
 		this.select1 = this.Tournament2;
-		this.select2 = this.RouleteReproduction;
+		this.select2 = this.Reproduction;
 		this.optimize = this.Optimize;
 		this.generation = null;
 		this.crossover = crossover;
 		this.copy = copy;
 
 		this.size = 10;
-		this.crossoverRate = 1; //0..1
-		this.mutation = 0; //0..1
+		this.crossoverRate = 0; //0..1
+		this.mutation = 1; //0..1
 		this.iterations = 10000;
 		this.timer = 4000;
 		this.fittestPercentageAlwaysSurvives = 1; //0..1
@@ -44,16 +44,6 @@ class Genegen {
 		return best.entity;
 	}
 
-	Roulete2 (pop) {
-		var tickets = [];
-		for(let p in pop){
-			for(var i = 0; i <= pop[p].fitness/pop[0].fitness; i++) {
-				tickets.push(pop[p])
-			}
-		}
-		return tickets;
-	}
-
 	Fittest (pop) {
 		return pop[0].entity;
 	}
@@ -64,10 +54,6 @@ class Genegen {
 
 	Reproduction(pop) {
 		return [this.select1.call(this, pop), this.select1.call(this, pop)];
-	}
-
-	RouleteReproduction(pop) {
-		return [this.select1.call(this, this.Roulete2(pop)), this.select1.call(this, this.Roulete2(pop))];
 	}
 
 	Start () {
@@ -108,7 +94,7 @@ function Iterate(){
 	// crossover and mutate
 	var newPop = [];
 	if(this.fittestPercentageAlwaysSurvives > 0) {
-		for (let i = 0; i < pop.length * this.fittestPercentageAlwaysSurvives; i++) // lets the best solution fall through
+		for (let i = 0; i < this.size * this.fittestPercentageAlwaysSurvives; i++) // lets the best solution fall through
 		{
 			this.fittestEntities.push(pop[i].entity);
 		}
@@ -125,12 +111,25 @@ function Iterate(){
 		this.fittestEntities = [];
 		for (let g = 0; g < greatest.length; g++) // lets the best solutions fall through
 		{
-			if (g < pop.length * this.fittestPercentageAlwaysSurvives) {
+			if (g < this.size * this.fittestPercentageAlwaysSurvives) {
 				this.fittestEntities.push(greatest[g].entity);
-				newPop.push(this.mutate(this.copy(greatest[g].entity), this.mutationType));
+				this.entities.push(this.copy(greatest[g].entity));
 			}
 		}
+
+		// score and sort
+		pop = this.entities
+			.map(function (entity) {
+				return {"fitness": self.fitness(entity), "entity": entity };
+			})
+			.sort(function (a, b) {
+				return self.optimize(a.fitness, b.fitness) ? -1 : 1;
+			});
+
+		pop = pop.slice(0,this.size);
 	}
+
+
 
 
 	while (newPop.length < self.size) {
