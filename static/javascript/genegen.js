@@ -13,12 +13,12 @@ class Genegen {
 		this.crossover = crossover;
 		this.copy = copy;
 
-		this.size = 6;
+		this.size = 10;
 		this.crossoverRate = 1; //0..1
-		this.mutation = 0.1; //0..1
+		this.mutation = 0; //0..1
 		this.iterations = 10000;
 		this.timer = 4000;
-		this.fittestPercentageAlwaysSurvives = 0.2; //0..1
+		this.fittestPercentageAlwaysSurvives = 1; //0..1
 		this.fittestEntities = [];
 		this.entities = [];
 	}
@@ -122,13 +122,14 @@ function Iterate(){
 
 		console.log(greatest[0]);
 
+		this.fittestEntities = [];
 		for (let g = 0; g < greatest.length; g++) // lets the best solutions fall through
 		{
 			if (g < pop.length * this.fittestPercentageAlwaysSurvives) {
+				this.fittestEntities.push(greatest[g].entity);
 				newPop.push(this.mutate(this.copy(greatest[g].entity), this.mutationType));
 			}
 		}
-		greatest = greatest.slice(0,10);
 	}
 
 
