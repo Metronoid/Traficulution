@@ -68,7 +68,7 @@ Perceptron.prototype.constructor = Perceptron;
 class Car {
     constructor(mesh,brain) {
         this.mesh = mesh;
-        this.brain = brain ? brain : new Perceptron(3,8,2);
+        this.brain = brain ? brain : new Perceptron(3,4,2);
         this.brain.setOptimize(false);
         this.brain = mutate(this,superMutate).brain;
         this.output = [0,0];
