@@ -9,6 +9,7 @@ var Neuron = synaptic.Neuron,
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera( 60, window.innerWidth/window.innerHeight, 0.1, 1000 );
 var renderer = new THREE.WebGLRenderer();
+var fpsText = document.getElementById("fps");
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor( 0x221f36, 1 );
 document.body.appendChild( renderer.domElement );
@@ -23,16 +24,18 @@ function Cube (xSize,ySize,zSize,color) {
 }
 
 
-function Perceptron(input, hidden, output)
+function Perceptron(input, hidden, second, output)
 {
     // create the layers
     var inputLayer = new Layer(input);
     var hiddenLayer = new Layer(hidden);
+    var secondHiddenLayer = new Layer(second);
     var outputLayer = new Layer(output);
 
     // connect the layers
     inputLayer.project(hiddenLayer);
-    hiddenLayer.project(outputLayer);
+    hiddenLayer.project(secondHiddenLayer);
+    secondHiddenLayer.project(outputLayer);
 
     inputLayer.set({
         squash: Neuron.squash.LOGISTIC,
@@ -40,6 +43,10 @@ function Perceptron(input, hidden, output)
     });
 
     hiddenLayer.set({
+        squash: Neuron.squash.LOGISTIC,
+        bias: 0
+    });
+    secondHiddenLayer.set({
         squash: Neuron.squash.LOGISTIC,
         bias: 0
     });
@@ -53,7 +60,7 @@ function Perceptron(input, hidden, output)
     // set the layers
     this.set({
         input: inputLayer,
-        hidden: [hiddenLayer],
+        hidden: [hiddenLayer,secondHiddenLayer],
         output: outputLayer
     });
 
@@ -68,7 +75,7 @@ Perceptron.prototype.constructor = Perceptron;
 class Car {
     constructor(mesh,brain) {
         this.mesh = mesh;
-        this.brain = brain ? brain : new Perceptron(3,4,2);
+        this.brain = brain ? brain : new Perceptron(3,4,4,2);
         this.brain.setOptimize(false);
         this.brain = mutate(this,superMutate).brain;
         this.output = [0,0];
@@ -101,8 +108,14 @@ var point = new THREE.Vector3(-13,0,5);
 var fitness = function(entity) {
     var moral = 0;
     moral = - entity.mesh.position.distanceTo(point);
-    //moral -= (Math.abs(0.5 - entity.output[1]) * 4);
-    //moral -= (Math.abs(0 - entity.output[0]) * 4);
+    if(moral > -1) {
+        //point.x = -point.x
+        //targetBox.position.set(point.x, 0.3, point.z);
+        moral = 10;
+        moral -= Math.abs(0 - entity.output[0]) * 5;
+        moral -= Math.abs(0.5 - entity.output[1]) * 10;
+
+    }
     // moral = entity.mesh.position.z;
     // moral = entity.mesh.position.x;
     return moral;
@@ -315,10 +328,10 @@ function moveCar(object,delta)
     input.push(object.output[0]);
     input.push(((object.mesh.rotation.y + 1.6) / 3.2));
     input.push(Math.abs(object.mesh.position.distanceTo(point))/20);
-    // TODO: Add the positive and negative rotation axis.
+    // TODO: Add the positive and negative rotation axis for input.
     //input.push((Math.abs(object.mesh.rotation.x / Math.PI)));
     var output = object.brain.activate(input);
-    var speed = 10;
+    var speed = 15;
     object.output[0] = output[0];
     object.output[1] = output[1];
     object.mesh.translateZ((output[0] - 0.40) * speed * delta);
@@ -353,6 +366,7 @@ function moveCar(object,delta)
 
 var update = function () {
     requestAnimationFrame( update );
+    fpsText.innerHTML = "FPS: " + fps.getFPS();
     var delta = clock.getDelta(); // seconds.
     for (car in pool.entities){
         moveCar(pool.entities[car],delta);
@@ -379,6 +393,22 @@ function addMouseHandler(canvas) {
 }
 
 addMouseHandler(document);
+
+var fps = {
+    startTime : 0,
+    frameNumber : 0,
+    getFPS : function(){
+        this.frameNumber++;
+        var d = new Date().getTime(),
+            currentTime = ( d - this.startTime ) / 1000,
+            result = Math.floor( ( this.frameNumber / currentTime ) );
+        if( currentTime > 1 ){
+            this.startTime = new Date().getTime();
+            this.frameNumber = 0;
+        }
+        return result;
+    }
+};
 
 update();
 

@@ -1,0 +1,10 @@
+p {
+    z-index: 1;
+    position: absolute;
+    color: white;
+}
+
+#fps{
+    margin-top: 32px;
+    color: red;
+}

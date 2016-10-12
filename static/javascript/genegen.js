@@ -13,7 +13,7 @@ class Genegen {
 		this.crossover = crossover;
 		this.copy = copy;
 
-		this.size = 10;
+		this.size = 40;
 		this.crossoverRate = 0; //0..1
 		this.mutation = 1; //0..1
 		this.iterations = 10000;
