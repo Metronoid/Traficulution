@@ -76,24 +76,24 @@ class Genegen {
 }
 
 function Iterate(){
-	var self = this;
+	let self = this;
 	function mutateOrNot(entity) {
 		// applies mutation based on mutation probability
 		return Math.random() <= self.mutation && self.mutate ? self.mutate(entity,self.mutationType) : entity;
 	}
 
 	// score and sort
-	var pop = this.entities
+	let pop = this.entities
 		.map(function (entity) {
 			return {"fitness": self.fitness(entity), "entity": entity };
 		})
 		.sort(function (a, b) {
 			return self.optimize(a.fitness, b.fitness) ? -1 : 1;
 		});
-
-
-	// crossover and mutate
-	var newPop = [];
+    //
+    //
+	// // crossover and mutate
+	let newPop = [];
 	if(this.fittestPercentageAlwaysSurvives > 0) {
 		for (let i = 0; i < this.size * this.fittestPercentageAlwaysSurvives; i++) // lets the best solution fall through
 		{
@@ -110,7 +110,10 @@ function Iterate(){
 		console.log(greatest[0]);
 		this.fitnessText.innerHTML = "Best fitness: " + greatest[0].fitness.toFixed(2);
 
+		this.fittestEntities = null;
+		this.entities = null;
 		this.fittestEntities = [];
+		this.entities = [];
 		for (let g = 0; g < greatest.length; g++) // lets the best solutions fall through
 		{
 			if (g < this.size * this.fittestPercentageAlwaysSurvives) {
