@@ -21,6 +21,7 @@ class Genegen {
 		this.fittestPercentageAlwaysSurvives = 1; //0..1
 		this.fittestEntities = [];
 		this.entities = [];
+		this.fitnessText = document.getElementById("fitness");
 	}
 
 	Optimize(a, b) {
@@ -107,6 +108,7 @@ function Iterate(){
 			});
 
 		console.log(greatest[0]);
+		this.fitnessText.innerHTML = "Best fitness: " + greatest[0].fitness.toFixed(2);
 
 		this.fittestEntities = [];
 		for (let g = 0; g < greatest.length; g++) // lets the best solutions fall through
