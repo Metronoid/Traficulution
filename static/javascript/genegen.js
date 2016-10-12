@@ -94,6 +94,7 @@ function Iterate(){
     //
 	// // crossover and mutate
 	let newPop = [];
+	let entityCopy = this.entities;
 	if(this.fittestPercentageAlwaysSurvives > 0) {
 		for (let i = 0; i < this.size * this.fittestPercentageAlwaysSurvives; i++) // lets the best solution fall through
 		{
@@ -153,8 +154,8 @@ function Iterate(){
 	}
 
 	// Remove the previous entities from the game.
-	for (var e = 0; e < this.entities.length; e++) {
-		if (this.entities[e].Destroy()) {
+	for (var e = 0; e < entityCopy.length; e++) {
+		if (entityCopy[e].Destroy()) {
 		}
 	}
 
