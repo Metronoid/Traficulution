@@ -109,13 +109,18 @@ function Iterate(){
 	}
 
 	// score and sort
-	let pop = this.entities
-		.map(function (entity) {
-			return {"fitness": self.fitness(entity), "entity": entity };
-		})
-		.sort(function (a, b) {
-			return self.optimize(a.fitness, b.fitness) ? -1 : 1;
-		});
+	function sortOnFitness(entities){
+		return entities
+			.map(function (entity) {
+				return {"fitness": self.fitness(entity), "entity": entity };
+			})
+			.sort(function (a, b) {
+				return self.optimize(a.fitness, b.fitness) ? -1 : 1;
+			});
+	}
+
+	// score and sort
+	let pop = sortOnFitness(this.entities);
     //
     //
 	// // crossover and mutate
@@ -126,13 +131,7 @@ function Iterate(){
 		{
 			this.fittestEntities.push(pop[i].entity);
 		}
-		var greatest = this.fittestEntities
-			.map(function (entity) {
-				return {"fitness": self.fitness(entity), "entity": entity};
-			})
-			.sort(function (a, b) {
-				return self.optimize(a.fitness, b.fitness) ? -1 : 1;
-			});
+		var greatest = sortOnFitness(this.fittestEntities)
 
 		console.log(greatest[0]);
 		this.fitnessText.innerHTML = "Best fitness: " + greatest[0].fitness.toFixed(2);
@@ -150,13 +149,7 @@ function Iterate(){
 		}
 
 		// score and sort
-		pop = this.entities
-			.map(function (entity) {
-				return {"fitness": self.fitness(entity), "entity": entity };
-			})
-			.sort(function (a, b) {
-				return self.optimize(a.fitness, b.fitness) ? -1 : 1;
-			});
+		pop = sortOnFitness(this.entities)
 
 		pop = pop.slice(0,this.size);
 	}
