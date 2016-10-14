@@ -57,6 +57,32 @@ class Genegen {
 		return [this.select1.call(this, pop), this.select1.call(this, pop)];
 	}
 
+	RouletteReproduction(pop) {
+
+		console.log("Reproduce");
+		var tickets = [];
+		let sum = 0;
+		// normalize
+		let minScore = null;
+		for(let p in pop){
+			let fitness = pop[p].fitness;
+			if(minScore == null) {minScore = fitness;}
+			if(pop[p].fitness < minScore){minScore = fitness;}
+			sum += fitness;
+		}
+
+		sum += -(pop.length * minScore);
+		let percentage = 100/sum;
+		for(let p in pop){
+			for(let i = 0;i < ((pop[p].fitness - minScore) * percentage);i++){
+				console.log(((pop[p].fitness - minScore) * percentage));
+				tickets.push(pop[p]);
+			}
+		}
+
+		return [this.select1.call(this, tickets), this.select1.call(this, tickets)];
+	}
+
 	Start () {
 
 		var i;
