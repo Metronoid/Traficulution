@@ -88,7 +88,7 @@ class Car {
 
     Create() {
         this.mesh.position.set(0,0.3,-12);
-        this.brain.restore();
+        this.mesh.quaternion.setFromAxisAngle( new THREE.Vector3( 0, 0, 0 ), 0);
         scene.add(this.mesh);
         this.raycaster = new THREE.Raycaster();
         this.raycaster.set(this.mesh.position, new THREE.Vector3(0, -1, 0))
