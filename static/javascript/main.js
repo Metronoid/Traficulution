@@ -126,6 +126,7 @@ var copy = function(entity)
     var newEntity = new Car(Cube(1,0.25,2,0x47475b));
     newEntity.brain = entity.brain.clone();
     newEntity.brain.setOptimize(false);
+    newEntity.mesh.position.set(entity.mesh.position.x, entity.mesh.position.y, entity.mesh.position.z);
     return newEntity;
 }
 
@@ -196,6 +197,54 @@ var crossoverRandom = function(father,mother)
         }
     }
     return [son,daughter];
+}
+
+//Not working really
+var mutateTwo = function(father, mother) {
+    let son = father;
+    let daughter = mother;
+
+    var sonInputConn = son.brain.layers.input.list;
+    var daughterInputConn = daughter.brain.layers.input.list;
+    for(let n in sonInputConn){
+        for(let c in sonInputConn[n].connections.projected) {
+            if (Math.random() >= 0.75) {
+                sonInputConn[n].connections.projected[c].weight = daughterInputConn[n].connections.projected[c].weight;
+            }
+        }
+    }
+
+    for(let n in daughterInputConn){
+        for(let c in sonInputConn[n].connections.projected) {
+            if (Math.random() >= 0.75) {
+                daughterInputConn[n].connections.projected[c].weight = sonInputConn[n].connections.projected[c].weight;
+            }
+        }
+    }
+
+    var sonHiddenLayerAmt = son.brain.layers.hidden;
+    var daughterHiddenLayerAmt = daughter.brain.layers.hidden;
+    for (let depth = 0; depth < sonHiddenLayerAmt.length; depth++) {
+        for (let n in sonHiddenLayerAmt[depth].list) {
+            for (let c in sonHiddenLayerAmt[depth].list[n].connections.projected) {
+                if (Math.random() >= 0.75) {
+                    sonHiddenLayerAmt[depth].list[n].connections.projected[c].weight = motherHiddenLayerAmt[depth].list[n].connections.projected[c].weight;
+                }
+            }
+        }
+    }
+
+    for (let depth = 0; depth < daughterHiddenLayerAmt.length; depth++) {
+        for (let n in daughterHiddenLayerAmt[depth].list) {
+            for (let c in daughterHiddenLayerAmt[depth].list[n].connections.projected) {
+                if (Math.random() >= 0.75) {
+                    daughterHiddenLayerAmt[depth].list[n].connections.projected[c].weight = sonHiddenLayerAmt[depth].list[n].connections.projected[c].weight;
+                }
+            }
+        }
+    }
+    
+    return [father, mother];
 }
 
 //TODO: Fix all the mutations depending on this new varaible

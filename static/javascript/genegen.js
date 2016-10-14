@@ -111,11 +111,11 @@ function Iterate(){
 	// score and sort
 	function sortOnFitness(entities){
 		return entities
+			.sort(function (a, b) {
+				return  self.fitness(b) - self.fitness(a);
+			})
 			.map(function (entity) {
 				return {"fitness": self.fitness(entity), "entity": entity };
-			})
-			.sort(function (a, b) {
-				return self.optimize(a.fitness, b.fitness) ? -1 : 1;
 			});
 	}
 
@@ -149,9 +149,10 @@ function Iterate(){
 		}
 
 		// score and sort
-		pop = sortOnFitness(this.entities)
+		pop = sortOnFitness(this.entities);
 
-		pop = pop.slice(0,this.size);
+		pop = pop.slice(0,5);
+
 	}
 
 
@@ -171,6 +172,7 @@ function Iterate(){
 			newPop.push(mutateOrNot(this.copy(self.select1(pop))));
 		}
 	}
+
 
 	// Remove the previous entities from the game.
 	for (var e = 0; e < entityCopy.length; e++) {
