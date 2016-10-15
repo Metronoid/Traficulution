@@ -1,9 +1,6 @@
 /**
  * Created by wander on 9/15/2016.
  */
-var Neuron = synaptic.Neuron,
-    Layer = synaptic.Layer,
-    Network = synaptic.Network;
 
 
 var scene = new THREE.Scene();
@@ -16,84 +13,6 @@ document.body.appendChild( renderer.domElement );
 
 var loader = new THREE.TextureLoader();
 var clock = new THREE.Clock();
-
-function Cube (xSize,ySize,zSize,color) {
-    this.geometry = new THREE.BoxGeometry(xSize, ySize, zSize);
-    this.material = new THREE.MeshLambertMaterial({color: color});
-    return new THREE.Mesh(this.geometry, this.material);
-}
-
-
-function Perceptron(input, hidden, second, output)
-{
-    // create the layers
-    var inputLayer = new Layer(input);
-    var hiddenLayer = new Layer(hidden);
-    var secondHiddenLayer = new Layer(second);
-    var outputLayer = new Layer(output);
-
-    // connect the layers
-    inputLayer.project(hiddenLayer);
-    hiddenLayer.project(secondHiddenLayer);
-    secondHiddenLayer.project(outputLayer);
-
-    inputLayer.set({
-        squash: Neuron.squash.LOGISTIC,
-        bias: 0
-    });
-
-    hiddenLayer.set({
-        squash: Neuron.squash.LOGISTIC,
-        bias: 0
-    });
-    secondHiddenLayer.set({
-        squash: Neuron.squash.LOGISTIC,
-        bias: 0
-    });
-
-    outputLayer.set({
-        squash: Neuron.squash.LOGISTIC,
-        bias: 0
-    });
-
-
-    // set the layers
-    this.set({
-        input: inputLayer,
-        hidden: [hiddenLayer,secondHiddenLayer],
-        output: outputLayer
-    });
-
-    //var standalone = this.standalone();
-}
-
-// extend the prototype chain
-Perceptron.prototype = new Network();
-Perceptron.prototype.constructor = Perceptron;
-
-
-class Car {
-    constructor(mesh,brain) {
-        this.mesh = mesh;
-        this.brain = brain ? brain : new Perceptron(3,4,4,2);
-        this.brain.setOptimize(false);
-        this.brain = mutate(this,superMutate).brain;
-        this.output = [0,0];
-    }
-
-    Destroy() {
-        //TODO: Would be nice to be able to remove the neural network too.
-        scene.remove(this.mesh);
-    }
-
-    Create() {
-        this.mesh.position.set(0,0.3,-12);
-        this.mesh.quaternion.setFromAxisAngle( new THREE.Vector3( 0, 0, 0 ), 0);
-        scene.add(this.mesh);
-        this.raycaster = new THREE.Raycaster();
-        this.raycaster.set(this.mesh.position, new THREE.Vector3(0, -1, 0))
-    }
-}
 
 var collisionList = [];
 

@@ -58,8 +58,6 @@ class Genegen {
 	}
 
 	RouletteReproduction(pop) {
-
-		console.log("Reproduce");
 		var tickets = [];
 		let sum = 0;
 		// normalize
