@@ -166,7 +166,7 @@ var mutateTwo = function(father, mother) {
             }
         }
     }
-    
+
     return [father, mother];
 }
 
@@ -216,7 +216,7 @@ collisionList.push(intersectionFloor);
 scene.add(intersection);
 
 camera.position.z = 15;
-camera.position.y = 20
+camera.position.y = 30;
 camera.lookAt(new THREE.Vector3(0, 0, 4));
 
 // create a point light
@@ -229,6 +229,11 @@ pointLight.position.z = 25;
 
 // add to the scene
 scene.add(pointLight);
+
+var buildingBlock = new block(20, 30);
+let bblock = buildingBlock.generateBlock(2, 3, 7, 20, .2);
+bblock.position.set(15, 2.2, -15);
+scene.add(bblock);
 
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
