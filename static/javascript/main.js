@@ -15,9 +15,13 @@ var loader = new THREE.TextureLoader();
 var clock = new THREE.Clock();
 
 var collisionList = [];
+var spawns = [];
+spawns.push(new Spawn(new THREE.Vector3(13,1,5),-Math.PI/2));
+spawns.push(new Spawn(new THREE.Vector3(2,1,13),-Math.PI));
+spawns.push(new Spawn(new THREE.Vector3(2,1,-13),0));
 
 var seed = function() {
-    var car = new Car(Cube(1,0.25,2,0x47475b));
+    var car = new Car(Cube(1,0.25,2,0x47475b),spawns[Math.floor((Math.random() * spawns.length))]);
     car.Create();
     //collisionList.push(car.mesh);
     return car;
@@ -27,7 +31,7 @@ var point = new THREE.Vector3(-13,0,5);
 var fitness = function(entity) {
     var moral = 0;
     moral = - entity.mesh.position.distanceTo(point);
-    if(moral > -1) {
+    if(moral > -2) {
         //point.x = -point.x
         //targetBox.position.set(point.x, 0.3, point.z);
         moral = 10;
@@ -42,7 +46,7 @@ var fitness = function(entity) {
 
 var copy = function(entity)
 {
-    var newEntity = new Car(Cube(1,0.25,2,0x47475b));
+    var newEntity = new Car(Cube(1,0.25,2,0x47475b),spawns[Math.floor((Math.random() * spawns.length))]);
     newEntity.brain = entity.brain.clone();
     newEntity.brain.setOptimize(false);
     newEntity.mesh.position.set(entity.mesh.position.x, entity.mesh.position.y, entity.mesh.position.z);
@@ -51,8 +55,8 @@ var copy = function(entity)
 
 var crossoverRandom = function(father,mother)
 {
-    var son = new Car(Cube(1,0.25,2,0x47475b));
-    var daughter = new Car(Cube(1,0.25,2,0x47475b));
+    var son = new Car(Cube(1,0.25,2,0x47475b),spawns[Math.floor((Math.random() * spawns.length))]);
+    var daughter = new Car(Cube(1,0.25,2,0x47475b),spawns[Math.floor((Math.random() * spawns.length))]);
 
     var dadNeurons = father.brain.neurons();
     var dadWeights = [];
