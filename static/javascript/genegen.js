@@ -173,6 +173,7 @@ function Generate(self){
 
 		console.log(greatest[0]);
 		self.fitnessText.innerHTML = "Best fitness: " + greatest[0].fitness.toFixed(2);
+		nwstats.updateStats(greatest[0].entity.brain);
 
 		self.fittestEntities = null;
 		self.entities = null;

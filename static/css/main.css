@@ -12,3 +12,10 @@ p {
 #fitness{
     margin-top: 16px;
 }
+
+#network {
+    position:absolute;
+    float:right;
+    right:0;
+    top:0;
+}
