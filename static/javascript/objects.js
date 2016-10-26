@@ -16,7 +16,6 @@ class Spawn {
         this.mesh.position.y = position.y;
         this.mesh.position.z = position.z;
         this.mesh.rotation.y = rotation;
-        console.log(this);
         this.position = position;
         this.rotation = rotation;
         scene.add(this.mesh);
@@ -31,6 +30,7 @@ class Car {
         this.brain.setOptimize(false);
         this.brain = mutate(this, superMutate).brain;
         this.output = [0, 0];
+        this.moral = 0;
     }
 
     Destroy() {
@@ -38,7 +38,12 @@ class Car {
         scene.remove(this.mesh);
     }
 
-    Create() {
+    Create(spawnPoint) {
+        if(spawnPoint == undefined)
+        {
+            spawnPoint = 0;
+        }
+        this.spawn = spawns[spawnPoint];
         this.mesh.position.x = this.spawn.position.x;
         this.mesh.position.y = this.spawn.position.y;
         this.mesh.position.z = this.spawn.position.z;

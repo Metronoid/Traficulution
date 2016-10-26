@@ -16,7 +16,8 @@ class Genegen {
 		this.size = 40;
 		this.crossoverRate = 0; //0..1
 		this.mutation = 1; //0..1
-		this.iterations = 10000;
+		this.generations = 100;
+		this.itterations = 3;
 		this.timer = 4000;
 		this.fittestPercentageAlwaysSurvives = 1; //0..1
 		this.fittestEntities = [];
@@ -87,20 +88,59 @@ class Genegen {
 
 		// seed the population
 		for (i=0;i<this.size;++i)  {
-			this.entities.push(this.seed());
+			this.entities.push(this.seed(0));
 		}
 
-		for (i=0;i<this.iterations;++i) {
+		for (i=0; i<this.generations; i++) {
 
 			// Wait a while
-			setTimeout(Iterate.bind(this), this.timer * (i+1))
-
+			for (let g=0; g<this.itterations; g++) {
+				setTimeout(Iterate.bind(this,g), this.timer * (g+1) + ((this.timer * i * this.itterations)+1))
+			}
 		}
 	}
 }
 
-function Iterate(){
+// TODO: Use a pulling mechanism instead.
+function RemoveBatch(entities){
+	// Remove the previous entities from the game.
+	for (var e = 0; e < entities.length; e++) {
+		if (entities[e].Destroy()) {
+		}
+	}
+}
+
+function CreateBatch(entities,spawnPoint){
+	for (var e = 0; e < entities.length; e++) {
+		if (entities[e].Create(spawnPoint)) {
+		}
+	}
+}
+
+function CheckMoral(self,entities){
+	for (var e = 0; e < entities.length; e++) {
+		entities[e].moral += self.fitness(entities[e]);
+	}
+}
+
+function CleanMoral(entities){
+	for (var e = 0; e < entities.length; e++) {
+		entities[e].moral = 0;
+	}
+}
+
+function Iterate(g){
 	let self = this;
+	CheckMoral(self,self.entities);
+	if(g == this.itterations-1) {
+		Generate(self);
+	}else{
+		RemoveBatch(self.entities);
+		CreateBatch(self.entities,g+1);
+	}
+}
+
+function Generate(self){
 	function mutateOrNot(entity) {
 		// applies mutation based on mutation probability
 		return Math.random() <= self.mutation && self.mutate ? self.mutate(entity,self.mutationType) : entity;
@@ -110,44 +150,44 @@ function Iterate(){
 	function sortOnFitness(entities){
 		return entities
 			.sort(function (a, b) {
-				return  self.fitness(b) - self.fitness(a);
+				return  b.moral - a.moral;
 			})
 			.map(function (entity) {
-				return {"fitness": self.fitness(entity), "entity": entity };
+				return {"fitness": entity.moral, "entity": entity };
 			});
 	}
 
 	// score and sort
-	let pop = sortOnFitness(this.entities);
+	let pop = sortOnFitness(self.entities);
     //
     //
 	// // crossover and mutate
 	let newPop = [];
-	let entityCopy = this.entities;
-	if(this.fittestPercentageAlwaysSurvives > 0) {
-		for (let i = 0; i < this.size * this.fittestPercentageAlwaysSurvives; i++) // lets the best solution fall through
+	let entityCopy = self.entities;
+	if(self.fittestPercentageAlwaysSurvives > 0) {
+		for (let i = 0; i < self.size * self.fittestPercentageAlwaysSurvives; i++) // lets the best solution fall through
 		{
-			this.fittestEntities.push(pop[i].entity);
+			self.fittestEntities.push(pop[i].entity);
 		}
-		var greatest = sortOnFitness(this.fittestEntities)
+		var greatest = sortOnFitness(self.fittestEntities)
 
 		console.log(greatest[0]);
-		this.fitnessText.innerHTML = "Best fitness: " + greatest[0].fitness.toFixed(2);
+		self.fitnessText.innerHTML = "Best fitness: " + greatest[0].fitness.toFixed(2);
 
-		this.fittestEntities = null;
-		this.entities = null;
-		this.fittestEntities = [];
-		this.entities = [];
+		self.fittestEntities = null;
+		self.entities = null;
+		self.fittestEntities = [];
+		self.entities = [];
 		for (let g = 0; g < greatest.length; g++) // lets the best solutions fall through
 		{
-			if (g < this.size * this.fittestPercentageAlwaysSurvives) {
-				this.fittestEntities.push(greatest[g].entity);
-				this.entities.push(this.copy(greatest[g].entity));
+			if (g < self.size * self.fittestPercentageAlwaysSurvives) {
+				self.fittestEntities.push(greatest[g].entity);
+				self.entities.push(self.copy(greatest[g].entity,0));
 			}
 		}
 
 		// score and sort
-		pop = sortOnFitness(this.entities);
+		pop = sortOnFitness(self.entities);
 
 		pop = pop.slice(0,5);
 
@@ -158,30 +198,24 @@ function Iterate(){
 
 	while (newPop.length < self.size) {
 		if (
-			this.crossover // if there is a crossover function
-			&& Math.random() <= this.crossoverRate // base crossover on specified probability
+			self.crossover // if there is a crossover function
+			&& Math.random() <= self.crossoverRate // base crossover on specified probability
 			&& newPop.length+1 < self.size // keeps us from going 1 over the max population size
-			&& this.select2
+			&& self.select2
 		) {
-			let parents = this.select2(pop);
-			let children = this.crossover(parents[0], parents[1]).map(mutateOrNot);
+			let parents = self.select2(pop);
+			let children = self.crossover(parents[0], parents[1], 0).map(mutateOrNot);
 			newPop.push(children[0], children[1]);
 		} else {
-			newPop.push(mutateOrNot(this.copy(self.select1(pop))));
+			newPop.push(mutateOrNot(self.copy(self.select1(pop),0)));
 		}
 	}
 
+	RemoveBatch(entityCopy);
 
-	// Remove the previous entities from the game.
-	for (var e = 0; e < entityCopy.length; e++) {
-		if (entityCopy[e].Destroy()) {
-		}
-	}
+	self.entities = newPop;
 
-	this.entities = newPop;
+	CreateBatch(self.entities);
+	CleanMoral(self.entities);
 
-	for (var e = 0; e < this.entities.length; e++) {
-		if (this.entities[e].Create()) {
-		}
-	}
 }

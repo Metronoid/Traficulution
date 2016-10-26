@@ -20,8 +20,8 @@ spawns.push(new Spawn(new THREE.Vector3(13,1,5),-Math.PI/2));
 spawns.push(new Spawn(new THREE.Vector3(2,1,13),-Math.PI));
 spawns.push(new Spawn(new THREE.Vector3(2,1,-13),0));
 
-var seed = function() {
-    var car = new Car(Cube(1,0.25,2,0x47475b),spawns[Math.floor((Math.random() * spawns.length))]);
+var seed = function(spawnPoint) {
+    var car = new Car(Cube(1,0.25,2,0x47475b),spawns[spawnPoint]);
     car.Create();
     //collisionList.push(car.mesh);
     return car;
@@ -44,19 +44,19 @@ var fitness = function(entity) {
     return moral;
 };
 
-var copy = function(entity)
+var copy = function(entity,spawnPoint)
 {
-    var newEntity = new Car(Cube(1,0.25,2,0x47475b),spawns[Math.floor((Math.random() * spawns.length))]);
+    var newEntity = new Car(Cube(1,0.25,2,0x47475b),spawns[spawnPoint]);
     newEntity.brain = entity.brain.clone();
     newEntity.brain.setOptimize(false);
     newEntity.mesh.position.set(entity.mesh.position.x, entity.mesh.position.y, entity.mesh.position.z);
     return newEntity;
 }
 
-var crossoverRandom = function(father,mother)
+var crossoverRandom = function(father,mother,spawnPoint)
 {
-    var son = new Car(Cube(1,0.25,2,0x47475b),spawns[Math.floor((Math.random() * spawns.length))]);
-    var daughter = new Car(Cube(1,0.25,2,0x47475b),spawns[Math.floor((Math.random() * spawns.length))]);
+    var son = new Car(Cube(1,0.25,2,0x47475b),spawns[spawnPoint]);
+    var daughter = new Car(Cube(1,0.25,2,0x47475b),spawns[spawnPoint]);
 
     var dadNeurons = father.brain.neurons();
     var dadWeights = [];
