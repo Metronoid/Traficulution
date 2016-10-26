@@ -12,7 +12,14 @@ renderer.setClearColor( 0x221f36, 1 );
 document.body.appendChild( renderer.domElement );
 
 var loader = new THREE.TextureLoader();
+var cloader = new THREE.ColladaLoader();
 var clock = new THREE.Clock();
+
+var controls = new THREE.TrackballControls( camera );
+controls.target.set( 0, 0, 0 );
+controls.rotateSpeed = 5.0;
+controls.zoomSpeed = 0.05;
+controls.panSpeed = 5;
 
 var collisionList = [];
 var spawns = [];
@@ -20,10 +27,16 @@ spawns.push(new Spawn(new THREE.Vector3(13,1,5),-Math.PI/2));
 spawns.push(new Spawn(new THREE.Vector3(2,1,13),-Math.PI));
 spawns.push(new Spawn(new THREE.Vector3(2,1,-13),0));
 
+
+cloader.load('/model/intersection.dae', function (result) {
+    result.scene.rotation.x = Math.PI*1.5;
+    console.log(result);
+    scene.add(result.scene);
+});
+
 var seed = function() {
     var car = new Car(Cube(1,0.25,2,0x47475b),spawns[Math.floor((Math.random() * spawns.length))]);
     car.Create();
-    //collisionList.push(car.mesh);
     return car;
 };
 
@@ -197,23 +210,11 @@ var mutate = function (oldEntity,mutationType) {
 var pool = new Genegen(seed,fitness,copy,crossoverRandom,mutate);
 
 pool.Start();
-var loader = new THREE.TextureLoader();
-var iTexture = loader.load("img/texture/intersection.png");
-var intersectionFloorGeometry = new THREE.BoxGeometry(30,0.25,30);
-var intersectionFloorMaterial = new THREE.MeshLambertMaterial({ map:  iTexture});
-var intersectionFloor = new THREE.Mesh(intersectionFloorGeometry, intersectionFloorMaterial);
-intersectionFloor.position.set(0,0,0);
 
 var targetBox = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshLambertMaterial({color:0xFFFFFF}));
 targetBox.position.set(point.x, 0.3, point.z);
 scene.add(targetBox);
 
-
-var intersection = new THREE.Group();
-intersection.add(intersectionFloor);
-
-collisionList.push(intersectionFloor);
-scene.add(intersection);
 
 camera.position.z = 15;
 camera.position.y = 30;
@@ -229,11 +230,6 @@ pointLight.position.z = 25;
 
 // add to the scene
 scene.add(pointLight);
-
-var buildingBlock = new block(20, 30);
-let bblock = buildingBlock.generateBlock(2, 3, 7, 20, .2);
-bblock.position.set(15, 2.2, -15);
-scene.add(bblock);
 
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
@@ -343,6 +339,7 @@ function moveCar(object,delta)
 
 var update = function () {
     requestAnimationFrame( update );
+    controls.update();
     fpsText.innerHTML = "FPS: " + fps.getFPS();
     var delta = clock.getDelta(); // seconds.
     for (car in pool.entities){
