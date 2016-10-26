@@ -34,8 +34,8 @@ cloader.load('/model/intersection.dae', function (result) {
     scene.add(result.scene);
 });
 
-var seed = function() {
-    var car = new Car(Cube(1,0.25,2,0x47475b),spawns[Math.floor((Math.random() * spawns.length))]);
+var seed = function(spawnPoint) {
+    var car = new Car(Cube(1,0.25,2,0x47475b),spawns[spawnPoint]);
     car.Create();
     return car;
 };
@@ -57,19 +57,19 @@ var fitness = function(entity) {
     return moral;
 };
 
-var copy = function(entity)
+var copy = function(entity,spawnPoint)
 {
-    var newEntity = new Car(Cube(1,0.25,2,0x47475b),spawns[Math.floor((Math.random() * spawns.length))]);
+    var newEntity = new Car(Cube(1,0.25,2,0x47475b),spawns[spawnPoint]);
     newEntity.brain = entity.brain.clone();
     newEntity.brain.setOptimize(false);
     newEntity.mesh.position.set(entity.mesh.position.x, entity.mesh.position.y, entity.mesh.position.z);
     return newEntity;
 }
 
-var crossoverRandom = function(father,mother)
+var crossoverRandom = function(father,mother,spawnPoint)
 {
-    var son = new Car(Cube(1,0.25,2,0x47475b),spawns[Math.floor((Math.random() * spawns.length))]);
-    var daughter = new Car(Cube(1,0.25,2,0x47475b),spawns[Math.floor((Math.random() * spawns.length))]);
+    var son = new Car(Cube(1,0.25,2,0x47475b),spawns[spawnPoint]);
+    var daughter = new Car(Cube(1,0.25,2,0x47475b),spawns[spawnPoint]);
 
     var dadNeurons = father.brain.neurons();
     var dadWeights = [];
@@ -300,7 +300,8 @@ function moveCar(object,delta)
     var input = [];
     input.push(object.output[0]);
     input.push(((object.mesh.rotation.y + 1.6) / 3.2));
-    input.push(Math.abs(object.mesh.position.distanceTo(point))/20);
+    input.push(Math.abs(object.mesh.position.x - point.x)/50);
+    input.push(Math.abs(object.mesh.position.z - point.z)/50);
     // TODO: Add the positive and negative rotation axis for input.
     //input.push((Math.abs(object.mesh.rotation.x / Math.PI)));
     var output = object.brain.activate(input);
