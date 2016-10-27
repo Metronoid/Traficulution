@@ -248,10 +248,13 @@ function onMouseDown( event ) {
         for(let entnr in pool.entities) {
             if(uuid == pool.entities[entnr].mesh.uuid) {
                 nwstats.updateStats(pool.entities[entnr].brain);
+                nwstats.pulsate(true);
                 return;
             }
         }
     }
+
+
 }
 
 class ColorMap {

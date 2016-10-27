@@ -18,13 +18,29 @@ class NetworkStats {
         this.height = this.canvas.height;
         this.context = this.canvas.getContext('2d');
 
+        this.pulsateCurrentTime = 0;
+        this.pulsateCurrentLayer = 0;
+        this.pulsateStep = .5;
+        this.pulsateDelay = 20;
+        this.pulsateTotalTime = 1000;
+        this.pulsating = false;
+
+        this.circleCurrentRadius = 50;
+        this.circleDefaultRadius = 50;
+        this.circleMaxRadius = this.circleDefaultRadius + (this.pulsateTotalTime/this.pulsateDelay)*this.pulsateStep/2;
+        this.circleMinRadius = this.circleDefaultRadius - (this.pulsateTotalTime/this.pulsateDelay)*this.pulsateStep/2;
+        this.circleIncreasing = true;
+
+        this.layerAmt = -1;
 
     }
 
     updateStats(brain) {
-        this.input = brain.layers.input;
-        this.hidden = brain.layers.hidden;
-        this.output = brain.layers.output;
+        if(brain) {
+            this.input = brain.layers.input;
+            this.hidden = brain.layers.hidden;
+            this.output = brain.layers.output;
+        }
 
         this.context.clearRect(0, 0, this.width, this.height);
         if(this.input && this.hidden && this.output) {
@@ -42,7 +58,6 @@ class NetworkStats {
                 let xPos = this.width/8*neuronWidthIdx+offset*neuronWidthIdx;
                 let yPos = (this.height/maxNeuronHeight*i + 50*2) + ((this.height/maxNeuronHeight*((maxNeuronHeight - this.input.list.length)/2)));
                 temp.push({ id: this.input.list[i].ID, x: xPos, y: yPos, activation: this.input.list[i].activation });
-                console.log(this.input.list[i].activation);
             }
             neuronWidthIdx++;
             layers.push(temp);
@@ -62,12 +77,12 @@ class NetworkStats {
             for(let i = 0; i < this.output.list.length; i++) {
                 let xPos = this.width/8*neuronWidthIdx+offset*neuronWidthIdx;
                 let yPos = (this.height/maxNeuronHeight*i + 50*2) + ((this.height/maxNeuronHeight*((maxNeuronHeight - this.output.list.length)/2)));
-                console.log(xPos + " " + yPos);
                 temp.push({ id: this.output.list[i].ID, x: xPos, y: yPos, activation: this.output.list[i].activation  });
             }
             layers.push(temp);
             temp = [];
 
+            this.layerAmt = neuronWidthIdx;
 
             let layerIdx = 0;
             for(let i = 0 ; i < this.input.list.length; i++) {
@@ -92,23 +107,22 @@ class NetworkStats {
 
             for(let layer in layers) {
                 for(let neur in layers[layer]) {
-                    this.drawNeuron(layers[layer][neur].x, layers[layer][neur].y, layers[layer][neur].activation);
+                    let rad = layer == this.pulsateCurrentLayer ? this.circleCurrentRadius : this.circleDefaultRadius;
+                    this.drawNeuron(layers[layer][neur].x, layers[layer][neur].y, rad, layers[layer][neur].activation);
                 }
             }
 
+            // this.pulsate();
 
         }
 
-        this.input = brain.layers.input;
-        this.hidden = brain.layers.hidden;
-        this.output = brain.layers.output;
     }
 
-    drawNeuron(x, y, activation) {
+    drawNeuron(x, y, radius, activation) {
         this.context.beginPath();
         this.context.strokeStyle = "black";
         this.context.lineWidth = "2";
-        this.context.arc(x, y, 50, 0, 2 * Math.PI);
+        this.context.arc(x, y, radius, 0, 2 * Math.PI);
         this.context.fillStyle = "black";
         this.context.fill();
         this.context.stroke();
@@ -124,10 +138,10 @@ class NetworkStats {
     drawConnection(startX, startY, endX, endY, weight) {
         this.context.beginPath();
         if(weight >= 0) {
-            this.context.strokeStyle = "green";
+            this.context.strokeStyle = "#4CAF50";
             this.context.lineWidth = weight*4;
         }else{
-            this.context.strokeStyle = "red";
+            this.context.strokeStyle = "#FF5722";
             this.context.lineWidth = -weight*4;
         }
         this.context.moveTo(startX,startY);
@@ -144,6 +158,45 @@ class NetworkStats {
             }
         }
         return undefined;
+    }
+
+    pulsate(init, reset) {
+        if(this.pulsating && init) return;
+        if(init || reset) {
+            this.circleCurrentRadius = 50;
+            this.circleIncreasing = true;
+            this.pulsateCurrentTime = 0;
+            this.pulsating = true;
+        }
+
+        let self = this;
+        setTimeout(function() {
+            self.updateStats();
+
+            if(self.circleCurrentRadius <= self.circleMaxRadius && self.circleIncreasing) {
+                self.circleCurrentRadius += self.pulsateStep;
+            } else if(self.circleIncreasing) {
+                self.circleIncreasing = false;
+            }
+
+            if(self.circleCurrentRadius >= self.circleMinRadius && !self.circleIncreasing) {
+                self.circleCurrentRadius -= self.pulsateStep;
+            } else if(!self.circleIncreasing) {
+                self.circleIncreasing = true;
+            }
+
+            self.pulsateCurrentTime += Math.abs(self.pulsateDelay);
+            if(self.pulsateTotalTime > self.pulsateCurrentTime) {
+                self.pulsate();
+            } else {
+                if(self.pulsateCurrentLayer + 1 == self.layerAmt) {
+                    self.pulsateCurrentLayer = 0;
+                } else {
+                    self.pulsateCurrentLayer++;
+                }
+                self.pulsate(false, true);
+            }
+        }, Math.abs(self.pulsateDelay));
     }
 
     getTextHeight(font) {
