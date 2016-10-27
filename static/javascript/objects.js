@@ -60,7 +60,7 @@ class Car {
 
             self.raycaster.set(result.scene.position, new THREE.Vector3(0, -1, 0))
 
-            scene.add(result.scene);
+            scene.add(self.mesh);
         });
 
         // this.spawn = spawns[spawnPoint];
