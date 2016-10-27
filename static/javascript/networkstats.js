@@ -7,6 +7,7 @@ class NetworkStats {
         // $("#network").width(window.innerWidth/4);
         // $("#network").height(window.innerHeight/3);
 
+
         $("#networkdiv").width(512);
         $("#networkdiv").height(327);
 
@@ -35,7 +36,7 @@ class NetworkStats {
             }
 
             let neuronWidthIdx = 1;
-            let offset = this.width/12;
+            let offset = this.width/24;
             let temp = [];
             for(let i = 0 ; i < this.input.list.length; i++) {
                 let xPos = this.width/8*neuronWidthIdx+offset*neuronWidthIdx;
