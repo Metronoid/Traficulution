@@ -35,11 +35,14 @@ class NetworkStats {
 
     }
 
-    updateStats(brain) {
+    updateStats(brain, moral) {
         if(brain) {
             this.input = brain.layers.input;
             this.hidden = brain.layers.hidden;
             this.output = brain.layers.output;
+        }
+        if(moral) {
+            this.moral = moral;
         }
 
         this.context.clearRect(0, 0, this.width, this.height);
@@ -47,15 +50,16 @@ class NetworkStats {
             let layers = [];
 
             let maxNeuronHeight = this.input.list.length < this.output.list.length ? this.output.list.length : this.input.list.length;
+            let neuronsWidth = 2 + this.hidden.length;
             for(let l = 0; l < this.hidden.length; l++) {
                 if(maxNeuronHeight < this.hidden[l].list.length) maxNeuronHeight  = this.hidden[l].list.length;
             }
 
             let neuronWidthIdx = 1;
-            let offset = this.width/24;
+            let offset = (this.width - neuronsWidth * this.circleMaxRadius*2)/neuronsWidth;
             let temp = [];
             for(let i = 0 ; i < this.input.list.length; i++) {
-                let xPos = this.width/8*neuronWidthIdx+offset*neuronWidthIdx;
+                let xPos = this.width/8*neuronWidthIdx+offset*(neuronWidthIdx-1);
                 let yPos = (this.height/maxNeuronHeight*i + 50*2) + ((this.height/maxNeuronHeight*((maxNeuronHeight - this.input.list.length)/2)));
                 temp.push({ id: this.input.list[i].ID, x: xPos, y: yPos, activation: this.input.list[i].activation });
             }
@@ -65,7 +69,7 @@ class NetworkStats {
 
             for(let l = 0; l < this.hidden.length; l++) {
                 for(let i = 0 ; i < this.hidden[l].list.length; i++) {
-                    let xPos = this.width/8*neuronWidthIdx+offset*neuronWidthIdx;
+                    let xPos = this.width/8*neuronWidthIdx+offset*(neuronWidthIdx-1);
                     let yPos = (this.height/maxNeuronHeight*i + 50*2) + ((this.height/maxNeuronHeight*((maxNeuronHeight - this.hidden[l].list.length)/2)));
                     temp.push({ id: this.hidden[l].list[i].ID, x: xPos, y: yPos, activation: this.hidden[l].list[i].activation });
                 }
@@ -75,7 +79,7 @@ class NetworkStats {
             }
 
             for(let i = 0; i < this.output.list.length; i++) {
-                let xPos = this.width/8*neuronWidthIdx+offset*neuronWidthIdx;
+                let xPos = this.width/8*neuronWidthIdx+offset*(neuronWidthIdx-1);
                 let yPos = (this.height/maxNeuronHeight*i + 50*2) + ((this.height/maxNeuronHeight*((maxNeuronHeight - this.output.list.length)/2)));
                 temp.push({ id: this.output.list[i].ID, x: xPos, y: yPos, activation: this.output.list[i].activation  });
             }
@@ -112,7 +116,9 @@ class NetworkStats {
                 }
             }
 
-            // this.pulsate();
+            if(this.moral) {
+                this.drawText("Moral: " + this.moral, layers[0][0].x - this.circleDefaultRadius, 25);
+            }
 
         }
 
@@ -127,11 +133,16 @@ class NetworkStats {
         this.context.fill();
         this.context.stroke();
 
+        let txt = activation.toFixed(3);
+        this.drawText(txt, x - this.context.measureText(txt).width/2, y + this.getTextHeight(this.context.font).height/2);
+    }
+
+    drawText(txt, x, y) {
         this.context.beginPath();
+        this.context.strokeStyle = "white";
         this.context.fillStyle = "white";
         this.context.font="25px Verdana";
-        let txt = activation.toFixed(3);
-        this.context.fillText(txt, x - this.context.measureText(txt).width/2, y + this.getTextHeight(this.context.font).height/2);
+        this.context.fillText(txt, x, y);
         this.context.stroke();
     }
 

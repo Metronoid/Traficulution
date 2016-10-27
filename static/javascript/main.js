@@ -247,7 +247,7 @@ function onMouseDown( event ) {
         let uuid = intersects[0].object.uuid;
         for(let entnr in pool.entities) {
             if(uuid == pool.entities[entnr].mesh.uuid) {
-                nwstats.updateStats(pool.entities[entnr].brain);
+                nwstats.updateStats(pool.entities[entnr].brain, pool.entities[entnr].moral);
                 nwstats.pulsate(true);
                 return;
             }
