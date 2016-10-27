@@ -16,6 +16,7 @@ class Genegen {
 		this.size = 3;
 		this.crossoverRate = 0; //0..1
 		this.mutation = 1; //0..1
+		this.mutationChance = 0.75; //1..0
 		this.generations = 10000;
 		this.itterations = 3;
 		this.timer = 5000;
@@ -95,7 +96,7 @@ class Genegen {
 
 			// Wait a while
 			for (let g=0; g<this.itterations; g++) {
-				setTimeout(Iterate.bind(this,g), this.timer * (g+1) + ((this.timer * i * this.itterations)+1))
+				setTimeout(Iterate.bind(this,g), (this.timer * (g+1) + ((this.timer * i * this.itterations)+1)))
 			}
 		}
 	}
@@ -149,7 +150,7 @@ function Iterate(g){
 function Generate(self){
 	function mutateOrNot(entity) {
 		// applies mutation based on mutation probability
-		return Math.random() <= self.mutation && self.mutate ? self.mutate(entity,self.mutationType) : entity;
+		return Math.random() <= self.mutation && self.mutate ? self.mutate(entity,self.mutationType,self.mutationChance) : entity;
 	}
 
 	// score and sort

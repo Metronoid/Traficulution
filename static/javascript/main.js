@@ -173,13 +173,13 @@ var mutateTwo = function(father, mother) {
     return [father, mother];
 }
 
-var mutate = function (oldEntity,mutationType) {
+var mutate = function (oldEntity,mutationType,mutationChance) {
     var entity = oldEntity;
 
     var inputConn = entity.brain.layers.input.list;
     for(let n in inputConn){
         for(let c in inputConn[n].connections.projected) {
-            inputConn[n].connections.projected[c].weight = mutationType(inputConn[n].connections.projected[c].weight,2.5,-2.5);
+            inputConn[n].connections.projected[c].weight = mutationType(inputConn[n].connections.projected[c].weight,2.5,-2.5,mutationChance);
         }
     }
 
@@ -189,7 +189,7 @@ var mutate = function (oldEntity,mutationType) {
         for (let n in hiddenLayerAmt[depth].list) {
             for (let c in hiddenLayerAmt[depth].list[n].connections.projected) {
                 if (Math.random() >= 0.75) {
-                    hiddenLayerAmt[depth].list[n].connections.projected[c].weight = mutationType(hiddenLayerAmt[depth].list[n].connections.projected[c].weight,2.5,-2.5);
+                    hiddenLayerAmt[depth].list[n].connections.projected[c].weight = mutationType(hiddenLayerAmt[depth].list[n].connections.projected[c].weight,2.5,-2.5,mutationChance);
                 }
             }
         }
@@ -312,7 +312,7 @@ function moveCar(object,delta)
     // TODO: Add the positive and negative rotation axis for input.
     //input.push((Math.abs(object.mesh.rotation.x / Math.PI)));
     var output = object.brain.activate(input);
-    var speed = 15;
+    let speed = 15;
     object.output[0] = output[0];
     object.output[1] = output[1];
     object.mesh.translateZ((output[0] - 0.40) * speed * delta);
