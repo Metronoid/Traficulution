@@ -175,7 +175,6 @@ var mutateTwo = function(father, mother) {
     return [father, mother];
 }
 
-//TODO: Fix all the mutations depending on this new varaible
 var mutate = function (oldEntity,mutationType) {
     var entity = oldEntity;
 
