@@ -43,6 +43,9 @@ var seed = function(spawnPoint) {
 var fitness = function(entity) {
     var moral = 0;
     moral -= entity.mesh.position.distanceTo(point);
+    if(moral > -2) {
+        moral += (1 - Math.abs(0.5 - entity.output[1]) * 2) * 5;
+    }
     return moral;
 };
 
@@ -242,8 +245,7 @@ function onMouseDown( event ) {
     console.log(meshes);
 
     var intersects = raycaster.intersectObjects(meshes.children);
-    if(intersects[0] != undefined) {
-        point = intersects[0].point;
+     if(intersects[0] != undefined) {
         let uuid = intersects[0].object.uuid;
         for(let entnr in pool.entities) {
             if(uuid == pool.entities[entnr].mesh.uuid) {
