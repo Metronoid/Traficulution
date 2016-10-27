@@ -5,32 +5,39 @@ var Neuron = synaptic.Neuron,
     Layer = synaptic.Layer,
     Network = synaptic.Network;
 
-function Perceptron(input, hidden, second, output)
+
+function Perceptron(input, hidden, output)
 {
     // create the layers
     var inputLayer = new Layer(input);
-    var hiddenLayer = new Layer(hidden);
-    var secondHiddenLayer = new Layer(second);
     var outputLayer = new Layer(output);
+    var hiddenLayers = [];
+    for(let n in hidden){
+        hiddenLayers.push(new Layer(hidden[n]));
+    }
 
     // connect the layers
-    inputLayer.project(hiddenLayer);
-    hiddenLayer.project(secondHiddenLayer);
-    secondHiddenLayer.project(outputLayer);
+    inputLayer.project(hiddenLayers[0]);
+    for(let i = 0; i < hiddenLayers.length; i++){
+        if(i+1 < hiddenLayers.length) {
+            hiddenLayers[i].project(hiddenLayers[i + 1]);
+        }
+        else{
+            hiddenLayers[i].project(outputLayer);
+        }
+    }
 
     inputLayer.set({
         squash: Neuron.squash.LOGISTIC,
         bias: 0
     });
 
-    hiddenLayer.set({
-        squash: Neuron.squash.LOGISTIC,
-        bias: 0
-    });
-    secondHiddenLayer.set({
-        squash: Neuron.squash.LOGISTIC,
-        bias: 0
-    });
+    for(let n in hiddenLayers) {
+        hiddenLayers[n].set({
+            squash: Neuron.squash.LOGISTIC,
+            bias: 0
+        });
+    }
 
     outputLayer.set({
         squash: Neuron.squash.LOGISTIC,
@@ -41,7 +48,7 @@ function Perceptron(input, hidden, second, output)
     // set the layers
     this.set({
         input: inputLayer,
-        hidden: [hiddenLayer,secondHiddenLayer],
+        hidden: hiddenLayers,
         output: outputLayer
     });
 
