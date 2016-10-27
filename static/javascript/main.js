@@ -54,15 +54,6 @@ var copy = function(entity,spawnPoint)
     var newEntity = new Car(Cube(1,0.25,2,0x47475b),spawns[spawnPoint]);
     newEntity.brain = entity.brain.clone();
     newEntity.brain.setOptimize(false);
-    
-    // Network Mutation
-    let layers = slideMutate(newEntity.brain.layers.hidden.length,2,1);
-    if(newEntity.brain.layers.hidden.length > layers)
-    {
-
-    }
-
-
 
     newEntity.mesh.position.set(entity.mesh.position.x, entity.mesh.position.y, entity.mesh.position.z);
     return newEntity;
