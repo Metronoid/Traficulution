@@ -10,8 +10,6 @@ class NetworkStats {
         $("#networkdiv").width(512);
         $("#networkdiv").height(327);
 
-
-
         this.canvas = document.getElementById('network');
         this.canvas.width = 512*2;
         this.canvas.height = 327*2;
