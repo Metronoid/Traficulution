@@ -41,8 +41,8 @@ class NetworkStats {
             for(let i = 0 ; i < this.input.list.length; i++) {
                 let xPos = this.width/8*neuronWidthIdx+offset*neuronWidthIdx;
                 let yPos = (this.height/maxNeuronHeight*i + 50*2) + ((this.height/maxNeuronHeight*((maxNeuronHeight - this.input.list.length)/2)));
-                temp.push({ id: this.input.list[i].ID, x: xPos, y: yPos });
-                this.drawNeuron(xPos, yPos);
+                temp.push({ id: this.input.list[i].ID, x: xPos, y: yPos, activation: this.input.list[i].activation });
+                console.log(this.input.list[i].activation);
             }
             neuronWidthIdx++;
             layers.push(temp);
@@ -52,8 +52,7 @@ class NetworkStats {
                 for(let i = 0 ; i < this.hidden[l].list.length; i++) {
                     let xPos = this.width/8*neuronWidthIdx+offset*neuronWidthIdx;
                     let yPos = (this.height/maxNeuronHeight*i + 50*2) + ((this.height/maxNeuronHeight*((maxNeuronHeight - this.hidden[l].list.length)/2)));
-                    temp.push({ id: this.hidden[l].list[i].ID, x: xPos, y: yPos });
-                    this.drawNeuron(xPos, yPos);
+                    temp.push({ id: this.hidden[l].list[i].ID, x: xPos, y: yPos, activation: this.hidden[l].list[i].activation });
                 }
                 layers.push(temp);
                 temp = [];
@@ -64,8 +63,7 @@ class NetworkStats {
                 let xPos = this.width/8*neuronWidthIdx+offset*neuronWidthIdx;
                 let yPos = (this.height/maxNeuronHeight*i + 50*2) + ((this.height/maxNeuronHeight*((maxNeuronHeight - this.output.list.length)/2)));
                 console.log(xPos + " " + yPos);
-                temp.push({ id: this.output.list[i].ID, x: xPos, y: yPos });
-                this.drawNeuron(xPos, yPos);
+                temp.push({ id: this.output.list[i].ID, x: xPos, y: yPos, activation: this.output.list[i].activation  });
             }
             layers.push(temp);
             temp = [];
@@ -92,6 +90,12 @@ class NetworkStats {
                 }
             }
 
+            for(let layer in layers) {
+                for(let neur in layers[layer]) {
+                    this.drawNeuron(layers[layer][neur].x, layers[layer][neur].y, layers[layer][neur].activation);
+                }
+            }
+
 
         }
 
@@ -100,13 +104,20 @@ class NetworkStats {
         this.output = brain.layers.output;
     }
 
-    drawNeuron(x, y) {
+    drawNeuron(x, y, activation) {
         this.context.beginPath();
         this.context.strokeStyle = "black";
         this.context.lineWidth = "2";
         this.context.arc(x, y, 50, 0, 2 * Math.PI);
-        this.context.fillStype = "black";
+        this.context.fillStyle = "black";
         this.context.fill();
+        this.context.stroke();
+
+        this.context.beginPath();
+        this.context.fillStyle = "white";
+        this.context.font="25px Verdana";
+        let txt = activation.toFixed(3);
+        this.context.fillText(txt, x - this.context.measureText(txt).width/2, y + this.getTextHeight(this.context.font).height/2);
         this.context.stroke();
     }
 
@@ -134,5 +145,35 @@ class NetworkStats {
         }
         return undefined;
     }
+
+    getTextHeight(font) {
+
+    var text = $('<span>Hg</span>').css({ fontFamily: font });
+    var block = $('<div style="display: inline-block; width: 1px; height: 0px;"></div>');
+
+    var div = $('<div></div>');
+    div.append(text, block);
+
+    var body = $('body');
+    body.append(div);
+
+    try {
+
+        var result = {};
+
+        block.css({ verticalAlign: 'baseline' });
+        result.ascent = block.offset().top - text.offset().top;
+
+        block.css({ verticalAlign: 'bottom' });
+        result.height = block.offset().top - text.offset().top;
+
+        result.descent = result.height - result.ascent;
+
+    } finally {
+        div.remove();
+    }
+
+    return result;
+};
 
 }
