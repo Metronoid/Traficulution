@@ -16,9 +16,9 @@ class Genegen {
 		this.size = 12;
 		this.crossoverRate = 0; //0..1
 		this.mutation = 1; //0..1
-		this.mutationChance = 0.75; //1..0
+		this.mutationChance = 0.8; //1..0
 		this.generations = 10000;
-		this.itterations = 3;
+		this.itterations = 1;
 		this.timer = 5000;
 		this.fittestPercentageAlwaysSurvives = 1; //0..1
 		this.fittestEntities = [];
@@ -115,6 +115,7 @@ function CreateBatch(entities,spawnPoint){
 	if(spawnPoint == undefined) {
 		console.error("There is no spawnPoint");
 	}
+	collisionList = [];
 	for (var e = 0; e < entities.length; e++) {
 		if (entities[e].Create(spawnPoint)) {
 		}

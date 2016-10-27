@@ -32,6 +32,7 @@ class Car {
         this.output = [0, 0];
         this.moral = 0;
         this.raycaster = new THREE.Raycaster();
+        this.view = new THREE.Raycaster();
     }
 
     Destroy() {
@@ -58,9 +59,12 @@ class Car {
             self.mesh.quaternion.setFromAxisAngle(new THREE.Vector3(0,0,0), 0);
             self.mesh.rotation.y = self.spawn.rotation;
 
-            self.raycaster.set(result.scene.position, new THREE.Vector3(0, -1, 0))
+            self.raycaster.set(self.mesh .position, new THREE.Vector3(0, -1, 0))
+            self.view.set(self.mesh.position, new THREE.Vector3(0, 0, 1))
 
             scene.add(self.mesh);
+            collisionList.push(self);
+
         });
 
         // this.spawn = spawns[spawnPoint];

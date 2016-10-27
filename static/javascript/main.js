@@ -35,7 +35,7 @@ spawns.push(new Spawn(new THREE.Vector3(34,1,-2.5),-Math.PI/2));
 spawns.push(new Spawn(new THREE.Vector3(2.5,1,27),-Math.PI));
 spawns.push(new Spawn(new THREE.Vector3(-2.5,1,-27),0));
 
-var point = new THREE.Vector3(-13,0,-2.5);
+var point = new THREE.Vector3(-27,0,-2.5);
 
 
 cloader.load('/model/intersection.dae', function (result) {
@@ -323,40 +323,54 @@ var map = new ColorMap();
 
 // document.body.appendChild(canvas);
 
+// TODO: this is just a simple collision but we need one that cares about rotation
+function Collision(a,b){
+    return (Math.abs(a.position.x - b.position.x) * 2 < (3)) &&
+        (Math.abs(a.position.z - b.position.z) * 2 < (3));
+}
 
 function moveCar(object,delta)
 {
+    let speed = 20;
+    // Collision
+    if(speed > 0) {
+        for (let c in collisionList) {
+            if (collisionList[c].mesh != object.mesh) {
+                let collision = Collision(object.mesh, collisionList[c].mesh);
+                if (collision) {
+                    speed = 0;
+                }
+            }
+        }
+
     //var objDistance = point.distanceTo(object.mesh.position);
     var input = [];
     input.push(object.output[0]);
     input.push(((object.mesh.rotation.y + Math.PI/2) / Math.PI));
-    input.push(Math.abs(object.mesh.position.x - point.x)/50);
-    input.push(Math.abs(object.mesh.position.z - point.z)/50);
+    input.push(Math.abs(object.mesh.position.x - point.x)/100);
+    input.push(Math.abs(object.mesh.position.z - point.z)/100);
     // TODO: Add the positive and negative rotation axis for input.
     //input.push((Math.abs(object.mesh.rotation.x / Math.PI)));
     var output = object.brain.activate(input);
-    let speed = 15;
     object.output[0] = output[0];
     object.output[1] = output[1];
     object.mesh.translateZ((output[0] - 0.40) * speed * delta);
     object.mesh.rotateY((output[1] - 0.5) * speed * delta);
 
-    var learningRate = 0.01;
-    var target = [(mouse.y/2)+0.5,(mouse.x/2)+0.5];
     var outLog = document.getElementById("outLog");
 
-    var intersects = object.raycaster.intersectObjects( collisionList );
-
-
-    if(intersects.length != 0) {
-        var intersect = intersects[0];
-        if(intersect.object.material.map.image && intersect.object.material.map.image.complete) {
-            // Code for getting the pixel the car is driving on
-            // var posX = map.img.width / 30 * (object.mesh.position.x + 15);
-            // var posY = map.img.height / 30 * (object.mesh.position.z + 15);
-            // console.log(map.getRGBPixel(posX, posY));
-        }
-    }
+    // var intersects = object.raycaster.intersectObjects( collisionList );
+    //
+    //
+    // if(intersects.length != 0) {
+    //     var intersect = intersects[0];
+    //     if(intersect.object.material.map.image && intersect.object.material.map.image.complete) {
+    //         // Code for getting the pixel the car is driving on
+    //         // var posX = map.img.width / 30 * (object.mesh.position.x + 15);
+    //         // var posY = map.img.height / 30 * (object.mesh.position.z + 15);
+    //         // console.log(map.getRGBPixel(posX, posY));
+    //     }
+    // }
 
     // Some sort of output for checking on our neural network
     // TODO: This should be generated but because we don't really know how we want it to look like this will function as a prototype.
@@ -366,6 +380,7 @@ function moveCar(object,delta)
     //    "<h5> Input:" + input[1].toFixed(2) + " Bias:" + object.brain.layers.input.list[1].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.hidden[0].list[1].connections.inputs[7].weight.toFixed(2) + " and " + object.brain.layers.hidden[0].list[1].connections.inputs[9].weight.toFixed(2) + " Bias:" + object.brain.layers.hidden[0].list[1].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.output.list[1].connections.inputs[11].weight.toFixed(2) + " and " + object.brain.layers.output.list[1].connections.inputs[13].weight.toFixed(2) + " Bias:" + object.brain.layers.output.list[1].bias.toFixed(2) + " Output:" + output[1].toFixed(2) + "</h5>";
     // object.brain.propagate(learningRate, target);
     // object.brain.restore();
+    }
 };
 
 var update = function () {
