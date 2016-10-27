@@ -23,8 +23,18 @@ controls.panSpeed = 5;
 var collisionList = [];
 var spawns = [];
 spawns.push(new Spawn(new THREE.Vector3(13,1,-2.5),-Math.PI/2));
-spawns.push(new Spawn(new THREE.Vector3(2.5,1,13),-Math.PI));
+spawns.push(new Spawn(new THREE.Vector3(2.5,1,20),-Math.PI));
 spawns.push(new Spawn(new THREE.Vector3(-2.5,1,-13),0));
+spawns.push(new Spawn(new THREE.Vector3(20,1,-2.5),-Math.PI/2));
+spawns.push(new Spawn(new THREE.Vector3(2.5,1,13),-Math.PI));
+spawns.push(new Spawn(new THREE.Vector3(-2.5,1,-8),0));
+spawns.push(new Spawn(new THREE.Vector3(27,1,-2.5),-Math.PI/2));
+spawns.push(new Spawn(new THREE.Vector3(2.5,1,8),-Math.PI));
+spawns.push(new Spawn(new THREE.Vector3(-2.5,1,-20),0));
+spawns.push(new Spawn(new THREE.Vector3(34,1,-2.5),-Math.PI/2));
+spawns.push(new Spawn(new THREE.Vector3(2.5,1,27),-Math.PI));
+spawns.push(new Spawn(new THREE.Vector3(-2.5,1,-27),0));
+
 var point = new THREE.Vector3(-13,0,-2.5);
 
 
