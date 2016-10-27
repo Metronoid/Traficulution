@@ -107,8 +107,13 @@ class NetworkStats {
 
     drawConnection(startX, startY, endX, endY, weight) {
         this.context.beginPath();
-        this.context.strokeStyle = "white";
-        this.context.lineWidth = weight + .2;
+        if(weight >= 0) {
+            this.context.strokeStyle = "green";
+            this.context.lineWidth = weight;
+        }else{
+            this.context.strokeStyle = "red";
+            this.context.lineWidth = -weight;
+        }
         this.context.moveTo(startX,startY);
         this.context.lineTo(endX,endY);
         this.context.stroke();

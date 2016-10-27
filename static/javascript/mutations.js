@@ -13,8 +13,10 @@ var superMutate = function (weight) {
 }
 
 var slideMutate = function (weight) {
-    if (Math.random() >= 0.8) {
+    if (Math.random() >= 0.75) {
         let newWeight = weight + Math.random() * 2 - 1;
+        newWeight = Math.min(newWeight,2);
+        newWeight = Math.max(newWeight,-2);
         return newWeight;
     }
     return weight;
