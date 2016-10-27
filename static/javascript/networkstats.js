@@ -13,8 +13,8 @@ class NetworkStats {
 
 
         this.canvas = document.getElementById('network');
-        this.canvas.width = 512*4;
-        this.canvas.height = 327*4;
+        this.canvas.width = 512*2;
+        this.canvas.height = 327*2;
         this.width = this.canvas.width;
         this.height = this.canvas.height;
         this.context = this.canvas.getContext('2d');
@@ -31,9 +31,9 @@ class NetworkStats {
         if(this.input && this.hidden && this.output) {
             let layers = [];
 
-            let totalNeuronWidth = this.input.list.length + this.output.list.length;
+            let maxNeuronHeight = this.input.list.length < this.output.list.length ? this.output.list.length : this.input.list.length;
             for(let l = 0; l < this.hidden.length; l++) {
-                totalNeuronWidth += this.hidden[l].list.length;
+                if(maxNeuronHeight < this.hidden[l].list.length) maxNeuronHeight  = this.hidden[l].list.length;
             }
 
             let neuronWidthIdx = 1;
@@ -41,7 +41,7 @@ class NetworkStats {
             let temp = [];
             for(let i = 0 ; i < this.input.list.length; i++) {
                 let xPos = this.width/8*neuronWidthIdx+offset*neuronWidthIdx;
-                let yPos = this.height/this.input.list.length*i + 100*2;
+                let yPos = (this.height/maxNeuronHeight*i + 50*2) + ((this.height/maxNeuronHeight*((maxNeuronHeight - this.input.list.length)/2)));
                 temp.push({ id: this.input.list[i].ID, x: xPos, y: yPos });
                 this.drawNeuron(xPos, yPos);
             }
@@ -52,7 +52,7 @@ class NetworkStats {
             for(let l = 0; l < this.hidden.length; l++) {
                 for(let i = 0 ; i < this.hidden[l].list.length; i++) {
                     let xPos = this.width/8*neuronWidthIdx+offset*neuronWidthIdx;
-                    let yPos = this.height/this.hidden[l].list.length*i + 100*2;
+                    let yPos = (this.height/maxNeuronHeight*i + 50*2) + ((this.height/maxNeuronHeight*((maxNeuronHeight - this.hidden[l].list.length)/2)));
                     temp.push({ id: this.hidden[l].list[i].ID, x: xPos, y: yPos });
                     this.drawNeuron(xPos, yPos);
                 }
@@ -61,9 +61,10 @@ class NetworkStats {
                 neuronWidthIdx++;
             }
 
-            for(let i = 0 ; i < this.output.list.length; i++) {
+            for(let i = 0; i < this.output.list.length; i++) {
                 let xPos = this.width/8*neuronWidthIdx+offset*neuronWidthIdx;
-                let yPos = this.height/this.output.list.length*i + 100*2;
+                let yPos = (this.height/maxNeuronHeight*i + 50*2) + ((this.height/maxNeuronHeight*((maxNeuronHeight - this.output.list.length)/2)));
+                console.log(xPos + " " + yPos);
                 temp.push({ id: this.output.list[i].ID, x: xPos, y: yPos });
                 this.drawNeuron(xPos, yPos);
             }
@@ -104,7 +105,7 @@ class NetworkStats {
         this.context.beginPath();
         this.context.strokeStyle = "black";
         this.context.lineWidth = "2";
-        this.context.arc(x, y, 100, 0, 2 * Math.PI);
+        this.context.arc(x, y, 50, 0, 2 * Math.PI);
         this.context.fillStype = "black";
         this.context.fill();
         this.context.stroke();
@@ -112,8 +113,13 @@ class NetworkStats {
 
     drawConnection(startX, startY, endX, endY, weight) {
         this.context.beginPath();
-        this.context.strokeStyle = "white";
-        this.context.lineWidth = (weight + .2)*7;
+        if(weight >= 0) {
+            this.context.strokeStyle = "green";
+            this.context.lineWidth = weight*4;
+        }else{
+            this.context.strokeStyle = "red";
+            this.context.lineWidth = -weight*4;
+        }
         this.context.moveTo(startX,startY);
         this.context.lineTo(endX,endY);
         this.context.stroke();

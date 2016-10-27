@@ -22,9 +22,10 @@ controls.panSpeed = 5;
 
 var collisionList = [];
 var spawns = [];
-spawns.push(new Spawn(new THREE.Vector3(13,1,5),-Math.PI/2));
-spawns.push(new Spawn(new THREE.Vector3(2,1,13),-Math.PI));
-spawns.push(new Spawn(new THREE.Vector3(2,1,-13),0));
+spawns.push(new Spawn(new THREE.Vector3(13,1,-2.5),-Math.PI/2));
+spawns.push(new Spawn(new THREE.Vector3(2.5,1,13),-Math.PI));
+spawns.push(new Spawn(new THREE.Vector3(-2.5,1,-13),0));
+var point = new THREE.Vector3(-13,0,-2.5);
 
 
 cloader.load('/model/intersection.dae', function (result) {
@@ -39,20 +40,12 @@ var seed = function(spawnPoint) {
     return car;
 };
 
-var point = new THREE.Vector3(-13,0,5);
 var fitness = function(entity) {
     var moral = 0;
-    moral = - entity.mesh.position.distanceTo(point);
+    moral -= entity.mesh.position.distanceTo(point);
     if(moral > -2) {
-        //point.x = -point.x
-        //targetBox.position.set(point.x, 0.3, point.z);
-        moral = 10;
-        moral -= Math.abs(0 - entity.output[0]) * 5;
-        moral -= Math.abs(0.5 - entity.output[1]) * 10;
-
+        moral += (1 - Math.abs(0.5 - entity.output[1]) * 2) * 10;
     }
-    // moral = entity.mesh.position.z;
-    // moral = entity.mesh.position.x;
     return moral;
 };
 
@@ -298,7 +291,7 @@ function moveCar(object,delta)
     //var objDistance = point.distanceTo(object.mesh.position);
     var input = [];
     input.push(object.output[0]);
-    input.push(((object.mesh.rotation.y + 1.6) / 3.2));
+    input.push(((object.mesh.rotation.y + Math.PI/2) / Math.PI));
     input.push(Math.abs(object.mesh.position.x - point.x)/50);
     input.push(Math.abs(object.mesh.position.z - point.z)/50);
     // TODO: Add the positive and negative rotation axis for input.
