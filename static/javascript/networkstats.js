@@ -42,6 +42,7 @@ class NetworkStats {
             this.input = brain.layers.input;
             this.hidden = brain.layers.hidden;
             this.output = brain.layers.output;
+            if(!this.pulsating) this.pulsate();
         }
         if(moral) {
             this.moral = moral;
