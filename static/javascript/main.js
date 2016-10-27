@@ -245,10 +245,24 @@ function onMouseDown( event ) {
 
     raycaster.setFromCamera( mouse, camera );
 
-    var intersects = raycaster.intersectObjects( collisionList );
-    if(intersects[0] != undefined)
-    {
-        // point = intersects[0].point;
+
+    let meshes = new THREE.Object3D();
+    for(let ent in pool.entities) {
+        meshes.add(jQuery.extend(true, {}, pool.entities[ent].mesh));
+    }
+
+    console.log(meshes);
+
+    var intersects = raycaster.intersectObjects(meshes.children);
+    if(intersects[0] != undefined) {
+        point = intersects[0].point;
+        let uuid = intersects[0].object.uuid;
+        for(let entnr in pool.entities) {
+            if(uuid == pool.entities[entnr].mesh.uuid) {
+                nwstats.updateStats(pool.entities[entnr].brain);
+                return;
+            }
+        }
     }
 }
 
