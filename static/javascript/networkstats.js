@@ -7,10 +7,14 @@ class NetworkStats {
         // $("#network").width(window.innerWidth/4);
         // $("#network").height(window.innerHeight/3);
 
-        $("#network").width(512);
-        $("#network").height(327);
+        $("#networkdiv").width(512);
+        $("#networkdiv").height(327);
+
+
 
         this.canvas = document.getElementById('network');
+        this.canvas.width = 512*4;
+        this.canvas.height = 327*4;
         this.width = this.canvas.width;
         this.height = this.canvas.height;
         this.context = this.canvas.getContext('2d');
@@ -24,7 +28,6 @@ class NetworkStats {
         this.output = brain.layers.output;
 
         this.context.clearRect(0, 0, this.width, this.height);
-        this.context.fillRect(0, 0, this.width, this.height);
         if(this.input && this.hidden && this.output) {
             let layers = [];
 
@@ -38,7 +41,7 @@ class NetworkStats {
             let temp = [];
             for(let i = 0 ; i < this.input.list.length; i++) {
                 let xPos = this.width/8*neuronWidthIdx+offset*neuronWidthIdx;
-                let yPos = this.height/this.input.list.length*i + 10*2;
+                let yPos = this.height/this.input.list.length*i + 100*2;
                 temp.push({ id: this.input.list[i].ID, x: xPos, y: yPos });
                 this.drawNeuron(xPos, yPos);
             }
@@ -49,7 +52,7 @@ class NetworkStats {
             for(let l = 0; l < this.hidden.length; l++) {
                 for(let i = 0 ; i < this.hidden[l].list.length; i++) {
                     let xPos = this.width/8*neuronWidthIdx+offset*neuronWidthIdx;
-                    let yPos = this.height/this.hidden[l].list.length*i + 10*2;
+                    let yPos = this.height/this.hidden[l].list.length*i + 100*2;
                     temp.push({ id: this.hidden[l].list[i].ID, x: xPos, y: yPos });
                     this.drawNeuron(xPos, yPos);
                 }
@@ -60,7 +63,7 @@ class NetworkStats {
 
             for(let i = 0 ; i < this.output.list.length; i++) {
                 let xPos = this.width/8*neuronWidthIdx+offset*neuronWidthIdx;
-                let yPos = this.height/this.output.list.length*i + 10*2;
+                let yPos = this.height/this.output.list.length*i + 100*2;
                 temp.push({ id: this.output.list[i].ID, x: xPos, y: yPos });
                 this.drawNeuron(xPos, yPos);
             }
@@ -99,16 +102,18 @@ class NetworkStats {
 
     drawNeuron(x, y) {
         this.context.beginPath();
-        this.context.strokeStyle = "purple";
+        this.context.strokeStyle = "black";
         this.context.lineWidth = "2";
-        this.context.arc(x, y, 10, 0, 2 * Math.PI);
+        this.context.arc(x, y, 100, 0, 2 * Math.PI);
+        this.context.fillStype = "black";
+        this.context.fill();
         this.context.stroke();
     }
 
     drawConnection(startX, startY, endX, endY, weight) {
         this.context.beginPath();
         this.context.strokeStyle = "white";
-        this.context.lineWidth = weight + .2;
+        this.context.lineWidth = (weight + .2)*7;
         this.context.moveTo(startX,startY);
         this.context.lineTo(endX,endY);
         this.context.stroke();
