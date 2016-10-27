@@ -233,18 +233,19 @@ function onMouseDown( event ) {
 
     raycaster.setFromCamera( mouse, camera );
 
-
     let meshes = new THREE.Object3D();
     for(let ent in pool.entities) {
-        meshes.add(jQuery.extend(true, {}, pool.entities[ent].mesh));
+        let children = getChildren(pool.entities[ent].mesh);
+        for(let child in children) {
+            children[child].parentuuid = pool.entities[ent].mesh.uuid;
+            meshes.add(jQuery.extend(true, {}, children[child]));
+        }
     }
-
-    console.log(meshes);
 
     var intersects = raycaster.intersectObjects(meshes.children);
      if(intersects[0] != undefined) {
-        let uuid = intersects[0].object.uuid;
-        for(let entnr in pool.entities) {
+        let uuid = intersects[0].object.parentuuid;
+         for(let entnr in pool.entities) {
             if(uuid == pool.entities[entnr].mesh.uuid) {
                 nwstats.updateStats(pool.entities[entnr].brain, pool.entities[entnr].moral);
                 nwstats.pulsate(true);
@@ -253,7 +254,19 @@ function onMouseDown( event ) {
         }
     }
 
+}
 
+function getChildren(mesh) {
+    let result = [];
+    if(!mesh.children || mesh.children.length == 0) return result;
+    for(let child in mesh.children) {
+        let rchildren = getChildren(mesh.children[child]);
+        for(let rchild in rchildren) {
+            result.push(rchildren[rchild]);
+        }
+        result.push(mesh.children[child]);
+    }
+    return result;
 }
 
 class ColorMap {
