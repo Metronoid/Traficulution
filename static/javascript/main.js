@@ -36,16 +36,13 @@ cloader.load('/model/intersection.dae', function (result) {
 
 var seed = function(spawnPoint) {
     var car = new Car(Cube(1,0.25,2,0x47475b),spawns[spawnPoint]);
-    car.Create();
+    car.Create(spawnPoint);
     return car;
 };
 
 var fitness = function(entity) {
     var moral = 0;
     moral -= entity.mesh.position.distanceTo(point);
-    if(moral > -2) {
-        moral += (1 - Math.abs(0.5 - entity.output[1]) * 2) * 5;
-    }
     return moral;
 };
 

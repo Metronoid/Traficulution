@@ -13,7 +13,7 @@ class Genegen {
 		this.crossover = crossover;
 		this.copy = copy;
 
-		this.size = 60;
+		this.size = 3;
 		this.crossoverRate = 0; //0..1
 		this.mutation = 1; //0..1
 		this.generations = 10000;
@@ -87,8 +87,8 @@ class Genegen {
 		var i;
 
 		// seed the population
-		for (i=0;i<this.size;++i)  {
-			this.entities.push(this.seed(0));
+		for (i=0;i<this.size;i++)  {
+			this.entities.push(this.seed(i));
 		}
 
 		for (i=0; i<this.generations; i++) {
@@ -111,9 +111,15 @@ function RemoveBatch(entities){
 }
 
 function CreateBatch(entities,spawnPoint){
+	if(spawnPoint == undefined) {
+		console.error("There is no spawnPoint");
+	}
 	for (var e = 0; e < entities.length; e++) {
 		if (entities[e].Create(spawnPoint)) {
 		}
+		spawnPoint += 1;
+		if(spawnPoint >= entities.length)
+			spawnPoint = 0;
 	}
 }
 
@@ -216,7 +222,7 @@ function Generate(self){
 
 	self.entities = newPop;
 
-	CreateBatch(self.entities);
+	CreateBatch(self.entities,0);
 	CleanMoral(self.entities);
 
 }
