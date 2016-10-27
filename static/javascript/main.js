@@ -43,9 +43,6 @@ var seed = function(spawnPoint) {
 var fitness = function(entity) {
     var moral = 0;
     moral -= entity.mesh.position.distanceTo(point);
-    if(moral > -2) {
-        moral += (1 - Math.abs(0.5 - entity.output[1]) * 2) * 10;
-    }
     return moral;
 };
 
