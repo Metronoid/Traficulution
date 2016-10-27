@@ -20,6 +20,7 @@ class NetworkStats {
 
         this.pulsateCurrentTime = 0;
         this.pulsateCurrentLayer = 0;
+        this.pulsateCurrentNeuron = 0;
         this.pulsateStep = .5;
         this.pulsateDelay = 20;
         this.pulsateTotalTime = 1000;
@@ -31,7 +32,8 @@ class NetworkStats {
         this.circleMinRadius = this.circleDefaultRadius - (this.pulsateTotalTime/this.pulsateDelay)*this.pulsateStep/2;
         this.circleIncreasing = true;
 
-        this.layerAmt = -1;
+        this.layerAmt = 0;
+        this.neuronAmt = 0;
 
     }
 
