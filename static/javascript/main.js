@@ -54,6 +54,16 @@ var copy = function(entity,spawnPoint)
     var newEntity = new Car(Cube(1,0.25,2,0x47475b),spawns[spawnPoint]);
     newEntity.brain = entity.brain.clone();
     newEntity.brain.setOptimize(false);
+    
+    // Network Mutation
+    let layers = slideMutate(newEntity.brain.layers.hidden.length,2,1);
+    if(newEntity.brain.layers.hidden.length > layers)
+    {
+
+    }
+
+
+
     newEntity.mesh.position.set(entity.mesh.position.x, entity.mesh.position.y, entity.mesh.position.z);
     return newEntity;
 }
@@ -181,15 +191,17 @@ var mutate = function (oldEntity,mutationType) {
     var inputConn = entity.brain.layers.input.list;
     for(let n in inputConn){
         for(let c in inputConn[n].connections.projected) {
-            inputConn[n].connections.projected[c].weight = mutationType(inputConn[n].connections.projected[c].weight);
+            inputConn[n].connections.projected[c].weight = mutationType(inputConn[n].connections.projected[c].weight,2.5,-2.5);
         }
     }
+
     var hiddenLayerAmt = entity.brain.layers.hidden;
+
     for (let depth = 0; depth < hiddenLayerAmt.length; depth++) {
         for (let n in hiddenLayerAmt[depth].list) {
             for (let c in hiddenLayerAmt[depth].list[n].connections.projected) {
                 if (Math.random() >= 0.75) {
-                    hiddenLayerAmt[depth].list[n].connections.projected[c].weight = mutationType(hiddenLayerAmt[depth].list[n].connections.projected[c].weight);
+                    hiddenLayerAmt[depth].list[n].connections.projected[c].weight = mutationType(hiddenLayerAmt[depth].list[n].connections.projected[c].weight,2.5,-2.5);
                 }
             }
         }

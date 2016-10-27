@@ -26,7 +26,7 @@ class Car {
     constructor(mesh, spawn, brain) {
         this.mesh = mesh;
         this.spawn = spawn;
-        this.brain = brain ? brain : new Perceptron(4,[4,4],2);
+        this.brain = brain ? brain : new Perceptron(4,RandomHidden(2,8),2);
         this.brain.setOptimize(false);
         this.brain = mutate(this, superMutate).brain;
         this.output = [0, 0];
