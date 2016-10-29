@@ -153,10 +153,10 @@ class NetworkStats {
         this.context.beginPath();
         if(weight >= 0) {
             this.context.strokeStyle = "#4CAF50";
-            this.context.lineWidth = weight*4;
+            this.context.lineWidth = weight*10;
         }else{
             this.context.strokeStyle = "#FF5722";
-            this.context.lineWidth = -weight*4;
+            this.context.lineWidth = -weight*10;
         }
         this.context.moveTo(startX,startY);
         this.context.lineTo(endX,endY);
