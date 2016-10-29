@@ -45,7 +45,7 @@ cloader.load('/model/intersection.dae', function (result) {
 });
 
 var seed = function(spawnPoint) {
-    var car = new Car(Cube(1,0.25,2,0x47475b),spawns[spawnPoint]);
+    var car = new Car(Cube(1,0.25,2,0x47475b),spawnPoint);
     car.Create(spawnPoint);
     return car;
 };
@@ -58,7 +58,7 @@ var fitness = function(entity) {
 
 var copy = function(entity,spawnPoint)
 {
-    var newEntity = new Car(Cube(1,0.25,2,0x47475b),spawns[spawnPoint]);
+    var newEntity = new Car(Cube(1,0.25,2,0x47475b),spawnPoint);
     newEntity.brain = entity.brain.clone();
     newEntity.brain.setOptimize(false);
 
@@ -68,8 +68,8 @@ var copy = function(entity,spawnPoint)
 
 var crossoverRandom = function(father,mother,spawnPoint)
 {
-    var son = new Car(Cube(1,0.25,2,0x47475b),spawns[spawnPoint]);
-    var daughter = new Car(Cube(1,0.25,2,0x47475b),spawns[spawnPoint]);
+    var son = new Car(Cube(1,0.25,2,0x47475b),spawnPoint);
+    var daughter = new Car(Cube(1,0.25,2,0x47475b),spawnPoint);
 
     var dadNeurons = father.brain.neurons();
     var dadWeights = [];
