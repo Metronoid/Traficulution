@@ -289,9 +289,9 @@ function moveCar(object,delta)
     //var objDistance = point.distanceTo(object.mesh.position);
     var input = [];
     input.push(object.output[0]);
-    input.push(((object.mesh.rotation.y + Math.PI/2) / Math.PI));
-    input.push(Math.abs(object.mesh.position.x - point.x)/100);
-    input.push(Math.abs(object.mesh.position.z - point.z)/100);
+    input.push(object.mesh.rotation.y / (Math.PI/2));
+    input.push((object.mesh.position.x - point.x)/100);
+    input.push((object.mesh.position.z - point.z)/100);
     // TODO: Add the positive and negative rotation axis for input.
     //input.push((Math.abs(object.mesh.rotation.x / Math.PI)));
     var output = object.brain.activate(input);
