@@ -46,19 +46,19 @@ function Perceptron(input, hidden, output)
     }
 
     inputLayer.set({
-        squash: Neuron.squash.LOGISTIC,
+        squash: Neuron.squash.TANH,
         bias: 0
     });
 
     for(let n in hiddenLayers) {
         hiddenLayers[n].set({
-            squash: Neuron.squash.LOGISTIC,
+            squash: Neuron.squash.TANH,
             bias: 0
         });
     }
 
     outputLayer.set({
-        squash: Neuron.squash.LOGISTIC,
+        squash: Neuron.squash.TANH,
         bias: 0
     });
 
