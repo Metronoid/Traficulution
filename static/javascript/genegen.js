@@ -16,9 +16,9 @@ class Genegen {
 		this.size = 12;
 		this.crossoverRate = 0; //0..1
 		this.mutation = 1; //0..1
-		this.mutationChance = 0.8; //1..0
+		this.mutationChance = 0.9; //1..0
 		this.generations = 10000;
-		this.itterations = 1;
+		this.itterations = 3;
 		this.timer = 5000;
 		this.fittestPercentageAlwaysSurvives = 1; //0..1
 		this.fittestEntities = [];
@@ -179,8 +179,13 @@ function Generate(self){
 		}
 		var greatest = sortOnFitness(self.fittestEntities)
 
-		console.log(greatest[0]);
-		self.fitnessText.innerHTML = "Best fitness: " + greatest[0].fitness.toFixed(2);
+		let sumFitness = 0;
+		for(let g in greatest){
+			sumFitness += greatest[g].fitness;
+		}
+		sumFitness = sumFitness/greatest.length;
+		self.fitnessText.innerHTML = "Best fitness: " + greatest[0].fitness.toFixed(2) + " Med fitness: " + sumFitness.toFixed(2);
+		console.log(greatest[0].fitness + " and " + sumFitness);
 		nwstats.updateStats(greatest[0].entity.brain);
 
 		self.fittestEntities = null;

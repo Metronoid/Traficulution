@@ -135,61 +135,13 @@ var crossoverRandom = function(father,mother,spawnPoint)
     return [son,daughter];
 }
 
-//Not working really
-var mutateTwo = function(father, mother) {
-    let son = father;
-    let daughter = mother;
-
-    var sonInputConn = son.brain.layers.input.list;
-    var daughterInputConn = daughter.brain.layers.input.list;
-    for(let n in sonInputConn){
-        for(let c in sonInputConn[n].connections.projected) {
-            if (Math.random() >= 0.75) {
-                sonInputConn[n].connections.projected[c].weight = daughterInputConn[n].connections.projected[c].weight;
-            }
-        }
-    }
-
-    for(let n in daughterInputConn){
-        for(let c in sonInputConn[n].connections.projected) {
-            if (Math.random() >= 0.75) {
-                daughterInputConn[n].connections.projected[c].weight = sonInputConn[n].connections.projected[c].weight;
-            }
-        }
-    }
-
-    var sonHiddenLayerAmt = son.brain.layers.hidden;
-    var daughterHiddenLayerAmt = daughter.brain.layers.hidden;
-    for (let depth = 0; depth < sonHiddenLayerAmt.length; depth++) {
-        for (let n in sonHiddenLayerAmt[depth].list) {
-            for (let c in sonHiddenLayerAmt[depth].list[n].connections.projected) {
-                if (Math.random() >= 0.75) {
-                    sonHiddenLayerAmt[depth].list[n].connections.projected[c].weight = motherHiddenLayerAmt[depth].list[n].connections.projected[c].weight;
-                }
-            }
-        }
-    }
-
-    for (let depth = 0; depth < daughterHiddenLayerAmt.length; depth++) {
-        for (let n in daughterHiddenLayerAmt[depth].list) {
-            for (let c in daughterHiddenLayerAmt[depth].list[n].connections.projected) {
-                if (Math.random() >= 0.75) {
-                    daughterHiddenLayerAmt[depth].list[n].connections.projected[c].weight = sonHiddenLayerAmt[depth].list[n].connections.projected[c].weight;
-                }
-            }
-        }
-    }
-
-    return [father, mother];
-}
-
 var mutate = function (oldEntity,mutationType,mutationChance) {
     var entity = oldEntity;
 
     var inputConn = entity.brain.layers.input.list;
     for(let n in inputConn){
         for(let c in inputConn[n].connections.projected) {
-            inputConn[n].connections.projected[c].weight = mutationType(inputConn[n].connections.projected[c].weight,2.5,-2.5,mutationChance);
+            inputConn[n].connections.projected[c].weight = mutationType(inputConn[n].connections.projected[c].weight,1,-1,mutationChance);
         }
     }
 
@@ -198,9 +150,7 @@ var mutate = function (oldEntity,mutationType,mutationChance) {
     for (let depth = 0; depth < hiddenLayerAmt.length; depth++) {
         for (let n in hiddenLayerAmt[depth].list) {
             for (let c in hiddenLayerAmt[depth].list[n].connections.projected) {
-                if (Math.random() >= 0.75) {
-                    hiddenLayerAmt[depth].list[n].connections.projected[c].weight = mutationType(hiddenLayerAmt[depth].list[n].connections.projected[c].weight,2.5,-2.5,mutationChance);
-                }
+                hiddenLayerAmt[depth].list[n].connections.projected[c].weight = mutationType(hiddenLayerAmt[depth].list[n].connections.projected[c].weight,1,-1,mutationChance);
             }
         }
     }
@@ -323,25 +273,19 @@ var map = new ColorMap();
 
 // document.body.appendChild(canvas);
 
-// TODO: this is just a simple collision but we need one that cares about rotation
-function Collision(a,b){
-    return (Math.abs(a.position.x - b.position.x) * 2 < (3)) &&
-        (Math.abs(a.position.z - b.position.z) * 2 < (3));
-}
-
 function moveCar(object,delta)
 {
     let speed = 20;
     // Collision
     if(speed > 0) {
-        for (let c in collisionList) {
-            if (collisionList[c].mesh != object.mesh) {
-                let collision = Collision(object.mesh, collisionList[c].mesh);
-                if (collision) {
-                    speed = 0;
-                }
-            }
-        }
+    //     for (let c in collisionList) {
+    //         if (collisionList[c].mesh != object.mesh) {
+    //             let collision = object.Collision(collisionList[c].mesh);
+    //             if (collision) {
+    //                 speed = 0;
+    //             }
+    //         }
+    //     }
 
     //var objDistance = point.distanceTo(object.mesh.position);
     var input = [];

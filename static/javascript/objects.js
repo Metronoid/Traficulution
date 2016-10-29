@@ -33,11 +33,24 @@ class Car {
         this.moral = 0;
         this.raycaster = new THREE.Raycaster();
         this.view = new THREE.Raycaster();
+        //this.arrow = new THREE.ArrowHelper( new THREE.Vector3(0,1,0), this.mesh.position, 5, Math.random() * 0xffffff );
+    }
+
+    // TODO: this is just a simple collision but we need one that cares about rotation
+    Collision(b){
+        //let axisX = new THREE.Vector3(1,0,0).applyEuler(this.mesh.rotation);
+        //let axisZ = new THREE.Vector3(0,0,1).applyEuler(this.mesh.rotation);
+        //this.arrow.position.x = this.mesh.position.x;
+        //this.arrow.position.z = this.mesh.position.z;
+        //this.arrow.setDirection(axisX);
+        //return (Math.abs(this.mesh.position.x - b.position.x) * 2 < (2)) &&
+        //    (Math.abs(this.mesh.position.z - b.position.z) * 2 < (2));
     }
 
     Destroy() {
         //TODO: Would be nice to be able to remove the neural network too.
         scene.remove(this.mesh);
+        //scene.remove ( this.arrow );
     }
 
     Create(spawnPoint) {

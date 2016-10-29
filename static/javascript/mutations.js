@@ -8,13 +8,16 @@ var randomMutate = function (weight) {
     return weight;
 }
 
-var superMutate = function (weight) {
-    return Math.random() * 4 - 2;
+var superMutate = function (weight,max,min) {
+    //let newWeight = Math.random() * (max*2) - max;
+    //newWeight = Math.min(newWeight,max);
+    //newWeight = Math.max(newWeight,min);
+    return weight
 }
 
 var slideMutate = function (weight,max,min,mutateChance) {
     if (Math.random() >= mutateChance) {
-        let newWeight = Math.floor(weight + Math.random() * (max*2) - max);
+        let newWeight = weight + Math.random() * (max*2) - max;
         newWeight = Math.min(newWeight,max);
         newWeight = Math.max(newWeight,min);
         return newWeight;
