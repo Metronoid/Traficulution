@@ -208,9 +208,9 @@ var mutate = function (oldEntity,mutationType,mutationChance) {
     return entity;
 }
 
-var pool = new Genegen(seed,fitness,copy,crossoverRandom,mutate);
+// var pool = new Genegen(seed,fitness,copy,crossoverRandom,mutate);
 
-pool.Start();
+// pool.Start();
 
 var targetBox = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshLambertMaterial({color:0xFFFFFF}));
 targetBox.position.set(point.x, 0.3, point.z);
@@ -328,20 +328,22 @@ function Collision(a,b){
     return (Math.abs(a.position.x - b.position.x) * 2 < (3)) &&
         (Math.abs(a.position.z - b.position.z) * 2 < (3));
 }
-
+var angle = .5;
+var sp = 0.4;
+var tryityourself = false;
 function moveCar(object,delta)
 {
     let speed = 20;
     // Collision
     if(speed > 0) {
-        for (let c in collisionList) {
-            if (collisionList[c].mesh != object.mesh) {
-                let collision = Collision(object.mesh, collisionList[c].mesh);
-                if (collision) {
-                    speed = 0;
-                }
-            }
-        }
+        // for (let c in collisionList) {
+        //     if (collisionList[c].mesh != object.mesh) {
+        //         let collision = Collision(object.mesh, collisionList[c].mesh);
+        //         if (collision) {
+        //             speed = 0;
+        //         }
+        //     }
+        // }
 
     //var objDistance = point.distanceTo(object.mesh.position);
     var input = [];
@@ -354,11 +356,13 @@ function moveCar(object,delta)
     var output = object.brain.activate(input);
     object.output[0] = output[0];
     object.output[1] = output[1];
-    object.mesh.translateZ((output[0] - 0.40) * speed * delta);
+        console.log(output[1]);
+    object.mesh.translateZ((output[0] - 0.4) * speed * delta);
     object.mesh.rotateY((output[1] - 0.5) * speed * delta);
 
     var outLog = document.getElementById("outLog");
 
+    var target = [sp, angle];
     // var intersects = object.raycaster.intersectObjects( collisionList );
     //
     //
@@ -378,19 +382,46 @@ function moveCar(object,delta)
     //    outLog.innerHTML =
     //    "<h5> Input:" + input[0].toFixed(2) + " Bias:" + object.brain.layers.input.list[0].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.hidden[0].list[0].connections.inputs[6].weight.toFixed(2) + " and " + object.brain.layers.hidden[0].list[0].connections.inputs[8].weight.toFixed(2) + " Bias:" + object.brain.layers.hidden[0].list[0].bias.toFixed(2) + " | " + " Weights:" + object.brain.layers.output.list[0].connections.inputs[10].weight.toFixed(2) + " and " + object.brain.layers.output.list[0].connections.inputs[12].weight.toFixed(2) + " Bias:" + object.brain.layers.output.list[0].bias.toFixed(2) + " Output:" + output[0].toFixed(2) + "</h5>" +
     //    "<h5> Input:" + input[1].toFixed(2) + " Bias:" + object.brain.layers.input.list[1].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.hidden[0].list[1].connections.inputs[7].weight.toFixed(2) + " and " + object.brain.layers.hidden[0].list[1].connections.inputs[9].weight.toFixed(2) + " Bias:" + object.brain.layers.hidden[0].list[1].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.output.list[1].connections.inputs[11].weight.toFixed(2) + " and " + object.brain.layers.output.list[1].connections.inputs[13].weight.toFixed(2) + " Bias:" + object.brain.layers.output.list[1].bias.toFixed(2) + " Output:" + output[1].toFixed(2) + "</h5>";
-    // object.brain.propagate(learningRate, target);
+    if(!tryityourself) object.brain.propagate(.1, target);
     // object.brain.restore();
     }
 };
+
+var car = new Car(Cube(1,0.25,2,0x47475b),spawns[1]);
+car.Create(1);
+var generation = 0;
 
 var update = function () {
     requestAnimationFrame( update );
     controls.update();
     fpsText.innerHTML = "FPS: " + fps.getFPS();
-    var delta = clock.getDelta(); // seconds.
-    for (car in pool.entities){
-        moveCar(pool.entities[car],delta);
+
+    if(keys[68])//A
+        angle -= 0.001;
+    if(keys[65])//D
+        angle += 0.001;
+    if(keys[87])//S
+        sp += 0.001;
+    if(keys[83])//W
+        sp -= 0.001;
+    if(keys[32]) {
+        car = copy(car,1);
+        car.Create(1);
+        angle = .5;
+        sp = 0.4;
+        generation++;
+        console.log(generation);
+        if(generation > 15) {
+            tryityourself = true;
+        }
+        keys[32] = false;
     }
+
+    var delta = clock.getDelta(); // seconds.
+    // for (car in pool.entities){
+    //     moveCar(pool.entities[car],delta);
+    // }
+    moveCar(car,delta);
     render();
 };
 
@@ -398,6 +429,9 @@ var update = function () {
 var render = function () {
     renderer.render(scene, camera);
 };
+
+var keys = [];
+$("body").keydown( function(event){ keys[event.which] = true; } ).keyup( function(event){ delete keys[event.which]; } );
 
 
 function addMouseHandler(canvas) {
