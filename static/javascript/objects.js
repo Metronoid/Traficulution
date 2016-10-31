@@ -66,7 +66,11 @@ class Car {
         let ploader = new THREE.ColladaLoader();
         ploader.load('/model/car.dae', function (result) {
             self.spawn = spawns[spawnPoint];
+            result.scene.traverse(function(child) {
+                child.castShadow = true;
+            });
             self.mesh = result.scene;
+            self.mesh.castShadow = true;
             self.mesh.position.x = self.spawn.position.x;
             self.mesh.position.y = self.spawn.position.y;
             self.mesh.position.z = self.spawn.position.z;
@@ -80,7 +84,6 @@ class Car {
 
             self.color = 0xFF0000;
             self.setColor(self.getRandomColor());
-
         });
 
         // this.spawn = spawns[spawnPoint];

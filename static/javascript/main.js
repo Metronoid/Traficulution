@@ -8,6 +8,8 @@ var fpsText = document.getElementById("fps");
 var nwstats = new NetworkStats();
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor( 0x221f36, 1 );
+renderer.shadowMapEnabled = true;
+
 document.body.appendChild( renderer.domElement );
 
 var loader = new THREE.TextureLoader();
@@ -36,24 +38,40 @@ spawns.push(new Spawn(new THREE.Vector3(2.5,1,27),-Math.PI));
 spawns.push(new Spawn(new THREE.Vector3(-2.5,1,-27),0));
 
 var point = new THREE.Vector3(-27,0,-2.5);
-var ground = [];
+var ground = new THREE.Object3D();
 
-cloader.load('/model/intersection.dae', function (result) {
+var iloader = new THREE.ColladaLoader();
+iloader.load('/model/intersection.dae', function (result) {
     result.scene.rotation.x = Math.PI*1.5;
     console.log(result);
+    result.scene.traverse(function(child) {
+        child.receiveShadow = true;
+    });
+
     scene.add(result.scene);
     collisionList.push(result.scene);
 
     for(let ent in collisionList) {
         let children = getChildren(collisionList[ent]);
         for(let child in children) {
-            if(children[child].type == "Object3D") {
-                children[child].parentuuid = collisionList[ent].uuid;
-                ground.push(children[child]);
-            }
+            children[child].parentuuid = collisionList[ent].uuid;
+            ground.add(jQuery.extend(true, {}, children[child]));
         }
     }
-    console.log(ground);
+
+});
+
+var lloader = new THREE.ColladaLoader();
+lloader.load('/model/lights.dae', function (result) {
+    result.scene.rotation.x = Math.PI*1.5;
+    console.log(result);
+    result.scene.traverse(function(child) {
+        child.castShadow = true;
+    });
+
+    scene.add(result.scene);
+    collisionList.push(result.scene);
+
 });
 
 var seed = function(spawnPoint) {
@@ -191,16 +209,57 @@ camera.position.z = 15;
 camera.position.y = 30;
 camera.lookAt(new THREE.Vector3(0, 0, 4));
 
+
+var ambient = new THREE.AmbientLight(0x404040 );
+scene.add(ambient);
+
 // create a point light
-var pointLight = new THREE.PointLight(0xcdcde7);
+var pointLight = new THREE.PointLight(0xcdcde7, 4, 100);
+//
+// // set its position
+pointLight.position.x = 50;
+pointLight.position.y = 50;
+pointLight.position.z = 50;
+pointLight.castShadow = true;
+pointLight.shadow.mapSize.width = 1024;
+pointLight.shadow.mapSize.height = 1024;
+// pointLight.shadow.camera.fov = 10;
+//
+// // add to the scene
+scene.add(pointLight);
+//
+var pointLight1 = new THREE.PointLight(0xcdcde7, 1, 100);
 
 // set its position
-pointLight.position.x = 10;
-pointLight.position.y = 50;
-pointLight.position.z = 25;
-
+pointLight1.position.x = 0;
+pointLight1.position.y = 50;
+pointLight1.position.z = 0;
 // add to the scene
-scene.add(pointLight);
+scene.add(pointLight1);
+//
+// var pointLight2 = new THREE.PointLight(0xcdcde7, 3, 100);
+//
+// // set its position
+// pointLight2.position.x = -50;
+// pointLight2.position.y = 50;
+// pointLight2.position.z = 50;
+// pointLight2.castShadow = true;
+// pointLight2.shadow.camera.fov = 7;
+//
+// // add to the scene
+// scene.add(pointLight2);
+//
+// var pointLight3 = new THREE.PointLight(0xcdcde7, 3, 100);
+//
+// // set its position
+// pointLight3.position.x = -50;
+// pointLight3.position.y = 50;
+// pointLight3.position.z = -50;
+// pointLight3.castShadow = true;
+// pointLight3.shadow.camera.fov = 7   ;
+//
+// // add to the scene
+// scene.add(pointLight3);
 
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
@@ -228,7 +287,6 @@ function onMouseDown( event ) {
         let uuid = intersects[0].object.parentuuid;
          for(let entnr in pool.entities) {
             if(uuid == pool.entities[entnr].mesh.uuid) {
-                pool.entities[entnr].setColor();
                 nwstats.updateStats(pool.entities[entnr].brain, pool.entities[entnr].moral);
                 nwstats.pulsate(true);
                 return;
@@ -326,10 +384,9 @@ function moveCar(object,delta)
     object.raycaster.set(object.mesh.position, new THREE.Vector3(0, -1, 0));
 
 
-
-    var intersects = object.raycaster.intersectObjects( ground );
-    if(intersects.length != 0) {
-         console.log("Hey");
+    // var intersects = object.raycaster.intersectObjects(ground.children);
+    // if(intersects.length != 0) {
+    //     console.log("Hey");
     //     console.log(intersects[0]);
     //     var intersect = intersects[0];
     //     if(intersect.object.material.map.image && intersect.object.material.map.image.complete) {
@@ -338,7 +395,7 @@ function moveCar(object,delta)
     //         // var posY = map.img.height / 30 * (object.mesh.position.z + 15);
     //         // console.log(map.getRGBPixel(posX, posY));
     //     }
-    }
+    // }
 
     // Some sort of output for checking on our neural network
     // TODO: This should be generated but because we don't really know how we want it to look like this will function as a prototype.
