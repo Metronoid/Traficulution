@@ -36,12 +36,24 @@ spawns.push(new Spawn(new THREE.Vector3(2.5,1,27),-Math.PI));
 spawns.push(new Spawn(new THREE.Vector3(-2.5,1,-27),0));
 
 var point = new THREE.Vector3(-27,0,-2.5);
-
+var ground = [];
 
 cloader.load('/model/intersection.dae', function (result) {
     result.scene.rotation.x = Math.PI*1.5;
     console.log(result);
     scene.add(result.scene);
+    collisionList.push(result.scene);
+
+    for(let ent in collisionList) {
+        let children = getChildren(collisionList[ent]);
+        for(let child in children) {
+            if(children[child].type == "Object3D") {
+                children[child].parentuuid = collisionList[ent].uuid;
+                ground.push(children[child]);
+            }
+        }
+    }
+    console.log(ground);
 });
 
 var seed = function(spawnPoint) {
@@ -210,6 +222,7 @@ function onMouseDown( event ) {
         }
     }
 
+    console.log(meshes.children);
     var intersects = raycaster.intersectObjects(meshes.children);
      if(intersects[0] != undefined) {
         let uuid = intersects[0].object.parentuuid;
@@ -310,11 +323,14 @@ function moveCar(object,delta)
     object.mesh.rotateY((output[1] / 2) * speed * delta);
 
     var outLog = document.getElementById("outLog");
+    object.raycaster.set(object.mesh.position, new THREE.Vector3(0, -1, 0));
 
-    // var intersects = object.raycaster.intersectObjects( collisionList );
-    //
-    //
-    // if(intersects.length != 0) {
+
+
+    var intersects = object.raycaster.intersectObjects( ground );
+    if(intersects.length != 0) {
+         console.log("Hey");
+    //     console.log(intersects[0]);
     //     var intersect = intersects[0];
     //     if(intersect.object.material.map.image && intersect.object.material.map.image.complete) {
     //         // Code for getting the pixel the car is driving on
@@ -322,7 +338,7 @@ function moveCar(object,delta)
     //         // var posY = map.img.height / 30 * (object.mesh.position.z + 15);
     //         // console.log(map.getRGBPixel(posX, posY));
     //     }
-    // }
+    }
 
     // Some sort of output for checking on our neural network
     // TODO: This should be generated but because we don't really know how we want it to look like this will function as a prototype.

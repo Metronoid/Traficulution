@@ -32,7 +32,7 @@ class Car {
         this.output = [0, 0];
         this.moral = 0;
         this.raycaster = new THREE.Raycaster();
-        this.view = new THREE.Raycaster();
+        //this.view = new THREE.Raycaster();
         //this.arrow = new THREE.ArrowHelper( new THREE.Vector3(0,1,0), this.mesh.position, 5, Math.random() * 0xffffff );
     }
 
@@ -51,6 +51,7 @@ class Car {
         //TODO: Would be nice to be able to remove the neural network too.
         scene.remove(this.mesh);
         //scene.remove ( this.arrow );
+
     }
 
     Create(spawnPoint) {
@@ -72,11 +73,10 @@ class Car {
             self.mesh.quaternion.setFromAxisAngle(new THREE.Vector3(0,0,0), 0);
             self.mesh.rotation.y = self.spawn.rotation;
 
-            self.raycaster.set(self.mesh .position, new THREE.Vector3(0, -1, 0))
-            self.view.set(self.mesh.position, new THREE.Vector3(0, 0, 1))
+            self.raycaster.set(self.mesh.position, new THREE.Vector3(0, -1, 0));
+            //self.view.set(self.mesh.position, new THREE.Vector3(0, 0, 1))
 
             scene.add(self.mesh);
-            collisionList.push(self);
 
             self.color = 0xFF0000;
             self.setColor(self.getRandomColor());
