@@ -221,8 +221,8 @@ pointLight.position.x = 50;
 pointLight.position.y = 50;
 pointLight.position.z = 50;
 pointLight.castShadow = true;
-pointLight.shadow.mapSize.width = 1024;
-pointLight.shadow.mapSize.height = 1024;
+pointLight.shadow.mapSize.width = 2048;
+pointLight.shadow.mapSize.height = 2048;
 // pointLight.shadow.camera.fov = 10;
 //
 // // add to the scene
