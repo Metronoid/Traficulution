@@ -78,6 +78,9 @@ class Car {
             scene.add(self.mesh);
             collisionList.push(self);
 
+            self.color = 0xFF0000;
+            self.setColor(self.getRandomColor());
+
         });
 
         // this.spawn = spawns[spawnPoint];
@@ -89,6 +92,35 @@ class Car {
         // scene.add(this.mesh);
         // this.raycaster = new THREE.Raycaster();
         // this.raycaster.set(this.mesh.position, new THREE.Vector3(0, -1, 0))
-
     }
+
+    getRandomColor() {
+        return '0x'+Math.floor(Math.random()*16777215).toString(16);
+    }
+
+    setColor(hex) {
+        let children = this.getChildren(this.mesh);
+        for(let child in children) {
+            if(!children[child].material) continue;
+            let color = children[child].material.color;
+            if(color.getHex() == this.color) {
+                color.setHex(hex);
+            }
+        }
+        if(hex) this.color = hex;
+    }
+
+    getChildren(mesh) {
+        let result = [];
+        if(!mesh.children || mesh.children.length == 0) return result;
+        for(let child in mesh.children) {
+            let rchildren = this.getChildren(mesh.children[child]);
+            for(let rchild in rchildren) {
+                result.push(rchildren[rchild]);
+            }
+            result.push(mesh.children[child]);
+        }
+        return result;
+    }
+
 }

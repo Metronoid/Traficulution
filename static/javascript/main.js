@@ -215,13 +215,13 @@ function onMouseDown( event ) {
         let uuid = intersects[0].object.parentuuid;
          for(let entnr in pool.entities) {
             if(uuid == pool.entities[entnr].mesh.uuid) {
+                pool.entities[entnr].setColor();
                 nwstats.updateStats(pool.entities[entnr].brain, pool.entities[entnr].moral);
                 nwstats.pulsate(true);
                 return;
             }
         }
     }
-
 }
 
 function getChildren(mesh) {
