@@ -242,5 +242,63 @@ class NetworkStats {
 
     return result;
 };
+}
+
+class GenerationData{
+    constructor(sortedEntities){
+        this.sortedEntities = sortedEntities;
+        this.max = this.sortedEntities[0].fitness;
+        this.min = this.sortedEntities[this.sortedEntities.length-1].fitness;
+
+    }
+}
+
+class GenerationStats {
+
+    constructor() {
+        $("#generationdiv").width(512);
+        $("#generationdiv").height(327);
+        //
+        this.canvas = document.getElementById('generation');
+        this.canvas.width = 512*2;
+        this.canvas.height = 327*2;
+        this.context = this.canvas.getContext('2d');
+
+        this.generations = [];
+        this.max = undefined;
+        this.min = undefined;
+    }
+
+    UpdateStats(){
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        let weight = this.canvas.width / this.generations.length;
+        for(let g in this.generations) {
+            let height = (this.canvas.height / 1.25) / (this.generations[g].max / this.max);
+            this.drawBlock(g * (weight) + (weight/2), weight - (20/this.generations.length),height);
+        }
+    }
+
+    AddGen(generation) {
+        let data = new GenerationData(generation);
+        this.generations.push(data);
+        if(data.max > this.max || this.max == undefined){
+            this.max = data.max;
+        }
+        if(data.min > this.min || this.min == undefined){
+            this.min = data.min;
+        }
+        this.UpdateStats();
+    }
+
+    drawBlock(x, weight, height) {
+        this.context.beginPath();
+        this.context.strokeStyle = "black";
+        this.context.lineWidth = weight;
+        this.context.moveTo(x,this.canvas.height);
+        this.context.lineTo(x,this.canvas.height - height);
+        this.context.fillStyle = "black";
+        this.context.fill();
+        this.context.stroke();
+    }
 
 }

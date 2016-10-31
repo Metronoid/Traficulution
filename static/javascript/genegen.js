@@ -18,12 +18,13 @@ class Genegen {
 		this.mutation = 1; //0..1
 		this.mutationChance = 0.9; //1..0
 		this.generations = 10000;
-		this.itterations = 4;
+		this.itterations = 1;
 		this.timer = 5000;
 		this.fittestPercentageAlwaysSurvives = 1; //0..1
 		this.fittestEntities = [];
 		this.entities = [];
 		this.fitnessText = document.getElementById("fitness");
+		this.genStats = new GenerationStats();
 	}
 
 	Optimize(a, b) {
@@ -187,6 +188,7 @@ function Generate(self){
 		self.fitnessText.innerHTML = "Best fitness: " + greatest[0].fitness.toFixed(2) + " Med fitness: " + sumFitness.toFixed(2);
 		console.log(greatest[0].fitness + " and " + sumFitness);
 		nwstats.updateStats(greatest[0].entity.brain);
+		self.genStats.AddGen(greatest);
 
 		self.fittestEntities = null;
 		self.entities = null;
@@ -202,6 +204,8 @@ function Generate(self){
 
 		// score and sort
 		pop = sortOnFitness(self.entities);
+
+		// Generation Stats Update.
 
 		pop = pop.slice(0,5);
 
