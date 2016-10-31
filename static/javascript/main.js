@@ -53,6 +53,14 @@ var seed = function(spawnPoint) {
 var fitness = function(entity) {
     var moral = 0;
     moral -= entity.mesh.position.distanceTo(point);
+    if(moral > -2) {
+        //point.x = -point.x
+        //targetBox.position.set(point.x, 0.3, point.z);
+        moral = 10;
+        moral -= Math.abs(0.2 - entity.output[0]) * 5;
+        moral -= Math.abs(entity.output[1]) * 10;
+
+    }
     return moral;
 };
 
@@ -141,7 +149,7 @@ var mutate = function (oldEntity,mutationType,mutationChance) {
     var inputConn = entity.brain.layers.input.list;
     for(let n in inputConn){
         for(let c in inputConn[n].connections.projected) {
-            inputConn[n].connections.projected[c].weight = mutationType(inputConn[n].connections.projected[c].weight,2,-2,mutationChance);
+            inputConn[n].connections.projected[c].weight = mutationType(inputConn[n].connections.projected[c].weight,2.5,-2.5,mutationChance);
         }
     }
 
@@ -150,7 +158,7 @@ var mutate = function (oldEntity,mutationType,mutationChance) {
     for (let depth = 0; depth < hiddenLayerAmt.length; depth++) {
         for (let n in hiddenLayerAmt[depth].list) {
             for (let c in hiddenLayerAmt[depth].list[n].connections.projected) {
-                hiddenLayerAmt[depth].list[n].connections.projected[c].weight = mutationType(hiddenLayerAmt[depth].list[n].connections.projected[c].weight,2,-2,mutationChance);
+                hiddenLayerAmt[depth].list[n].connections.projected[c].weight = mutationType(hiddenLayerAmt[depth].list[n].connections.projected[c].weight,2.5,-2.5,mutationChance);
             }
         }
     }
@@ -288,10 +296,11 @@ function moveCar(object,delta)
 
     //var objDistance = point.distanceTo(object.mesh.position);
     var input = [];
-    input.push(object.output[0]);
+    //input.push((object.output[0] + 1)/2);
     input.push(object.mesh.rotation.y / (Math.PI/2));
     input.push((object.mesh.position.x - point.x)/100);
     input.push((object.mesh.position.z - point.z)/100);
+    input.push(1);
     // TODO: Add the positive and negative rotation axis for input.
     //input.push((Math.abs(object.mesh.rotation.x / Math.PI)));
     var output = object.brain.activate(input);

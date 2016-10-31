@@ -18,7 +18,7 @@ class Genegen {
 		this.mutation = 1; //0..1
 		this.mutationChance = 0.9; //1..0
 		this.generations = 10000;
-		this.itterations = 3;
+		this.itterations = 4;
 		this.timer = 5000;
 		this.fittestPercentageAlwaysSurvives = 1; //0..1
 		this.fittestEntities = [];
