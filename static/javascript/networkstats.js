@@ -246,10 +246,18 @@ class NetworkStats {
 
 class GenerationData{
     constructor(sortedEntities){
-        this.sortedEntities = sortedEntities;
-        this.max = this.sortedEntities[0].fitness;
-        this.min = this.sortedEntities[this.sortedEntities.length-1].fitness;
+        this.max = sortedEntities[0].fitness;
+        this.min = sortedEntities[sortedEntities.length-1].fitness;
+        this.med = this.medCalc(sortedEntities);
 
+    }
+
+    medCalc(sortedEntities){
+        let sumFitness = 0;
+        for(let g in sortedEntities){
+            sumFitness += sortedEntities[g].fitness;
+        }
+        return sumFitness/sortedEntities.length;
     }
 }
 
@@ -273,8 +281,12 @@ class GenerationStats {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         let weight = this.canvas.width / this.generations.length;
         for(let g in this.generations) {
-            let height = (this.canvas.height / 1.25) / (this.generations[g].max / this.max);
-            this.drawBlock(g * (weight) + (weight/2), weight - (20/this.generations.length),height);
+            let maxHeight = (this.canvas.height / 1.25) / (this.generations[g].max / this.max);
+            let medHeight = (this.canvas.height / 1.25) / (this.generations[g].med / this.max);
+            let minHeight = (this.canvas.height / 1.25) / (this.generations[g].min / this.max);
+            this.drawBlock(g * (weight) + (weight/2), weight,maxHeight,"black");
+            this.drawBlock(g * (weight) + (weight/2), weight,medHeight,"#4CAF50");
+            this.drawBlock(g * (weight) + (weight/2), weight,minHeight,"#FF5722");
         }
     }
 
@@ -290,13 +302,13 @@ class GenerationStats {
         this.UpdateStats();
     }
 
-    drawBlock(x, weight, height) {
+    drawBlock(x, weight, height, color) {
         this.context.beginPath();
-        this.context.strokeStyle = "black";
+        this.context.strokeStyle = color;
         this.context.lineWidth = weight;
         this.context.moveTo(x,this.canvas.height);
         this.context.lineTo(x,this.canvas.height - height);
-        this.context.fillStyle = "black";
+        this.context.fillStyle = color;
         this.context.fill();
         this.context.stroke();
     }
