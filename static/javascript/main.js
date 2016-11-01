@@ -13,7 +13,6 @@ renderer.shadowMapEnabled = true;
 document.body.appendChild( renderer.domElement );
 
 var loader = new THREE.TextureLoader();
-var cloader = new THREE.ColladaLoader();
 var clock = new THREE.Clock();
 
 var controls = new THREE.TrackballControls( camera );
@@ -76,6 +75,7 @@ lloader.load('/model/lights.dae', function (result) {
     collisionList.push(result.scene);
 
 });
+
 
 var seed = function(spawnPoint) {
     var car = new Car(Cube(1,0.25,2,0x47475b),spawnPoint);
@@ -199,9 +199,37 @@ var mutate = function (oldEntity,mutationType,mutationChance) {
     return entity;
 }
 
-var pool = new Genegen(seed,fitness,copy,crossoverRandom,mutate);
 
-pool.Start();
+var pool = new Genegen(seed,fitness,copy,crossoverRandom,mutate);
+var carPool = [];
+var createCarPool = function() {
+    for(let i = 0; i < pool.size; i++) {
+        let cloader = new THREE.ColladaLoader();
+        cloader.load('/model/car.dae', function (result) {
+            result.scene.traverse(function(child) {
+                child.castShadow = true;
+            });
+
+            result.scene.inuse = false;
+            carPool.push(result.scene);
+
+            if(carPool.length == pool.size && !pool.started) {
+                pool.Start();
+            }
+
+        });
+    }
+}
+createCarPool();
+
+var getCarMesh = function() {
+    for(let car in carPool) {
+        if(!carPool[car].inuse) {
+            carPool[car].inuse = true;
+            return carPool[car];
+        }
+    }
+}
 
 var targetBox = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshLambertMaterial({color:0xFFFFFF}));
 targetBox.position.set(point.x, 0.3, point.z);
@@ -313,7 +341,6 @@ class ColorMap {
         self.img.src = "img/texture/intersection.png";
 
         this.img.onload = function() {
-            console.log("loaded");
             self.canvas.width = self.img.width;
             self.canvas.height = self.img.height;
             self.context.drawImage(self.img, 0, 0);
@@ -404,12 +431,14 @@ function moveCar(object,delta)
 
 var update = function () {
     requestAnimationFrame( update );
-    controls.update();
-    fpsText.innerHTML = "FPS: " + fps.getFPS();
-    var delta = clock.getDelta(); // seconds.
-    for (car in pool.entities){
-        moveCar(pool.entities[car],delta);
-    }
+        controls.update();
+        fpsText.innerHTML = "FPS: " + fps.getFPS();
+        var delta = clock.getDelta(); // seconds.
+    // if(pool && pool.started) {
+        for (car in pool.entities){
+            moveCar(pool.entities[car],delta);
+        }
+    // }
     render();
 };
 

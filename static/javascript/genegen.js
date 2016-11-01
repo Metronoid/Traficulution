@@ -85,7 +85,7 @@ class Genegen {
 	}
 
 	Start () {
-
+		this.started = true;
 		var i;
 
 		// seed the population
