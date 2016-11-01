@@ -20,7 +20,7 @@ class Genegen {
 		this.generations = 10000;
 		this.itterations = 3;
 		this.timer = 5000;
-		this.fittestPercentageAlwaysSurvives = 1; //0..1
+		this.fittestPercentageAlwaysSurvives = 0; //0..1
 		this.fittestEntities = [];
 		this.entities = [];
 		this.fitnessText = document.getElementById("fitness");
@@ -64,11 +64,12 @@ class Genegen {
 		var tickets = [];
 		let sum = 0;
 		// normalize
-		let minScore = null;
+		let minScore = undefined;
 		for(let p in pop){
 			let fitness = pop[p].fitness;
-			if(minScore == null) {minScore = fitness;}
-			if(pop[p].fitness < minScore){minScore = fitness;}
+			if(pop[p].fitness < minScore || minScore == undefined){
+				minScore = fitness;
+			}
 			sum += fitness;
 		}
 
@@ -168,6 +169,7 @@ function Generate(self){
 
 	// score and sort
 	let pop = sortOnFitness(self.entities);
+	self.genStats.AddGen(pop);
     //
     //
 	// // crossover and mutate
@@ -188,26 +190,24 @@ function Generate(self){
 		self.fitnessText.innerHTML = "Best fitness: " + greatest[0].fitness.toFixed(2) + " Med fitness: " + sumFitness.toFixed(2);
 		console.log(greatest[0].fitness + " and " + sumFitness);
 		nwstats.updateStats(greatest[0].entity.brain);
-		self.genStats.AddGen(greatest);
 
 		self.fittestEntities = null;
-		self.entities = null;
 		self.fittestEntities = [];
-		self.entities = [];
 		for (let g = 0; g < greatest.length; g++) // lets the best solutions fall through
 		{
 			if (g < self.size * self.fittestPercentageAlwaysSurvives) {
 				self.fittestEntities.push(greatest[g].entity);
-				self.entities.push(self.copy(greatest[g].entity,0));
+				newPop.push(self.copy(greatest[g].entity,0));
 			}
 		}
 
 		// score and sort
 		pop = sortOnFitness(self.entities);
 
-		// Generation Stats Update.
+		self.entities = null;
+		self.entities = [];
 
-		pop = pop.slice(0,5);
+		//pop = pop.slice(0,5);
 
 	}
 

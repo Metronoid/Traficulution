@@ -142,11 +142,11 @@ var crossoverRandom = function(father,mother,spawnPoint)
         var son = [];
         var daughter = [];
 
-        for(let i = 0; i <= dad.length;i++){
+        for(let i = 0; i < dad.length;i++){
             var len = dad.length * slice;
 
             son.push(i <= len ? dad[i] : mom[i]);
-            daughter.push(i <= len ? mom[i] : dad[i]);
+            daughter.push(i < len ? mom[i] : dad[i]);
         }
 
         return [son,daughter];
@@ -155,22 +155,25 @@ var crossoverRandom = function(father,mother,spawnPoint)
     var newWeights = splice(dadWeights,momWeights);
 
     var sonNeurons = son.brain.neurons();
+    let connection = 0;
     for(let s in sonNeurons){
         for(let i in sonNeurons[s].neuron.connections.inputs){
             if(newWeights[0][s] == undefined) {
                 console.error("Error: Undefined weight");
             }
-            son.brain.neurons()[s].neuron.connections.inputs[i].weight = newWeights[0][s];
+            son.brain.neurons()[s].neuron.connections.inputs[i].weight = newWeights[0][connection];
+            connection++;
         }
     }
-
+    connection = 0;
     var daughterNeurons = daughter.brain.neurons();
     for(let s in daughterNeurons){
         for(let i in daughterNeurons[s].neuron.connections.inputs){
             if(newWeights[1][s] == undefined) {
                 console.error("Error: Undefined weight");
             }
-            daughter.brain.neurons()[s].neuron.connections.inputs[i].weight = newWeights[1][s];
+            daughter.brain.neurons()[s].neuron.connections.inputs[i].weight = newWeights[1][connection];
+            connection++;
         }
     }
     return [son,daughter];
@@ -304,7 +307,7 @@ function onMouseDown( event ) {
         }
     }
 
-    console.log(meshes.children);
+   // console.log(meshes.children);
     var intersects = raycaster.intersectObjects(meshes.children);
      if(intersects[0] != undefined) {
         let uuid = intersects[0].object.parentuuid;
