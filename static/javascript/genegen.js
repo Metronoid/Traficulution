@@ -6,8 +6,8 @@ class Genegen {
 		this.seed = seed;
 		this.mutate = mutate;
 		this.mutationType = slideMutate;
-		this.select1 = this.Tournament2;
-		this.select2 = this.Reproduction;
+		this.select1 = this.Fittest;
+		this.select2 = this.RouletteReproduction;
 		this.optimize = this.Optimize;
 		this.generation = null;
 		this.crossover = crossover;
@@ -16,12 +16,10 @@ class Genegen {
 		this.size = 12;
 		this.crossoverRate = 0; //0..1
 		this.mutation = 1; //0..1
-		this.mutationChance = 0.9; //1..0
+		this.mutationChance = 0.95; //1..0
 		this.generations = 10000;
 		this.itterations = 3;
 		this.timer = 5000;
-		this.fittestPercentageAlwaysSurvives = 0; //0..1
-		this.fittestEntities = [];
 		this.entities = [];
 		this.fitnessText = document.getElementById("fitness");
 		this.genStats = new GenerationStats();
@@ -76,8 +74,8 @@ class Genegen {
 		sum += -(pop.length * minScore);
 		let percentage = 100/sum;
 		for(let p in pop){
+			console.log(((pop[p].fitness - minScore) * percentage));
 			for(let i = 0;i < ((pop[p].fitness - minScore) * percentage);i++){
-				console.log(((pop[p].fitness - minScore) * percentage));
 				tickets.push(pop[p]);
 			}
 		}
@@ -175,41 +173,16 @@ function Generate(self){
 	// // crossover and mutate
 	let newPop = [];
 	let entityCopy = self.entities;
-	if(self.fittestPercentageAlwaysSurvives > 0) {
-		for (let i = 0; i < self.size * self.fittestPercentageAlwaysSurvives; i++) // lets the best solution fall through
-		{
-			self.fittestEntities.push(pop[i].entity);
-		}
-		var greatest = sortOnFitness(self.fittestEntities)
 
-		let sumFitness = 0;
-		for(let g in greatest){
-			sumFitness += greatest[g].fitness;
-		}
-		sumFitness = sumFitness/greatest.length;
-		self.fitnessText.innerHTML = "Best fitness: " + greatest[0].fitness.toFixed(2) + " Med fitness: " + sumFitness.toFixed(2);
-		console.log(greatest[0].fitness + " and " + sumFitness);
-		nwstats.updateStats(greatest[0].entity.brain);
-
-		self.fittestEntities = null;
-		self.fittestEntities = [];
-		for (let g = 0; g < greatest.length; g++) // lets the best solutions fall through
-		{
-			if (g < self.size * self.fittestPercentageAlwaysSurvives) {
-				self.fittestEntities.push(greatest[g].entity);
-				newPop.push(self.copy(greatest[g].entity,0));
-			}
-		}
-
-		// score and sort
-		pop = sortOnFitness(self.entities);
-
-		self.entities = null;
-		self.entities = [];
-
-		//pop = pop.slice(0,5);
-
+	let sumFitness = 0;
+	for(let g in pop){
+		sumFitness += pop[g].fitness;
 	}
+	sumFitness = sumFitness/pop.length;
+	self.fitnessText.innerHTML = "Best fitness: " + pop[0].fitness.toFixed(2) + " Med fitness: " + sumFitness.toFixed(2);
+	console.log(pop[0].fitness + " and " + sumFitness);
+	nwstats.updateStats(pop[0].entity.brain);
+
 
 
 
