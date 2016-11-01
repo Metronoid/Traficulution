@@ -21,7 +21,9 @@ controls.target.set( 0, 0, 0 );
 controls.rotateSpeed = 5.0;
 controls.zoomSpeed = 0.05;
 controls.maxDistance = 200.0;
-controls.panSpeed = 5;
+controls.panSpeed = 0;
+controls.userPan = false;
+
 
 var collisionList = [];
 var spawns = [];
