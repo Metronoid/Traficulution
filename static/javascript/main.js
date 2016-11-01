@@ -20,6 +20,7 @@ var controls = new THREE.TrackballControls( camera );
 controls.target.set( 0, 0, 0 );
 controls.rotateSpeed = 5.0;
 controls.zoomSpeed = 0.05;
+controls.maxDistance = 200.0;
 controls.panSpeed = 5;
 
 var collisionList = [];
@@ -209,8 +210,25 @@ camera.position.z = 15;
 camera.position.y = 30;
 camera.lookAt(new THREE.Vector3(0, 0, 4));
 
+var geometry = new THREE.SphereGeometry(800, 60, 40);
+var uniforms = {
+    texture: { type: 't', value: THREE.ImageUtils.loadTexture('/img/texture/repeating.jpg') }
+};
 
-var ambient = new THREE.AmbientLight(0x404040 );
+var material = new THREE.ShaderMaterial( {
+    uniforms:       uniforms,
+    vertexShader:   document.getElementById('sky-vertex').textContent,
+    fragmentShader: document.getElementById('sky-fragment').textContent
+});
+
+skyBox = new THREE.Mesh(geometry, material);
+skyBox.scale.set(-1, 1, 1);
+skyBox.eulerOrder = 'XZY';
+skyBox.renderDepth = 1000.0;
+scene.add(skyBox);
+
+
+var ambient = new THREE.AmbientLight(0x404040);
 scene.add(ambient);
 
 // create a point light
@@ -223,8 +241,6 @@ pointLight.position.z = 50;
 pointLight.castShadow = true;
 pointLight.shadow.mapSize.width = 2048;
 pointLight.shadow.mapSize.height = 2048;
-// pointLight.shadow.camera.fov = 10;
-//
 // // add to the scene
 scene.add(pointLight);
 //
@@ -236,30 +252,7 @@ pointLight1.position.y = 50;
 pointLight1.position.z = 0;
 // add to the scene
 scene.add(pointLight1);
-//
-// var pointLight2 = new THREE.PointLight(0xcdcde7, 3, 100);
-//
-// // set its position
-// pointLight2.position.x = -50;
-// pointLight2.position.y = 50;
-// pointLight2.position.z = 50;
-// pointLight2.castShadow = true;
-// pointLight2.shadow.camera.fov = 7;
-//
-// // add to the scene
-// scene.add(pointLight2);
-//
-// var pointLight3 = new THREE.PointLight(0xcdcde7, 3, 100);
-//
-// // set its position
-// pointLight3.position.x = -50;
-// pointLight3.position.y = 50;
-// pointLight3.position.z = -50;
-// pointLight3.castShadow = true;
-// pointLight3.shadow.camera.fov = 7   ;
-//
-// // add to the scene
-// scene.add(pointLight3);
+
 
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
