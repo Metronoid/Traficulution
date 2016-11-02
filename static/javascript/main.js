@@ -80,6 +80,15 @@ lloader.load('/model/lights.dae', function (result) {
 var seed = function(spawnPoint) {
     var car = new Car(Cube(1,0.25,2,0x47475b),spawnPoint);
     car.Create(spawnPoint);
+    // We have to manually set the Bias to 0
+    for(let h in car.brain.layers.hidden) {
+        for(let l in car.brain.layers.hidden[h].list) {
+            car.brain.layers.hidden[h].list[l].bias = 0;
+        }
+    }
+    for(let o in car.brain.layers.output.list) {
+        car.brain.layers.output.list[o].bias = 0;
+    }
 
     return car;
 };
@@ -181,24 +190,30 @@ var crossoverRandom = function(father,mother,spawnPoint)
 }
 
 var mutate = function (oldEntity,mutationType,mutationChance) {
-    var entity = oldEntity;
+    let entity = oldEntity;
 
-    var inputConn = entity.brain.layers.input.list;
+    let inputConn = entity.brain.layers.input.list;
     for(let n in inputConn){
         for(let c in inputConn[n].connections.projected) {
             inputConn[n].connections.projected[c].weight = mutationType(inputConn[n].connections.projected[c].weight,2,-2,mutationChance);
         }
     }
 
-    var hiddenLayerAmt = entity.brain.layers.hidden;
+    let hiddenLayerAmt = entity.brain.layers.hidden;
 
     for (let depth = 0; depth < hiddenLayerAmt.length; depth++) {
         for (let n in hiddenLayerAmt[depth].list) {
+            //hiddenLayerAmt[depth].list[n].bias = mutationType(hiddenLayerAmt[depth].list[n].bias,2,-2,mutationChance);
             for (let c in hiddenLayerAmt[depth].list[n].connections.projected) {
                 hiddenLayerAmt[depth].list[n].connections.projected[c].weight = mutationType(hiddenLayerAmt[depth].list[n].connections.projected[c].weight,1,-1,mutationChance);
             }
         }
     }
+
+    // let outputConn = entity.brain.layers.output.list;
+    // for(let n in outputConn.list){
+    //     outputConn.list[n].bias = mutationType(outputConn.list[n].bias,2,-2,mutationChance);
+    // }
 
     return entity;
 }
