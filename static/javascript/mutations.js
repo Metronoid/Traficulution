@@ -12,6 +12,7 @@ var superMutate = function (weight,max,min) {
     //let newWeight = Math.random() * (max*2) - max;
     //newWeight = Math.min(newWeight,max);
     //newWeight = Math.max(newWeight,min);
+    //return newWeight
     return weight
 }
 
