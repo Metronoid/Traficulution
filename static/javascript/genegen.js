@@ -137,6 +137,20 @@ function CreateBatch(entities,spawnPoint){
 	}
 }
 
+function ResetBatch(entities,spawnPoint){
+	if(spawnPoint == undefined) {
+		console.error("There is no spawnPoint");
+	}
+	collisionList = [];
+	for (var e = 0; e < entities.length; e++) {
+		if (entities[e].Reset(spawnPoint)) {
+		}
+		spawnPoint += 1;
+		if(spawnPoint >= entities.length)
+			spawnPoint = 0;
+	}
+}
+
 function CheckMoral(self,entities){
 	for (var e = 0; e < entities.length; e++) {
 		entities[e].moral += self.fitness(entities[e]);
@@ -155,12 +169,12 @@ function Iterate(g){
 	if(g == this.itterations-1) {
 		Generate(self);
 	}else{
-		RemoveBatch(self.entities);
-		CreateBatch(self.entities,g+1);
+		ResetBatch(self.entities,g+1);
 	}
 }
 
 function Generate(self){
+	console.log("Generate!");
 	function mutateOrNot(entity) {
 		// applies mutation based on mutation probability
 		return Math.random() <= self.mutation && self.mutate ? self.mutate(entity,self.mutationType,self.mutationChance) : entity;
@@ -179,9 +193,8 @@ function Generate(self){
 
 	// score and sort
 	let pop = sortOnFitness(self.entities);
-    //
-    //
-	// // crossover and
+
+	// crossover and mutate
 	let newPop = [];
 	let entityCopy = self.entities;
 
@@ -210,8 +223,8 @@ function Generate(self){
 		for (let g = 0; g < greatest.length; g++) // lets the best solutions fall through
 		{
 			if (g < self.size * self.fittestPercentageAlwaysSurvives) {
-				self.fittestEntities.push(self.copy(greatest[g].entity));
-				self.entities.push(self.copy(greatest[g].entity,0));
+				self.fittestEntities.push(jQuery.extend(true, {}, greatest[g].entity));
+				self.entities.push(jQuery.extend(true, {}, greatest[g].entity,0));
 			}
 		}
 
@@ -238,11 +251,14 @@ function Generate(self){
 			let children = self.crossover(parents[0], parents[1], 0).map(mutateOrNot);
 			newPop.push(children[0], children[1]);
 		} else {
-			newPop.push(mutateOrNot(self.copy(self.select1(pop),0)));
+			let ent = self.select1(pop);
+			newPop.push(mutateOrNot(self.copy(ent,0)));
+			ent = undefined;
 		}
 	}
 
 	ObliterateBatch(entityCopy);
+	console.log(pop.length);
 
 	for(let pop in newPop) {
 		console.log(newPop[pop].brain);
@@ -252,5 +268,4 @@ function Generate(self){
 
 	CreateBatch(self.entities,0);
 	CleanMoral(self.entities);
-
 }

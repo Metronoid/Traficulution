@@ -105,6 +105,7 @@ var copy = function(entity,spawnPoint)
     newEntity.moral = entity.moral;
 
     newEntity.mesh.position.set(entity.mesh.position.x, entity.mesh.position.y, entity.mesh.position.z);
+
     return newEntity;
 }
 
@@ -230,6 +231,7 @@ var getCarMesh = function() {
             return carPool[car];
         }
     }
+    console.log("All car meshes are in use!");
 }
 
 var resetCarMeshes = function() {

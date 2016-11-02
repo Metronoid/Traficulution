@@ -32,8 +32,6 @@ class Car {
         this.output = [0, 0];
         this.moral = 0;
         this.raycaster = new THREE.Raycaster();
-        //this.view = new THREE.Raycaster();
-        //this.arrow = new THREE.ArrowHelper( new THREE.Vector3(0,1,0), this.mesh.position, 5, Math.random() * 0xffffff );
     }
 
     // TODO: this is just a simple collision but we need one that cares about rotation
@@ -60,8 +58,26 @@ class Car {
         //TODO: Make the line beneath this work without errors
         // this.mesh = undefined;
         this.mesh.inuse = false;
-        // this.brain = undefined;
+    }
 
+    Reset(spawnPoint) {
+        if(spawnPoint == undefined)
+        {
+            console.error("There is no spawnPoint");
+        }
+
+        this.spawn = spawns[spawnPoint];
+        this.mesh.castShadow = true;
+        this.mesh.position.x = this.spawn.position.x;
+        this.mesh.position.y = this.spawn.position.y;
+        this.mesh.position.z = this.spawn.position.z;
+        this.mesh.quaternion.setFromAxisAngle(new THREE.Vector3(0,0,0), 0);
+        this.mesh.rotation.y = this.spawn.rotation;
+
+        this.raycaster.set(this.mesh.position, new THREE.Vector3(0, -1, 0));
+
+        this.color = 0xFF0000;
+        this.setColor(this.getRandomColor());
     }
 
     Obliterate() {
