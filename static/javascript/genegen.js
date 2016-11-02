@@ -112,6 +112,17 @@ function RemoveBatch(entities){
 	}
 }
 
+function ObliterateBatch(entities) {
+	for(let e = 0; e < entities.length; e++) {
+		if(entities[e].Obliterate()) {
+
+		}
+		entities[e] = undefined;
+	}
+}
+
+
+
 function CreateBatch(entities,spawnPoint){
 	if(spawnPoint == undefined) {
 		console.error("There is no spawnPoint");
@@ -170,15 +181,17 @@ function Generate(self){
 	let pop = sortOnFitness(self.entities);
     //
     //
-	// // crossover and mutate
+	// // crossover and
 	let newPop = [];
 	let entityCopy = self.entities;
+
+
 	if(self.fittestPercentageAlwaysSurvives > 0) {
 		for (let i = 0; i < self.size * self.fittestPercentageAlwaysSurvives; i++) // lets the best solution fall through
 		{
 			self.fittestEntities.push(pop[i].entity);
 		}
-		var greatest = sortOnFitness(self.fittestEntities)
+		var greatest = sortOnFitness(self.fittestEntities);
 
 		let sumFitness = 0;
 		for(let g in greatest){
@@ -197,10 +210,11 @@ function Generate(self){
 		for (let g = 0; g < greatest.length; g++) // lets the best solutions fall through
 		{
 			if (g < self.size * self.fittestPercentageAlwaysSurvives) {
-				self.fittestEntities.push(greatest[g].entity);
+				self.fittestEntities.push(self.copy(greatest[g].entity));
 				self.entities.push(self.copy(greatest[g].entity,0));
 			}
 		}
+
 
 		// score and sort
 		pop = sortOnFitness(self.entities);
@@ -210,7 +224,6 @@ function Generate(self){
 		pop = pop.slice(0,5);
 
 	}
-
 
 
 
@@ -229,7 +242,11 @@ function Generate(self){
 		}
 	}
 
-	RemoveBatch(entityCopy);
+	ObliterateBatch(entityCopy);
+
+	for(let pop in newPop) {
+		console.log(newPop[pop].brain);
+	}
 
 	self.entities = newPop;
 

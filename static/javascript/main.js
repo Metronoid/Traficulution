@@ -102,6 +102,7 @@ var copy = function(entity,spawnPoint)
     var newEntity = new Car(Cube(1,0.25,2,0x47475b),spawnPoint);
     newEntity.brain = entity.brain.clone();
     newEntity.brain.setOptimize(false);
+    newEntity.moral = entity.moral;
 
     newEntity.mesh.position.set(entity.mesh.position.x, entity.mesh.position.y, entity.mesh.position.z);
     return newEntity;
@@ -228,6 +229,12 @@ var getCarMesh = function() {
             carPool[car].inuse = true;
             return carPool[car];
         }
+    }
+}
+
+var resetCarMeshes = function() {
+    for(let car in carPool) {
+        carPool[car].inuse = false;
     }
 }
 

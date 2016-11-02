@@ -249,7 +249,6 @@ class GenerationData{
         this.max = sortedEntities[0].fitness;
         this.min = sortedEntities[sortedEntities.length-1].fitness;
         this.med = this.medCalc(sortedEntities);
-
     }
 
     medCalc(sortedEntities){

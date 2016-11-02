@@ -48,6 +48,7 @@ class Car {
     }
 
     Destroy() {
+
         //TODO: Would be nice to be able to remove the neural network too.
         let children = getChildren(this.mesh);
         for(let child in children) {
@@ -56,10 +57,17 @@ class Car {
             children[child].material.dispose();
         }
         scene.remove(this.mesh);
+        //TODO: Make the line beneath this work without errors
+        // this.mesh = undefined;
         this.mesh.inuse = false;
-        // renderer.deallocateTexture( texture );
-        //scene.remove ( this.arrow );
+        // this.brain = undefined;
 
+    }
+
+    Obliterate() {
+        this.Destroy();
+        this.brain = undefined;
+        this.raycaster = undefined;
     }
 
     Create(spawnPoint) {
@@ -70,6 +78,7 @@ class Car {
 
         this.spawn = spawns[spawnPoint];
         this.mesh = getCarMesh();
+        console.log(this.mesh);
         this.mesh.castShadow = true;
         this.mesh.position.x = this.spawn.position.x;
         this.mesh.position.y = this.spawn.position.y;
