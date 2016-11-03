@@ -26,7 +26,7 @@ class Car {
     constructor(mesh, spawnPoint, brain) {
         this.mesh = mesh;
         this.spawn = spawns[spawnPoint];
-        this.brain = brain ? brain : new Perceptron(4,[4,4],2);
+        this.brain = brain ? brain : new Perceptron(2,[4,4],2);
         this.brain.setOptimize(false);
         this.brain = mutate(this, superMutate).brain;
         this.output = [0, 0];
@@ -66,6 +66,10 @@ class Car {
             console.error("There is no spawnPoint");
         }
 
+        while (spawnPoint > spawns.length-1){
+            spawnPoint -= spawns.length;
+        }
+
         this.spawn = spawns[spawnPoint];
         this.mesh.castShadow = true;
         this.mesh.position.x = this.spawn.position.x;
@@ -90,6 +94,10 @@ class Car {
         if(spawnPoint == undefined)
         {
             console.error("There is no spawnPoint");
+        }
+
+        while (spawnPoint > spawns.length-1){
+            spawnPoint -= spawns.length;
         }
 
         this.spawn = spawns[spawnPoint];
