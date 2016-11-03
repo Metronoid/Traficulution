@@ -43,23 +43,28 @@ var point = new THREE.Vector3(-27,0,-2.5);
 var ground = new THREE.Object3D();
 
 var iloader = new THREE.ColladaLoader();
+var intersectionMesh;
 iloader.load('/model/intersection.dae', function (result) {
     result.scene.rotation.x = Math.PI*1.5;
-    console.log(result);
+
     result.scene.traverse(function(child) {
         child.receiveShadow = true;
     });
 
+    intersectionMesh = result.scene;
     scene.add(result.scene);
     collisionList.push(result.scene);
 
     for(let ent in collisionList) {
         let children = getChildren(collisionList[ent]);
         for(let child in children) {
-            children[child].parentuuid = collisionList[ent].uuid;
-            ground.add(jQuery.extend(true, {}, children[child]));
+            if(children[child].type == "Mesh") {
+                children[child].parentuuid = collisionList[ent].uuid;
+                ground.add(jQuery.extend(true, {}, children[child]));
+            }
         }
     }
+
 
 });
 
@@ -313,6 +318,8 @@ function onMouseDown( event ) {
         }
     }
 
+    console.log(meshes);
+
     console.log(meshes.children);
     var intersects = raycaster.intersectObjects(meshes.children);
      if(intersects[0] != undefined) {
@@ -412,10 +419,10 @@ function moveCar(object,delta)
     object.mesh.rotateY((output[1] / 2) * speed * delta);
 
     var outLog = document.getElementById("outLog");
-    object.raycaster.set(object.mesh.position, new THREE.Vector3(0, -1, 0));
+    object.raycaster.set(object.mesh.position, new THREE.Vector3(0, -10, 0));
 
-
-    // var intersects = object.raycaster.intersectObjects(ground.children);
+    // console.log(ground.children);
+    var intersects = object.raycaster.intersectObjects(intersectionMesh.children[0].children);
     // if(intersects.length != 0) {
     //     console.log("Hey");
     //     console.log(intersects[0]);
