@@ -248,6 +248,7 @@ class GenerationData{
     constructor(sortedEntities){
         this.max = sortedEntities[0].fitness;
         this.min = sortedEntities[sortedEntities.length-1].fitness;
+        this.medium = sortedEntities[Math.floor(sortedEntities.length/2)].fitness;
         this.med = this.medCalc(sortedEntities);
     }
 
@@ -281,10 +282,13 @@ class GenerationStats {
         let weight = this.canvas.width / this.generations.length;
         for(let g in this.generations) {
             let maxHeight = (this.canvas.height / 1.25) / (this.generations[g].max / this.max);
+            let mediumHeight = (this.canvas.height / 1.25) / (this.generations[g].medium / this.max);
             let medHeight = (this.canvas.height / 1.25) / (this.generations[g].med / this.max);
             let minHeight = (this.canvas.height / 1.25) / (this.generations[g].min / this.max);
             this.drawBlock(g * (weight) + (weight/2), weight,maxHeight,"black");
-            this.drawBlock(g * (weight) + (weight/2), weight,medHeight,"#4CAF50");
+            this.drawBlock(g * (weight) + (weight/2), weight,mediumHeight,"#F2B50F");
+            //this.drawBlock(g * (weight) + (weight/2), weight,mediumHeight,"#4CAF50");
+            //this.drawBlock(g * (weight) + (weight/2), weight,medHeight,"#F2B50F");
             this.drawBlock(g * (weight) + (weight/2), weight,minHeight,"#FF5722");
         }
     }
