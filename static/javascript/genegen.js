@@ -6,7 +6,7 @@ class Genegen {
 		this.seed = seed;
 		this.mutate = mutate;
 		this.mutationType = slideMutate;
-		this.select1 = this.Tournament3;
+		this.select1 = this.Fittest;
 		this.select2 = this.Reproduction;
 		this.optimize = this.Optimize;
 		this.generation = null;
@@ -166,9 +166,26 @@ function Iterate(g){
 	CheckMoral(self,self.entities);
 	if(g == this.itterations-1) {
 		Generate(self);
-	}else{
-		ResetBatch(self.entities,g+1);
+	}else {
+		ResetBatch(self.entities, g + 1);
 	}
+
+	// This code is here to see the neural network update live instead of static. after half of the complete timer has passed,
+	// it'll pick out the best car and show the neural network of that car.
+	setTimeout(function() {
+		let fittestCar;
+		let maxFitness = this.fitness(pool.entities[0]);
+		// let maxFitness;
+		for (car in pool.entities){
+			let fitness = this.fitness(pool.entities[car]);
+			// let fitness = 1;
+			if(fitness > maxFitness) {
+				maxFitness = fitness;
+				fittestCar = pool.entities[car];
+			}
+		}
+		if(fittestCar != undefined) nwstats.updateStats(fittestCar.brain);
+	}, this.timer/2);
 }
 
 function Generate(self){
@@ -196,7 +213,6 @@ function Generate(self){
     //
 	// // crossover and mutate
 	let newPop = [];
-	let entityCopy = self.entities;
 
 	let sumFitness = 0;
 	for(let g in pop){
@@ -205,11 +221,8 @@ function Generate(self){
 	sumFitness = sumFitness/pop.length;
 	self.fitnessText.innerHTML = "Best fitness: " + pop[0].fitness.toFixed(2) + " Med fitness: " + sumFitness.toFixed(2);
 	console.log(pop[0].fitness + " and " + sumFitness);
-	nwstats.updateStats(pop[0].entity.brain);
 
-
-
-
+	let ent = self.select1(pop);
 	while (newPop.length < self.size) {
 		if (
 			self.crossover // if there is a crossover function
@@ -221,19 +234,16 @@ function Generate(self){
 			let children = self.crossover(parents[0], parents[1], 0).map(mutateOrNot);
 			newPop.push(children[0], children[1]);
 		} else {
-			let ent = self.select1(pop);
-			newPop.push(mutateOrNot(self.copy(ent,0)));
-			ent = undefined;
+			let copy = self.copy(ent);
+			newPop.push(mutateOrNot(copy));
 		}
 	}
 
-	ObliterateBatch(entityCopy);
-	console.log(pop.length);
+	ObliterateBatch(self.entities);
 
-	for(let pop in newPop) {
-		console.log(newPop[pop].brain);
+	for(let p in newPop) {
+		console.log(newPop[p]);
 	}
-
 	self.entities = newPop;
 
 	CreateBatch(self.entities,0);

@@ -116,7 +116,7 @@ var fitness = function(entity) {
 var copy = function(entity,spawnPoint)
 {
     var newEntity = new Car(Cube(1,0.25,2,0x47475b),spawnPoint);
-    newEntity.brain = entity.brain.clone();
+    newEntity.brain = cloneBrain(entity.brain);
     newEntity.brain.setOptimize(false);
     newEntity.moral = entity.moral;
 
@@ -224,6 +224,77 @@ var mutate = function (oldEntity,mutationType,mutationChance) {
     // }
 
     return entity;
+}
+
+var cloneBrain = function (brain) {
+    let newBrain = new Perceptron(2,[4,4],2);
+    console.log(brain);
+    let inputList = brain.layers.input.list;
+    let newInputList = newBrain.layers.input.list;
+    for(let neur = 0; neur < inputList.length; neur++) {
+        let neuron = inputList[neur];
+        let newNeuron = newInputList[neur];
+        newNeuron.activation = neuron.activation;
+
+        let idx = 0;
+        let proj = neuron.connections.projected;
+        let newProj = newNeuron.connections.projected;
+        for(let con in proj) {
+            let weight = proj[con].weight;
+            let newIdx = 0;
+            for(let newCon in newProj) {
+                newProj[newCon].weight = weight;
+                if(idx == newIdx) {
+                    break;
+                }
+                newIdx++;
+            }
+
+            idx++;
+        }
+    }
+
+    for(let depth = 0; depth < brain.layers.hidden.length; depth++) {
+
+        let hiddenList = brain.layers.hidden[depth].list;
+        let newHiddenList = newBrain.layers.hidden[depth].list;
+        for(let neur = 0; neur < hiddenList.length; neur++) {
+            let neuron = hiddenList[neur];
+            let newNeuron = newHiddenList[neur];
+            newNeuron.activation = neuron.activation;
+
+            let idx = 0;
+            let proj = neuron.connections.projected;
+            let newProj = newNeuron.connections.projected;
+            for(let con in proj) {
+                let weight = proj[con].weight;
+                let newIdx = 0;
+                for(let newCon in newProj) {
+                    newProj[newCon].weight = weight;
+                    if(idx == newIdx) {
+                        break;
+                    }
+                    newIdx++;
+                }
+
+                idx++;
+            }
+        }
+
+    }
+
+    let outputList = brain.layers.output.list;
+    let newOutputList = newBrain.layers.output.list;
+    for(let neur = 0; neur < outputList.length; neur++) {
+        let neuron = outputList[neur];
+        let newNeuron = newOutputList[neur];
+        newNeuron.activation = neuron.activation;
+    }
+
+    console.log(brain);
+    console.log(newBrain);
+
+    return newBrain;
 }
 
 
@@ -421,6 +492,9 @@ function moveCar(object,delta)
     //     }
 
     //var objDistance = point.distanceTo(object.mesh.position);
+
+
+
     var input = [];
     //input.push((object.output[0] + 1)/2);
     //input.push(object.mesh.rotation.y / (Math.PI/2));
