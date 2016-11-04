@@ -4,6 +4,8 @@ p {
     color: white;
 }
 
+canvas { display:block; }
+
 #fps{
     margin-top: 32px;
     color: red;

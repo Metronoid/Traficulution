@@ -35,6 +35,15 @@ class NetworkStats {
         this.layerAmt = 0;
         this.neuronAmt = 0;
 
+        this.show = true;
+
+    }
+
+    toggleStats(){
+        this.show = this.show ? false : true;
+        if(!this.show){
+            this.context.clearRect(0, 0, this.width, this.height);
+        }
     }
 
     updateStats(brain, moral) {
@@ -49,80 +58,92 @@ class NetworkStats {
         }
 
         this.context.clearRect(0, 0, this.width, this.height);
-        if(this.input && this.hidden && this.output) {
-            let layers = [];
+        if(this.show) {
+            if (this.input && this.hidden && this.output) {
+                let layers = [];
 
-            let maxNeuronHeight = this.input.list.length < this.output.list.length ? this.output.list.length : this.input.list.length;
-            let neuronsWidth = 2 + this.hidden.length;
-            for(let l = 0; l < this.hidden.length; l++) {
-                if(maxNeuronHeight < this.hidden[l].list.length) maxNeuronHeight  = this.hidden[l].list.length;
-            }
+                let maxNeuronHeight = this.input.list.length < this.output.list.length ? this.output.list.length : this.input.list.length;
+                let neuronsWidth = 2 + this.hidden.length;
+                for (let l = 0; l < this.hidden.length; l++) {
+                    if (maxNeuronHeight < this.hidden[l].list.length) maxNeuronHeight = this.hidden[l].list.length;
+                }
 
-            let neuronWidthIdx = 1;
-            let offset = (this.width - neuronsWidth * this.circleMaxRadius*2)/neuronsWidth;
-            let temp = [];
-            for(let i = 0 ; i < this.input.list.length; i++) {
-                let xPos = this.width/8*neuronWidthIdx+offset*(neuronWidthIdx-1);
-                let yPos = (this.height/maxNeuronHeight*i + 50*2) + ((this.height/maxNeuronHeight*((maxNeuronHeight - this.input.list.length)/2)));
-                temp.push({ id: this.input.list[i].ID, x: xPos, y: yPos, activation: this.input.list[i].activation });
-            }
-            neuronWidthIdx++;
-            layers.push(temp);
-            temp = [];
+                let neuronWidthIdx = 1;
+                let offset = (this.width - neuronsWidth * this.circleMaxRadius * 2) / neuronsWidth;
+                let temp = [];
+                for (let i = 0; i < this.input.list.length; i++) {
+                    let xPos = this.width / 8 * neuronWidthIdx + offset * (neuronWidthIdx - 1);
+                    let yPos = (this.height / maxNeuronHeight * i + 50 * 2) + ((this.height / maxNeuronHeight * ((maxNeuronHeight - this.input.list.length) / 2)));
+                    temp.push({id: this.input.list[i].ID, x: xPos, y: yPos, activation: this.input.list[i].activation});
+                }
+                neuronWidthIdx++;
+                layers.push(temp);
+                temp = [];
 
-            for(let l = 0; l < this.hidden.length; l++) {
-                for(let i = 0 ; i < this.hidden[l].list.length; i++) {
-                    let xPos = this.width/8*neuronWidthIdx+offset*(neuronWidthIdx-1);
-                    let yPos = (this.height/maxNeuronHeight*i + 50*2) + ((this.height/maxNeuronHeight*((maxNeuronHeight - this.hidden[l].list.length)/2)));
-                    temp.push({ id: this.hidden[l].list[i].ID, x: xPos, y: yPos, activation: this.hidden[l].list[i].activation });
+                for (let l = 0; l < this.hidden.length; l++) {
+                    for (let i = 0; i < this.hidden[l].list.length; i++) {
+                        let xPos = this.width / 8 * neuronWidthIdx + offset * (neuronWidthIdx - 1);
+                        let yPos = (this.height / maxNeuronHeight * i + 50 * 2) + ((this.height / maxNeuronHeight * ((maxNeuronHeight - this.hidden[l].list.length) / 2)));
+                        temp.push({
+                            id: this.hidden[l].list[i].ID,
+                            x: xPos,
+                            y: yPos,
+                            activation: this.hidden[l].list[i].activation
+                        });
+                    }
+                    layers.push(temp);
+                    temp = [];
+                    neuronWidthIdx++;
+                }
+
+                for (let i = 0; i < this.output.list.length; i++) {
+                    let xPos = this.width / 8 * neuronWidthIdx + offset * (neuronWidthIdx - 1);
+                    let yPos = (this.height / maxNeuronHeight * i + 50 * 2) + ((this.height / maxNeuronHeight * ((maxNeuronHeight - this.output.list.length) / 2)));
+                    temp.push({
+                        id: this.output.list[i].ID,
+                        x: xPos,
+                        y: yPos,
+                        activation: this.output.list[i].activation
+                    });
                 }
                 layers.push(temp);
                 temp = [];
-                neuronWidthIdx++;
-            }
 
-            for(let i = 0; i < this.output.list.length; i++) {
-                let xPos = this.width/8*neuronWidthIdx+offset*(neuronWidthIdx-1);
-                let yPos = (this.height/maxNeuronHeight*i + 50*2) + ((this.height/maxNeuronHeight*((maxNeuronHeight - this.output.list.length)/2)));
-                temp.push({ id: this.output.list[i].ID, x: xPos, y: yPos, activation: this.output.list[i].activation  });
-            }
-            layers.push(temp);
-            temp = [];
+                this.layerAmt = neuronWidthIdx;
 
-            this.layerAmt = neuronWidthIdx;
-
-            let layerIdx = 0;
-            for(let i = 0 ; i < this.input.list.length; i++) {
-                for(let c in Object.keys(this.input.list[i].connections.projected)) {
-                    let fromNeuron = this.getNeuronByID(layers, Object.values(this.input.list[i].connections.projected)[c].from.ID);
-                    let toNeuron = this.getNeuronByID(layers, Object.values(this.input.list[i].connections.projected)[c].to.ID);
-                    let weight = Object.values(this.input.list[i].connections.projected)[c].weight;
-                    this.drawConnection(fromNeuron.x, fromNeuron.y, toNeuron.x, toNeuron.y, weight);
-                }
-            }
-
-            for(let hid = 0; hid < this.hidden.length; hid++) {
-                for(let i = 0 ; i < this.hidden[hid].list.length; i++) {
-                    for(let c in Object.keys(this.hidden[hid].list[i].connections.projected)) {
-                        let fromNeuron = this.getNeuronByID(layers, Object.values(this.hidden[hid].list[i].connections.projected)[c].from.ID);
-                        let toNeuron = this.getNeuronByID(layers, Object.values(this.hidden[hid].list[i].connections.projected)[c].to.ID);
-                        let weight = Object.values(this.hidden[hid].list[i].connections.projected)[c].weight;
+                let layerIdx = 0;
+                for (let i = 0; i < this.input.list.length; i++) {
+                    for (let c in Object.keys(this.input.list[i].connections.projected)) {
+                        let fromNeuron = this.getNeuronByID(layers, Object.values(this.input.list[i].connections.projected)[c].from.ID);
+                        let toNeuron = this.getNeuronByID(layers, Object.values(this.input.list[i].connections.projected)[c].to.ID);
+                        let weight = Object.values(this.input.list[i].connections.projected)[c].weight;
                         this.drawConnection(fromNeuron.x, fromNeuron.y, toNeuron.x, toNeuron.y, weight);
                     }
                 }
-            }
 
-            for(let layer in layers) {
-                for(let neur in layers[layer]) {
-                    let rad = layer == this.pulsateCurrentLayer ? this.circleCurrentRadius : this.circleDefaultRadius;
-                    this.drawNeuron(layers[layer][neur].x, layers[layer][neur].y, rad, layers[layer][neur].activation);
+                for (let hid = 0; hid < this.hidden.length; hid++) {
+                    for (let i = 0; i < this.hidden[hid].list.length; i++) {
+                        for (let c in Object.keys(this.hidden[hid].list[i].connections.projected)) {
+                            let fromNeuron = this.getNeuronByID(layers, Object.values(this.hidden[hid].list[i].connections.projected)[c].from.ID);
+                            let toNeuron = this.getNeuronByID(layers, Object.values(this.hidden[hid].list[i].connections.projected)[c].to.ID);
+                            let weight = Object.values(this.hidden[hid].list[i].connections.projected)[c].weight;
+                            this.drawConnection(fromNeuron.x, fromNeuron.y, toNeuron.x, toNeuron.y, weight);
+                        }
+                    }
                 }
-            }
 
-            if(this.moral) {
-                this.drawText("Moral: " + this.moral, layers[0][0].x - this.circleDefaultRadius, 25);
-            }
+                for (let layer in layers) {
+                    for (let neur in layers[layer]) {
+                        let rad = layer == this.pulsateCurrentLayer ? this.circleCurrentRadius : this.circleDefaultRadius;
+                        this.drawNeuron(layers[layer][neur].x, layers[layer][neur].y, rad, layers[layer][neur].activation);
+                    }
+                }
 
+                if (this.moral) {
+                    this.drawText("Moral: " + this.moral, layers[0][0].x - this.circleDefaultRadius, 25);
+                }
+
+            }
         }
 
     }
@@ -275,21 +296,34 @@ class GenerationStats {
         this.generations = [];
         this.max = undefined;
         this.min = undefined;
+
+        this.show = true;
+    }
+
+    toggleStats(){
+        this.show = this.show ? false : true;
+        if(!this.show){
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        }else{
+            this.UpdateStats();
+        }
     }
 
     UpdateStats(){
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         let weight = this.canvas.width / this.generations.length;
-        for(let g in this.generations) {
-            let maxHeight = (this.canvas.height / 1.25) / (this.generations[g].max / this.max);
-            let mediumHeight = (this.canvas.height / 1.25) / (this.generations[g].medium / this.max);
-            let medHeight = (this.canvas.height / 1.25) / (this.generations[g].med / this.max);
-            let minHeight = (this.canvas.height / 1.25) / (this.generations[g].min / this.max);
-            this.drawBlock(g * (weight) + (weight/2), weight,maxHeight,"black");
-            this.drawBlock(g * (weight) + (weight/2), weight,mediumHeight,"#F2B50F");
-            //this.drawBlock(g * (weight) + (weight/2), weight,mediumHeight,"#4CAF50");
-            //this.drawBlock(g * (weight) + (weight/2), weight,medHeight,"#F2B50F");
-            this.drawBlock(g * (weight) + (weight/2), weight,minHeight,"#FF5722");
+        if(this.show) {
+            for (let g in this.generations) {
+                let maxHeight = (this.canvas.height / 1.25) / (this.generations[g].max / this.max);
+                let mediumHeight = (this.canvas.height / 1.25) / (this.generations[g].medium / this.max);
+                let medHeight = (this.canvas.height / 1.25) / (this.generations[g].med / this.max);
+                let minHeight = (this.canvas.height / 1.25) / (this.generations[g].min / this.max);
+                this.drawBlock(g * (weight) + (weight / 2), weight, maxHeight, "black");
+                this.drawBlock(g * (weight) + (weight / 2), weight, mediumHeight, "#F2B50F");
+                //this.drawBlock(g * (weight) + (weight/2), weight,mediumHeight,"#4CAF50");
+                //this.drawBlock(g * (weight) + (weight/2), weight,medHeight,"#F2B50F");
+                this.drawBlock(g * (weight) + (weight / 2), weight, minHeight, "#FF5722");
+            }
         }
     }
 

@@ -6,6 +6,7 @@ var camera = new THREE.PerspectiveCamera( 60, window.innerWidth/window.innerHeig
 var renderer = new THREE.WebGLRenderer();
 var fpsText = document.getElementById("fps");
 var nwstats = new NetworkStats();
+var genstats = new GenerationStats();
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor( 0x221f36, 1 );
 renderer.shadowMapEnabled = true;
@@ -478,8 +479,27 @@ var render = function () {
     renderer.render(scene, camera);
 };
 
+function onKeyDown(e){
+    if(e.key == "f"){
+        let canvas = renderer.domElement;
+        if (canvas.requestFullscreen) {
+            canvas.requestFullscreen();
+        } else if (canvas.mozRequestFullScreen) {
+            canvas.mozRequestFullScreen();
+        } else if (canvas.webkitRequestFullscreen) {
+            canvas.webkitRequestFullscreen();
+        }
+    }
+    if(e.key == "n"){
+        nwstats.toggleStats();
+    }
+    if(e.key == "g"){
+        genstats.toggleStats();
+    }
+}
 
-function addMouseHandler(canvas) {
+
+function addHandler(canvas) {
     canvas.addEventListener('mousemove', function (e) {
         // onMouseMove(e);
     }, false);
@@ -489,9 +509,12 @@ function addMouseHandler(canvas) {
     canvas.addEventListener('mouseup', function (e) {
         // onMouseUp(e);
     }, false);
+    canvas.addEventListener('keypress',function(e){
+        onKeyDown(e);
+    },false);
 }
 
-addMouseHandler(document);
+addHandler(document);
 
 var fps = {
     startTime : 0,

@@ -6,8 +6,8 @@ class Genegen {
 		this.seed = seed;
 		this.mutate = mutate;
 		this.mutationType = slideMutate;
-		this.select1 = this.Fittest;
-		this.select2 = this.RouletteReproduction;
+		this.select1 = this.Tournament3;
+		this.select2 = this.Reproduction;
 		this.optimize = this.Optimize;
 		this.generation = null;
 		this.crossover = crossover;
@@ -22,7 +22,6 @@ class Genegen {
 		this.timer = 5000;
 		this.entities = [];
 		this.fitnessText = document.getElementById("fitness");
-		this.genStats = new GenerationStats();
 	}
 
 	Optimize(a, b) {
@@ -192,7 +191,7 @@ function Generate(self){
 
 	// score and sort
 	let pop = sortOnFitness(self.entities);
-	self.genStats.AddGen(pop);
+	genstats.AddGen(pop);
     //
     //
 	// // crossover and mutate
