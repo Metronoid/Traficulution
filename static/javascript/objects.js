@@ -102,7 +102,7 @@ class Car {
 
         this.spawn = spawns[spawnPoint];
         this.mesh = getCarMesh();
-        console.log(this.mesh);
+        //console.log(this.mesh);
         this.mesh.castShadow = true;
         this.mesh.position.x = this.spawn.position.x;
         this.mesh.position.y = this.spawn.position.y;

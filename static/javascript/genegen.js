@@ -13,10 +13,10 @@ class Genegen {
 		this.crossover = crossover;
 		this.copy = copy;
 
-		this.size = 12;
+		this.size = 15;
 		this.crossoverRate = 0; //0..1
 		this.mutation = 1; //0..1
-		this.mutationChance = 0.95; //1..0
+		this.mutationChance = 0.9; //1..0
 		this.generations = 10000;
 		this.itterations = 3;
 		this.timer = 5000;
@@ -222,8 +222,9 @@ function Generate(self){
 	self.fitnessText.innerHTML = "Best fitness: " + pop[0].fitness.toFixed(2) + " Med fitness: " + sumFitness.toFixed(2);
 	console.log(pop[0].fitness + " and " + sumFitness);
 
-	let ent = self.select1(pop);
 	while (newPop.length < self.size) {
+		let ent = self.select1(pop);
+		console.log(ent);
 		if (
 			self.crossover // if there is a crossover function
 			&& Math.random() <= self.crossoverRate // base crossover on specified probability
@@ -242,7 +243,7 @@ function Generate(self){
 	ObliterateBatch(self.entities);
 
 	for(let p in newPop) {
-		console.log(newPop[p]);
+		//console.log(newPop[p]);
 	}
 	self.entities = newPop;
 

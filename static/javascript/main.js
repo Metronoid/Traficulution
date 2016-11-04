@@ -116,7 +116,9 @@ var fitness = function(entity) {
 var copy = function(entity,spawnPoint)
 {
     var newEntity = new Car(Cube(1,0.25,2,0x47475b),spawnPoint);
-    newEntity.brain = cloneBrain(entity.brain);
+    console.log(entity.brain);
+    newEntity.brain = entity.brain.clone();
+    console.log(newEntity.brain);
     newEntity.brain.setOptimize(false);
     newEntity.moral = entity.moral;
 
@@ -228,13 +230,14 @@ var mutate = function (oldEntity,mutationType,mutationChance) {
 
 var cloneBrain = function (brain) {
     let newBrain = new Perceptron(2,[4,4],2);
-    console.log(brain);
+    //console.log(brain);
     let inputList = brain.layers.input.list;
     let newInputList = newBrain.layers.input.list;
     for(let neur = 0; neur < inputList.length; neur++) {
         let neuron = inputList[neur];
         let newNeuron = newInputList[neur];
-        newNeuron.activation = neuron.activation;
+        //newNeuron.activation = neuron.activation;
+        newNeuron.bias = neuron.bias;
 
         let idx = 0;
         let proj = neuron.connections.projected;
@@ -261,7 +264,8 @@ var cloneBrain = function (brain) {
         for(let neur = 0; neur < hiddenList.length; neur++) {
             let neuron = hiddenList[neur];
             let newNeuron = newHiddenList[neur];
-            newNeuron.activation = neuron.activation;
+            //newNeuron.activation = neuron.activation;
+            newNeuron.bias = neuron.bias;
 
             let idx = 0;
             let proj = neuron.connections.projected;
@@ -288,11 +292,12 @@ var cloneBrain = function (brain) {
     for(let neur = 0; neur < outputList.length; neur++) {
         let neuron = outputList[neur];
         let newNeuron = newOutputList[neur];
-        newNeuron.activation = neuron.activation;
+        newNeuron.bias = neuron.bias;
+        //newNeuron.activation = neuron.activation;
     }
 
-    console.log(brain);
-    console.log(newBrain);
+    //console.log(brain);
+    //console.log(newBrain);
 
     return newBrain;
 }
