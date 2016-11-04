@@ -203,7 +203,7 @@ function Generate(self){
 				return  b.moral - a.moral;
 			})
 			.map(function (entity) {
-				return {"fitness": entity.moral, "entity": entity, "isbest": false };
+				return {"fitness": entity.moral, "entity": entity };
 			});
 	}
 
@@ -214,7 +214,6 @@ function Generate(self){
     //
 	// // crossover and mutate
 	let newPop = [];
-	let entityCopy = self.entities;
 
 	let sumFitness = 0;
 	for(let g in pop){
@@ -223,8 +222,8 @@ function Generate(self){
 	sumFitness = sumFitness/pop.length;
 	self.fitnessText.innerHTML = "Best fitness: " + pop[0].fitness.toFixed(2) + " Med fitness: " + sumFitness.toFixed(2);
 	console.log(pop[0].fitness + " and " + sumFitness);
-	pop[0].entity.isbest = true;
 
+	let ent = self.select1(pop);
 	while (newPop.length < self.size) {
 		if (
 			self.crossover // if there is a crossover function
@@ -236,19 +235,16 @@ function Generate(self){
 			let children = self.crossover(parents[0], parents[1], 0).map(mutateOrNot);
 			newPop.push(children[0], children[1]);
 		} else {
-			let ent = self.select1(pop);
-			newPop.push(mutateOrNot(self.copy(ent,0)));
-			ent = undefined;
+			let copy = self.copy(ent);
+			newPop.push(mutateOrNot(copy));
 		}
 	}
 
-	ObliterateBatch(entityCopy);
-	console.log(pop.length);
+	ObliterateBatch(self.entities);
 
-	for(let pop in newPop) {
-		console.log(newPop[pop].brain);
+	for(let p in newPop) {
+		console.log(newPop[p]);
 	}
-
 	self.entities = newPop;
 
 	CreateBatch(self.entities,0);
