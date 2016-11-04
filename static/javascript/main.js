@@ -234,64 +234,45 @@ var cloneBrain = function (brain) {
     for(let neur = 0; neur < inputList.length; neur++) {
         let neuron = inputList[neur];
         let newNeuron = newInputList[neur];
-        newNeuron.activation = neuron.activation;
+        newNeuron.state = neuron.state;
+        newNeuron.old = neuron.old;
+        newNeuron.bias = 0;
 
         let idx = 0;
         let proj = neuron.connections.projected;
         let newProj = newNeuron.connections.projected;
-        for(let con in proj) {
-            let weight = proj[con].weight;
-            let newIdx = 0;
-            for(let newCon in newProj) {
-                newProj[newCon].weight = weight;
-                if(idx == newIdx) {
-                    break;
-                }
-                newIdx++;
-            }
-
-            idx++;
+        for(let con = 0; con < Object.keys(proj).length; con++) {
+            let weight = proj[Object.keys(proj)[con]].weight;
+            newProj[Object.keys(newProj)[con]].weight = weight;
         }
     }
 
-    for(let depth = 0; depth < brain.layers.hidden.length; depth++) {
+    console.log("Shit: " + newBrain.layers.input.list[0].activation);
+
+    for(let depth in brain.layers.hidden) {
 
         let hiddenList = brain.layers.hidden[depth].list;
         let newHiddenList = newBrain.layers.hidden[depth].list;
         for(let neur = 0; neur < hiddenList.length; neur++) {
             let neuron = hiddenList[neur];
             let newNeuron = newHiddenList[neur];
-            newNeuron.activation = neuron.activation;
+            newNeuron.state = neuron.state;
+            newNeuron.old = neuron.old;
+            newNeuron.bias = 0;
 
             let idx = 0;
             let proj = neuron.connections.projected;
             let newProj = newNeuron.connections.projected;
-            for(let con in proj) {
-                let weight = proj[con].weight;
-                let newIdx = 0;
-                for(let newCon in newProj) {
-                    newProj[newCon].weight = weight;
-                    if(idx == newIdx) {
-                        break;
-                    }
-                    newIdx++;
-                }
-
-                idx++;
+            for(let con = 0; con < Object.keys(proj).length; con++) {
+                let weight = proj[Object.keys(proj)[con]].weight;
+                newProj[Object.keys(newProj)[con]].weight = weight;
             }
         }
 
     }
 
-    let outputList = brain.layers.output.list;
-    let newOutputList = newBrain.layers.output.list;
-    for(let neur = 0; neur < outputList.length; neur++) {
-        let neuron = outputList[neur];
-        let newNeuron = newOutputList[neur];
-        newNeuron.activation = neuron.activation;
-    }
-
     console.log(brain);
+    console.log(brain.clone());
     console.log(newBrain);
 
     return newBrain;
