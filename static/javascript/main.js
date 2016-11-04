@@ -116,7 +116,7 @@ var fitness = function(entity) {
 var copy = function(entity,spawnPoint)
 {
     var newEntity = new Car(Cube(1,0.25,2,0x47475b),spawnPoint);
-    newEntity.brain = cloneBrain(entity.brain);
+    newEntity.brain = entity.brain.clone();
     newEntity.brain.setOptimize(false);
     newEntity.moral = entity.moral;
 
@@ -244,8 +244,6 @@ var cloneBrain = function (brain) {
             newProj[Object.keys(newProj)[con]].weight = weight;
         }
     }
-
-    console.log("Shit: " + newBrain.layers.input.list[0].activation);
 
     for(let depth in brain.layers.hidden) {
 

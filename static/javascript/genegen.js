@@ -224,7 +224,6 @@ function Generate(self){
 
 	while (newPop.length < self.size) {
 		let ent = self.select1(pop);
-		console.log(ent);
 		if (
 			self.crossover // if there is a crossover function
 			&& Math.random() <= self.crossoverRate // base crossover on specified probability

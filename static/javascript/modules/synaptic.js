@@ -1139,7 +1139,7 @@
 
 	  // adds a neuron to the layer
 	  add: function(neuron) {
-	    this.neurons[neuron.ID] = neuron || new Neuron();
+	    // this.neurons[neuron.ID] = neuron || new Neuron();
 	    this.list.push(neuron);
 	    this.size++;
 	  },
@@ -1835,16 +1835,16 @@
 
 	  var neurons = [];
 
-	  var layers = {
+	  let layers = {
 	    input: new Layer(),
 	    hidden: [],
 	    output: new Layer()
 	  };
 
-	  for (var i in json.neurons) {
-	    var config = json.neurons[i];
+	  for (let i in json.neurons) {
+		let config = json.neurons[i];
 
-	    var neuron = new Neuron();
+        let neuron = new Neuron();
 	    neuron.trace.elegibility = {};
 	    neuron.trace.extended = {};
 	    neuron.state = config.state;
@@ -1864,7 +1864,6 @@
 	      layers.hidden[config.layer].add(neuron);
 	    }
 	  }
-
 	  for (var i in json.connections) {
 	    var config = json.connections[i];
 	    var from = neurons[config.from];
