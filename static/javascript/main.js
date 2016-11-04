@@ -228,15 +228,13 @@ var mutate = function (oldEntity,mutationType,mutationChance) {
 
 var cloneBrain = function (brain) {
     let newBrain = new Perceptron(2,[4,4],2);
-    console.log(brain);
+    //console.log(brain);
     let inputList = brain.layers.input.list;
     let newInputList = newBrain.layers.input.list;
     for(let neur = 0; neur < inputList.length; neur++) {
         let neuron = inputList[neur];
         let newNeuron = newInputList[neur];
-        newNeuron.state = neuron.state;
-        newNeuron.old = neuron.old;
-        newNeuron.bias = 0;
+        newNeuron.bias = neuron.bias;
 
         let idx = 0;
         let proj = neuron.connections.projected;
@@ -256,9 +254,7 @@ var cloneBrain = function (brain) {
         for(let neur = 0; neur < hiddenList.length; neur++) {
             let neuron = hiddenList[neur];
             let newNeuron = newHiddenList[neur];
-            newNeuron.state = neuron.state;
-            newNeuron.old = neuron.old;
-            newNeuron.bias = 0;
+            newNeuron.bias = neuron.bias;
 
             let idx = 0;
             let proj = neuron.connections.projected;
@@ -270,10 +266,6 @@ var cloneBrain = function (brain) {
         }
 
     }
-
-    console.log(brain);
-    console.log(brain.clone());
-    console.log(newBrain);
 
     return newBrain;
 }
