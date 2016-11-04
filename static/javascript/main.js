@@ -420,6 +420,9 @@ function moveCar(object,delta)
     //     }
 
     //var objDistance = point.distanceTo(object.mesh.position);
+
+
+
     var input = [];
     //input.push((object.output[0] + 1)/2);
     //input.push(object.mesh.rotation.y / (Math.PI/2));
@@ -477,7 +480,6 @@ var update = function () {
 var render = function () {
     renderer.render(scene, camera);
 };
-
 
 function addMouseHandler(canvas) {
     canvas.addEventListener('mousemove', function (e) {

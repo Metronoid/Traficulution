@@ -167,9 +167,26 @@ function Iterate(g){
 	CheckMoral(self,self.entities);
 	if(g == this.itterations-1) {
 		Generate(self);
-	}else{
-		ResetBatch(self.entities,g+1);
+	}else {
+		ResetBatch(self.entities, g + 1);
 	}
+
+	// This code is here to see the neural network update live instead of static. after half of the complete timer has passed,
+	// it'll pick out the best car and show the neural network of that car.
+	setTimeout(function() {
+		let fittestCar;
+		let maxFitness = this.fitness(pool.entities[0]);
+		// let maxFitness;
+		for (car in pool.entities){
+			let fitness = this.fitness(pool.entities[car]);
+			// let fitness = 1;
+			if(fitness > maxFitness) {
+				maxFitness = fitness;
+				fittestCar = pool.entities[car];
+			}
+		}
+		if(fittestCar != undefined) nwstats.updateStats(fittestCar.brain);
+	}, this.timer/2);
 }
 
 function Generate(self){
@@ -186,7 +203,7 @@ function Generate(self){
 				return  b.moral - a.moral;
 			})
 			.map(function (entity) {
-				return {"fitness": entity.moral, "entity": entity };
+				return {"fitness": entity.moral, "entity": entity, "isbest": false };
 			});
 	}
 
@@ -206,10 +223,7 @@ function Generate(self){
 	sumFitness = sumFitness/pop.length;
 	self.fitnessText.innerHTML = "Best fitness: " + pop[0].fitness.toFixed(2) + " Med fitness: " + sumFitness.toFixed(2);
 	console.log(pop[0].fitness + " and " + sumFitness);
-	nwstats.updateStats(pop[0].entity.brain);
-
-
-
+	pop[0].entity.isbest = true;
 
 	while (newPop.length < self.size) {
 		if (
