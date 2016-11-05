@@ -314,12 +314,16 @@ class GenerationStats {
         let weight = this.canvas.width / this.generations.length;
         if(this.show) {
             for (let g in this.generations) {
-                let maxHeight = (this.canvas.height / 1.25) / (this.generations[g].max / this.max);
-                let mediumHeight = (this.canvas.height / 1.25) / (this.generations[g].medium / this.max);
-                let minHeight = (this.canvas.height / 1.25) / (this.generations[g].min / this.max);
+                let canvasHeight = this.canvas.height/1.25;
+                let totalHeight = (Math.abs(this.max)+Math.abs(this.min));
+                let maxHeight = (canvasHeight / (totalHeight) * (totalHeight)-Math.abs(this.generations[g].max));
+                let mediumHeight = (canvasHeight / (totalHeight) * (totalHeight)-Math.abs(this.generations[g].medium));
+                let minHeight = (canvasHeight / (totalHeight) * (totalHeight)-Math.abs(this.generations[g].min));
                 if(maxHeight < mediumHeight || maxHeight < minHeight || mediumHeight < minHeight){
                     console.error("gen has not been sorted")
                 }
+                //(this.canvas.height / 1.25) / (Math.abs(this.max)+Math.abs(this.min)) * ((Math.abs(this.max)+Math.abs(this.min))-Math.abs(this.generations[g].max))
+                //a / (b) * ((b)-c) = (a*(b-c))/b
                 this.drawBlock(g * (weight) + (weight / 2), weight, maxHeight, "black");
                 this.drawBlock(g * (weight) + (weight / 2), weight, mediumHeight, "#F2B50F");
                 //this.drawBlock(g * (weight) + (weight/2), weight,mediumHeight,"#4CAF50");
@@ -335,11 +339,24 @@ class GenerationStats {
         if(data.max > this.max || this.max == undefined){
             this.max = data.max;
         }
-        if(data.min > this.min || this.min == undefined){
+        if(data.min < this.min || this.min == undefined){
             this.min = data.min;
         }
         if(this.generations.length > 50) {
-            this.generations.shift();
+            let pop = this.generations.shift();
+            if(this.max == data.max) {
+                let max = this.generations[0];
+                for(let generation in generations) {
+                    if(generations[generation].max > max) max = generations[generation].max;
+                }
+
+            }
+            if(this.min = data.min) {
+                let min = this.generations[0];
+                for(let generation in generations) {
+                    if(generations[generation].min < min) min = generations[generation].min;
+                }
+            }
         }
         this.UpdateStats();
     }
