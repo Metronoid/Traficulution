@@ -270,6 +270,7 @@ var cloneBrain = function (brain) {
 
 
 var pool = new Genegen(seed,fitness,copy,crossoverRandom,mutate);
+var poolReady = false;
 var carPool = [];
 var createCarPool = function() {
     for(let i = 0; i < pool.size; i++) {
@@ -283,7 +284,7 @@ var createCarPool = function() {
             carPool.push(result.scene);
 
             if(carPool.length == pool.size && !pool.started) {
-                pool.Start();
+                poolReady = true;
             }
 
         });
@@ -541,8 +542,52 @@ function onKeyDown(e){
     if(e.key == "g"){
         genstats.toggleStats();
     }
+    if(e.key == "e") {
+        if(pool.bestentity != undefined) {
+            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({
+                    brain: pool.bestentity.entity.brain.toJSON(),
+                    fitness: pool.bestentity.fitness
+                }));
+            var dlAnchorElem = document.getElementById('downloadAnchorElem');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", "bestentity.json");
+            dlAnchorElem.click();
+        } else {
+            alert("No best entity yet");
+        }
+    }
+    if(e.key == "i") {
+        var dlAnchorElem = document.getElementById('uploadText');
+        dlAnchorElem.click();
+    }
+
+    if(e.key == "s") {
+        if(poolReady) {
+            pool.Start();
+        }
+    }
 }
 
+function setBestEntity() {
+    try {
+        // let obj = JS
+        var r = new FileReader();
+        let f = document.getElementById("uploadText").files[0];
+        r.onload = function (e) {
+            let obj = JSON.parse(e.target.result);
+            let brain = obj.brain;
+            let fitness = obj.fitness;
+            let bestentity = new Car(Cube(1,0.25,2,0x47475b),0);
+            bestentity.brain = Network.fromJSON(brain);
+            pool.bestentity = {"entity": bestentity, "fitness": fitness};
+            console.log(pool.bestentity);
+        };
+        r.readAsText(f);
+    } catch(ex) {
+        throw ex;
+        alert("Invalid file!");
+    }
+}
 
 function addHandler(canvas) {
     canvas.addEventListener('mousemove', function (e) {

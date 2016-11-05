@@ -22,8 +22,10 @@
 <body>
 <div id="networkdiv"><canvas id="network"></canvas></div>
 <div id="generationdiv"><canvas id="generation"></canvas></div>
+<a id="downloadAnchorElem" style="display:none"></a>
+<input id="uploadText" style="display:none" type="file" size="10"  onchange="setBestEntity()" />
 <div id="outLog" style="color: black; z-index: 1">
-    <p>Use F for Fullscreen Toggle, G for Generation Data Toggle and N for Neuron Data Toggle.</p>
+    <p>Use F for Fullscreen Toggle, G for Generation Data Toggle, N for Neuron Data Toggle, S for starting, E for exporting best entity, I for importing best entity.</p>
     <p id="fitness">Best fitness: 0</p>
     <p id="fps">FPS: 0</p>
 </div>
