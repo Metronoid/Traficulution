@@ -21,6 +21,7 @@ class Genegen {
 		this.itterations = 3;
 		this.timer = 5000;
 		this.entities = [];
+		this.bestentity = undefined;
 		this.fitnessText = document.getElementById("fitness");
 	}
 
@@ -209,6 +210,10 @@ function Generate(self){
 	// score and sort
 	let pop = sortOnFitness(self.entities);
 	genstats.AddGen(pop);
+	if(self.bestentity == undefined || pop[0].fitness > self.bestentity.fitness) {
+		self.bestentity = {"fitness": pop[0].fitness, "entity": self.copy(pop[0].entity)};
+	}
+	console.log(self.bestentity);
     //
     //
 	// // crossover and mutate
@@ -223,7 +228,7 @@ function Generate(self){
 	console.log(pop[0].fitness + " and " + sumFitness);
 
 	while (newPop.length < self.size) {
-		let ent = self.select1(pop);
+		// let ent = self.select1(pop);
 		if (
 			self.crossover // if there is a crossover function
 			&& Math.random() <= self.crossoverRate // base crossover on specified probability
@@ -234,7 +239,7 @@ function Generate(self){
 			let children = self.crossover(parents[0], parents[1], 0).map(mutateOrNot);
 			newPop.push(children[0], children[1]);
 		} else {
-			let copy = self.copy(ent);
+			let copy = self.copy(self.bestentity.entity);
 			newPop.push(mutateOrNot(copy));
 		}
 	}

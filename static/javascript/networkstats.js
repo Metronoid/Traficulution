@@ -338,6 +338,9 @@ class GenerationStats {
         if(data.min > this.min || this.min == undefined){
             this.min = data.min;
         }
+        if(this.generations.length > 50) {
+            this.generations.shift();
+        }
         this.UpdateStats();
     }
 
