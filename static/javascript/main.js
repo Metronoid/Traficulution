@@ -584,8 +584,8 @@ function setBestEntity() {
         };
         r.readAsText(f);
     } catch(ex) {
-        throw ex;
         alert("Invalid file!");
+        throw ex;
     }
 }
 

@@ -210,6 +210,7 @@ function Generate(self){
 	// score and sort
 	let pop = sortOnFitness(self.entities);
 	genstats.AddGen(pop);
+	console.log(pop);
 	if(self.bestentity == undefined || pop[0].fitness > self.bestentity.fitness) {
 		self.bestentity = {"fitness": pop[0].fitness, "entity": self.copy(pop[0].entity)};
 	}
