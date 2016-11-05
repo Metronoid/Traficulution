@@ -316,9 +316,9 @@ class GenerationStats {
             for (let g in this.generations) {
                 let canvasHeight = this.canvas.height/1.25;
                 let totalHeight = (Math.abs(this.max)+Math.abs(this.min));
-                let maxHeight = (canvasHeight / (totalHeight) * ((totalHeight))-Math.abs(this.generations[g].max));
-                let mediumHeight = (canvasHeight / (totalHeight) * ((totalHeight)-Math.abs(this.generations[g].medium));
-                let minHeight = (canvasHeight / (totalHeight) * ((totalHeight)-Math.abs(this.generations[g].min));
+                let maxHeight = (canvasHeight / (totalHeight) * (totalHeight)-Math.abs(this.generations[g].max));
+                let mediumHeight = (canvasHeight / (totalHeight) * (totalHeight)-Math.abs(this.generations[g].medium));
+                let minHeight = (canvasHeight / (totalHeight) * (totalHeight)-Math.abs(this.generations[g].min));
                 if(maxHeight < mediumHeight || maxHeight < minHeight || mediumHeight < minHeight){
                     console.error("gen has not been sorted")
                 }
