@@ -59,7 +59,6 @@ class Car {
         //TODO: Make the line beneath this work without errors
         // this.mesh = undefined;
         this.mesh.inuse = false;
-        this.brain.clear();
     }
 
     Reset(spawnPoint) {
@@ -88,6 +87,7 @@ class Car {
 
     Obliterate() {
         this.Destroy();
+        this.brain.clear();
         this.brain = undefined;
         this.raycaster = undefined;
     }
