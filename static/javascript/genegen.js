@@ -20,6 +20,7 @@ class Genegen {
 		this.generations = 10000;
 		this.itterations = 3;
 		this.timer = 5000;
+		this.generation = 0;
 		this.entities = [];
 		this.bestentity = undefined;
 		this.fitnessText = document.getElementById("fitness");
@@ -93,11 +94,13 @@ class Genegen {
 		}
 
 		for (i=0; i<this.generations; i++) {
+			this.generation = i;
 
 			// Wait a while
 			for (let g=0; g<this.itterations; g++) {
 				setTimeout(Iterate.bind(this,g), (this.timer * (g+1) + ((this.timer * i * this.itterations)+1)))
 			}
+
 		}
 	}
 }
@@ -163,13 +166,16 @@ function CleanMoral(entities){
 }
 
 function Iterate(g){
+
 	let self = this;
 	CheckMoral(self,self.entities);
 	if(g == this.itterations-1) {
+
 		Generate(self);
 	}else {
 		ResetBatch(self.entities, g + 1);
 	}
+
 
 	// This code is here to see the neural network update live instead of static. after half of the complete timer has passed,
 	// it'll pick out the best car and show the neural network of that car.

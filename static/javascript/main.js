@@ -319,7 +319,7 @@ camera.lookAt(new THREE.Vector3(0, 0, 4));
 
 var geometry = new THREE.SphereGeometry(800, 60, 40);
 var uniforms = {
-    texture: { type: 't', value: THREE.ImageUtils.loadTexture('/img/texture/repeating.jpg') }
+    texture: { type: 't', value: THREE.ImageUtils.loadTexture('/img/texture/dustskybox.png') }
 };
 
 var material = new THREE.ShaderMaterial( {
