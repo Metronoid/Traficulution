@@ -26,9 +26,10 @@ class Car {
     constructor(mesh, spawnPoint, brain) {
         this.mesh = mesh;
         this.spawn = spawns[spawnPoint];
-        this.brain = brain ? brain : new Perceptron(2,[4,4],2);
+        this.brain = brain ? brain : new Perceptron(3,[4,4],2);
         this.brain.setOptimize(false);
-        this.brain = mutate(this, superMutate).brain;
+        this.brain.mutationGenes = [];
+        //this.brain = ;
         this.output = [0, 0];
         this.moral = 0;
         this.raycaster = new THREE.Raycaster();
@@ -58,6 +59,7 @@ class Car {
         //TODO: Make the line beneath this work without errors
         // this.mesh = undefined;
         this.mesh.inuse = false;
+        this.brain.clear();
     }
 
     Reset(spawnPoint) {
