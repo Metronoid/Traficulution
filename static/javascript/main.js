@@ -113,12 +113,22 @@ var fitness = function(entity) {
     return moral;
 };
 
+function copyArray(array) {
+    let newArray = [];
+    for(let a in array){
+        newArray.push(array[a]);
+    }
+    return newArray;
+}
+
 var copy = function(entity,spawnPoint)
 {
     var newEntity = new Car(Cube(1,0.25,2,0x47475b),spawnPoint);
     newEntity.brain = entity.brain.clone();
     newEntity.brain.setOptimize(false);
     newEntity.moral = entity.moral;
+    //console.log(entity);
+    newEntity.mutationGenes = copyArray(entity.mutationGenes);
 
     newEntity.mesh.position.set(entity.mesh.position.x, entity.mesh.position.y, entity.mesh.position.z);
 
@@ -199,11 +209,24 @@ var crossoverRandom = function(father,mother,spawnPoint)
 
 var mutate = function (oldEntity,mutationType,mutationChance) {
     let entity = oldEntity;
+    let fillMutationGenes = false;
+    let mutGenes = entity.mutationGenes;
+    if(mutGenes == undefined || mutGenes.length <= 0 ){
+        fillMutationGenes = true;
+    }
 
+    //console.log(mutGenes);
+
+    let indx = 0;
     let inputConn = entity.brain.layers.input.list;
     for(let n in inputConn){
         for(let c in inputConn[n].connections.projected) {
-            inputConn[n].connections.projected[c].weight = mutationType(inputConn[n].connections.projected[c].weight,2,-2,mutationChance);
+            if(fillMutationGenes){
+                mutGenes.push(mutationChance);
+            }
+            mutGenes[indx] = mutationType(mutGenes[indx],0.98,0,mutGenes[indx]);
+            inputConn[n].connections.projected[c].weight = mutationType(inputConn[n].connections.projected[c].weight,2,-2,mutGenes[indx]);
+            indx++;
         }
     }
 
@@ -213,7 +236,13 @@ var mutate = function (oldEntity,mutationType,mutationChance) {
         for (let n in hiddenLayerAmt[depth].list) {
             //hiddenLayerAmt[depth].list[n].bias = mutationType(hiddenLayerAmt[depth].list[n].bias,2,-2,mutationChance);
             for (let c in hiddenLayerAmt[depth].list[n].connections.projected) {
-                hiddenLayerAmt[depth].list[n].connections.projected[c].weight = mutationType(hiddenLayerAmt[depth].list[n].connections.projected[c].weight,1,-1,mutationChance);
+                if(fillMutationGenes){
+                    mutGenes.push(mutationChance);
+                }
+                mutGenes[indx] = mutationType(mutGenes[indx],0.98,0,mutGenes[indx]);
+                mutGenes[indx] = mutationType(mutGenes[indx],0.98,0,mutGenes[indx]);
+                hiddenLayerAmt[depth].list[n].connections.projected[c].weight = mutationType(hiddenLayerAmt[depth].list[n].connections.projected[c].weight,1,-1,mutGenes[indx]);
+                indx++;
             }
         }
     }
@@ -470,6 +499,8 @@ function moveCar(object,delta)
     var input = [];
     //input.push((object.output[0] + 1)/2);
     //input.push(object.mesh.rotation.y / (Math.PI/2));
+    let rotpoint = new THREE.Vector3(point.x,point.y,point.z);
+    input.push(rotpoint.applyEuler(object.mesh.rotation).x / 30);
     //input.push(-1);
     input.push((object.mesh.position.x - point.x)/100);
     input.push((object.mesh.position.z - point.z)/100);
@@ -559,6 +590,14 @@ function onKeyDown(e){
     if(e.key == "i") {
         var dlAnchorElem = document.getElementById('uploadText');
         dlAnchorElem.click();
+    }
+
+    if(e.key == "p") {
+        if(point.x < 27) {
+            point = new THREE.Vector3(27, 0, -2.5);
+        }else{
+            point = new THREE.Vector3(-27, 0, -2.5);
+        }
     }
 
     if(e.key == "s") {
