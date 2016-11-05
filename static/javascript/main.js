@@ -224,7 +224,7 @@ var mutate = function (oldEntity,mutationType,mutationChance) {
             if(fillMutationGenes){
                 mutGenes.push(mutationChance);
             }
-            mutGenes[indx] = mutationType(mutGenes[indx],0.99,0,mutGenes[indx]);
+            mutGenes[indx] = mutationType(mutGenes[indx],0.98,0,mutGenes[indx]);
             inputConn[n].connections.projected[c].weight = mutationType(inputConn[n].connections.projected[c].weight,2,-2,mutGenes[indx]);
             indx++;
         }
@@ -239,7 +239,8 @@ var mutate = function (oldEntity,mutationType,mutationChance) {
                 if(fillMutationGenes){
                     mutGenes.push(mutationChance);
                 }
-                mutGenes[indx] = mutationType(mutGenes[indx],0.99,0,mutGenes[indx]);
+                mutGenes[indx] = mutationType(mutGenes[indx],0.98,0,mutGenes[indx]);
+                mutGenes[indx] = mutationType(mutGenes[indx],0.98,0,mutGenes[indx]);
                 hiddenLayerAmt[depth].list[n].connections.projected[c].weight = mutationType(hiddenLayerAmt[depth].list[n].connections.projected[c].weight,1,-1,mutGenes[indx]);
                 indx++;
             }
@@ -498,7 +499,9 @@ function moveCar(object,delta)
     var input = [];
     //input.push((object.output[0] + 1)/2);
     //input.push(object.mesh.rotation.y / (Math.PI/2));
-    input.push(-1);
+    let rotpoint = new THREE.Vector3(point.x,point.y,point.z);
+    input.push(rotpoint.applyEuler(object.mesh.rotation).x / 30);
+    //input.push(-1);
     input.push((object.mesh.position.x - point.x)/100);
     input.push((object.mesh.position.z - point.z)/100);
     //input.push(1);
@@ -587,6 +590,14 @@ function onKeyDown(e){
     if(e.key == "i") {
         var dlAnchorElem = document.getElementById('uploadText');
         dlAnchorElem.click();
+    }
+
+    if(e.key == "p") {
+        if(point.x < 27) {
+            point = new THREE.Vector3(27, 0, -2.5);
+        }else{
+            point = new THREE.Vector3(-27, 0, -2.5);
+        }
     }
 
     if(e.key == "s") {

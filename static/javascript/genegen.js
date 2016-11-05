@@ -168,6 +168,7 @@ function Iterate(g){
 	if(g == this.itterations-1) {
 		Generate(self);
 	}else {
+		if(g )
 		ResetBatch(self.entities, g + 1);
 	}
 
