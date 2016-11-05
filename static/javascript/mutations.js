@@ -12,11 +12,11 @@ var randomMutate = function (weight,max,min,mutateChance) {
 }
 
 var superMutate = function (weight) {
-    //let newWeight = Math.random() - 0.5;
-    //newWeight = Math.min(newWeight,0.5);
-    //newWeight = Math.max(newWeight,-0.5);
-    //return newWeight
-    return weight
+    let newWeight = Math.random() - 0.5;
+    newWeight = Math.min(newWeight,0.5);
+    newWeight = Math.max(newWeight,-0.5);
+    return newWeight
+    //return weight
 }
 
 var slideMutate = function (weight,max,min,mutateChance) {

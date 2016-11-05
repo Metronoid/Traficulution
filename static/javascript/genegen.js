@@ -165,10 +165,9 @@ function CleanMoral(entities){
 function Iterate(g){
 	let self = this;
 	CheckMoral(self,self.entities);
-	if(g == this.itterations-1) {
+	if(g == self.itterations-1) {
 		Generate(self);
 	}else {
-		if(g )
 		ResetBatch(self.entities, g + 1);
 	}
 
