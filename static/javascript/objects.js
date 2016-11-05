@@ -28,7 +28,7 @@ class Car {
         this.spawn = spawns[spawnPoint];
         this.brain = brain ? brain : new Perceptron(3,[4,4],2);
         this.brain.setOptimize(false);
-        this.brain.mutationGenes = [];
+        this.mutationGenes = [];
         //this.brain = ;
         this.output = [0, 0];
         this.moral = 0;
