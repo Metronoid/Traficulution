@@ -29,10 +29,10 @@ class Car {
         this.brain = brain ? brain : new Perceptron(3,[4,4],2);
         this.brain.setOptimize(false);
         this.mutationGenes = [];
-        //this.brain = ;
         this.output = [0, 0];
         this.moral = 0;
         this.raycaster = new THREE.Raycaster();
+        this.brain = mutate(this, slideMutate, 0.95).brain;
     }
 
     // TODO: this is just a simple collision but we need one that cares about rotation
