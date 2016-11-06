@@ -18,7 +18,7 @@ class Spawn {
         this.mesh.rotation.y = rotation;
         this.position = position;
         this.rotation = rotation;
-        scene.add(this.mesh);
+        // scene.add(this.mesh);
     }
 }
 

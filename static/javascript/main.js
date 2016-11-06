@@ -3,7 +3,7 @@
  */
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera( 60, window.innerWidth/window.innerHeight, 0.1, 1000 );
-var renderer = new THREE.WebGLRenderer();
+var renderer = new THREE.WebGLRenderer({preserveDrawingBuffer: true });
 var fpsText = document.getElementById("fps");
 var nwstats = new NetworkStats();
 var genstats = new GenerationStats();
@@ -368,17 +368,18 @@ var ambient = new THREE.AmbientLight(0x404040);
 scene.add(ambient);
 
 // create a point light
-var pointLight = new THREE.PointLight(0xcdcde7, 4, 100);
+var pointLight = new THREE.PointLight(0xcdcde7, 4, 50);
 //
 // // set its position
-pointLight.position.x = 50;
+pointLight.position.x = 60;
 pointLight.position.y = 50;
-pointLight.position.z = 50;
+pointLight.position.z = 60;
 pointLight.castShadow = true;
 pointLight.shadow.mapSize.width = 2048;
 pointLight.shadow.mapSize.height = 2048;
 // // add to the scene
 scene.add(pointLight);
+
 //
 var pointLight1 = new THREE.PointLight(0xcdcde7, 1, 100);
 
@@ -388,6 +389,43 @@ pointLight1.position.y = 50;
 pointLight1.position.z = 0;
 // add to the scene
 scene.add(pointLight1);
+
+var pointLight2 = new THREE.PointLight(0xcdcde7, 1, 100);
+
+// set its position
+pointLight2.position.x = -50;
+pointLight2.position.y = 50;
+pointLight2.position.z = 0;
+// add to the scene
+scene.add(pointLight2);
+
+var pointLight3 = new THREE.PointLight(0xcdcde7, 1, 100);
+
+// set its position
+pointLight3.position.x = -50;
+pointLight3.position.y = 50;
+pointLight3.position.z = -50;
+// add to the scene
+scene.add(pointLight3);
+
+var pointLight4 = new THREE.PointLight(0xcdcde7, 1, 100);
+
+// set its position
+pointLight4.position.x = 0;
+pointLight4.position.y = 50;
+pointLight4.position.z = -50;
+// add to the scene
+scene.add(pointLight4);
+
+//
+var bottomLight = new THREE.PointLight(0xcdcde7, 1, 100);
+
+// set its position
+bottomLight.position.x = 50;
+bottomLight.position.y = -50;
+bottomLight.position.z = 50;
+// add to the scene
+scene.add(bottomLight);
 
 
 var raycaster = new THREE.Raycaster();
@@ -605,6 +643,41 @@ function onKeyDown(e){
             pool.Start();
         }
     }
+    if(e.key == "z") {
+        downloadCanvas("1.jpg");
+    }
+}
+
+function downloadCanvas(filename) {
+    let download = document.getElementById("download");
+    let dataurl = renderer.domElement.toDataURL("image/png");
+    download.href = URL.createObjectURL(b64toBlob(dataurl.substr(22), "image/png"));
+    download.download = filename;
+    download.click();
+}
+
+function b64toBlob(b64Data, contentType, sliceSize) {
+    contentType = contentType || '';
+    sliceSize = sliceSize || 512;
+
+    var byteCharacters = atob(b64Data);
+    var byteArrays = [];
+
+    for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+        var byteNumbers = new Array(slice.length);
+        for (var i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+        }
+
+        var byteArray = new Uint8Array(byteNumbers);
+
+        byteArrays.push(byteArray);
+    }
+
+    var blob = new Blob(byteArrays, {type: contentType});
+    return blob;
 }
 
 function setBestEntity() {

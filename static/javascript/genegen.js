@@ -94,8 +94,6 @@ class Genegen {
 		}
 
 		for (i=0; i<this.generations; i++) {
-			this.generation = i;
-
 			// Wait a while
 			for (let g=0; g<this.itterations; g++) {
 				setTimeout(Iterate.bind(this,g), (this.timer * (g+1) + ((this.timer * i * this.itterations)+1)))
@@ -170,7 +168,8 @@ function Iterate(g){
 	let self = this;
 	CheckMoral(self,self.entities);
 	if(g == this.itterations-1) {
-
+		this.generation++;
+		downloadCanvas(this.generation + '.png');
 		Generate(self);
 	}else {
 		ResetBatch(self.entities, g + 1);
