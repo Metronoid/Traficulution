@@ -18,7 +18,7 @@ class Spawn {
         this.mesh.rotation.y = rotation;
         this.position = position;
         this.rotation = rotation;
-        // scene.add(this.mesh);
+        scene.add(this.mesh);
     }
 }
 
@@ -35,20 +35,8 @@ class Car {
         this.brain = mutate(this, slideMutate, 0.95).brain;
     }
 
-    // TODO: this is just a simple collision but we need one that cares about rotation
-    Collision(b){
-        //let axisX = new THREE.Vector3(1,0,0).applyEuler(this.mesh.rotation);
-        //let axisZ = new THREE.Vector3(0,0,1).applyEuler(this.mesh.rotation);
-        //this.arrow.position.x = this.mesh.position.x;
-        //this.arrow.position.z = this.mesh.position.z;
-        //this.arrow.setDirection(axisX);
-        //return (Math.abs(this.mesh.position.x - b.position.x) * 2 < (2)) &&
-        //    (Math.abs(this.mesh.position.z - b.position.z) * 2 < (2));
-    }
-
     Destroy() {
 
-        //TODO: Would be nice to be able to remove the neural network too.
         let children = getChildren(this.mesh);
         for(let child in children) {
             if(children[child].type == "PerspectiveCamera" || children[child].type == "Object3D") continue;
@@ -56,8 +44,6 @@ class Car {
             children[child].material.dispose();
         }
         scene.remove(this.mesh);
-        //TODO: Make the line beneath this work without errors
-        // this.mesh = undefined;
         this.mesh.inuse = false;
     }
 
@@ -104,7 +90,6 @@ class Car {
 
         this.spawn = spawns[spawnPoint];
         this.mesh = getCarMesh();
-        //console.log(this.mesh);
         this.mesh.castShadow = true;
         this.mesh.position.x = this.spawn.position.x;
         this.mesh.position.y = this.spawn.position.y;

@@ -16,7 +16,6 @@ var superMutate = function (weight) {
     newWeight = Math.min(newWeight,0.5);
     newWeight = Math.max(newWeight,-0.5);
     return newWeight
-    //return weight
 }
 
 var slideMutate = function (weight,max,min,mutateChance) {
