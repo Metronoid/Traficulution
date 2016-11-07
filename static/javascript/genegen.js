@@ -101,6 +101,10 @@ class Genegen {
 
 		}
 	}
+
+	Stop () {
+		this.stop = true;
+	}
 }
 
 // TODO: Use a pulling mechanism instead.
@@ -167,14 +171,21 @@ function Iterate(g){
 
 	let self = this;
 	CheckMoral(self,self.entities);
-	if(g == this.itterations-1) {
-		this.generation++;
-		downloadCanvas(this.generation + '.png');
-		Generate(self);
-	}else {
-		ResetBatch(self.entities, g + 1);
+	if(self.stop == false) {
+		if (g == this.itterations - 1) {
+			this.generation++;
+			//downloadCanvas(this.generation + '.png');
+			Generate(self);
+		} else {
+			ResetBatch(self.entities, g + 1);
+		}
+	}else{
+		for (let e in self.entities){
+			self.entities[e].Obliterate();
+		}
+		self.entities = [];
+		return;
 	}
-
 
 	// This code is here to see the neural network update live instead of static. after half of the complete timer has passed,
 	// it'll pick out the best car and show the neural network of that car.

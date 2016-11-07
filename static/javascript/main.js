@@ -545,35 +545,37 @@ function moveCar(object,delta)
     //input.push(1);
     // TODO: Add the positive and negative rotation axis for input.
     //input.push((Math.abs(object.mesh.rotation.x / Math.PI)));
-    var output = object.brain.activate(input);
-    object.output[0] = output[0];
-    object.output[1] = output[1];
-    object.mesh.translateZ((output[0] + 0.20) * speed * delta);
-    object.mesh.rotateY((output[1] / 2) * speed * delta);
+    if(object.brain) {
+        var output = object.brain.activate(input);
+        object.output[0] = output[0];
+        object.output[1] = output[1];
+        object.mesh.translateZ((output[0] + 0.20) * speed * delta);
+        object.mesh.rotateY((output[1] / 2) * speed * delta);
 
-    var outLog = document.getElementById("outLog");
-    object.raycaster.set(object.mesh.position, new THREE.Vector3(0, -10, 0));
+        var outLog = document.getElementById("outLog");
+        object.raycaster.set(object.mesh.position, new THREE.Vector3(0, -10, 0));
 
-    // console.log(ground.children);
-    var intersects = object.raycaster.intersectObjects(intersectionMesh.children[0].children);
-    // if(intersects.length != 0) {
-    //     console.log("Hey");
-    //     console.log(intersects[0]);
-    //     var intersect = intersects[0];
-    //     if(intersect.object.material.map.image && intersect.object.material.map.image.complete) {
-    //         // Code for getting the pixel the car is driving on
-    //         // var posX = map.img.width / 30 * (object.mesh.position.x + 15);
-    //         // var posY = map.img.height / 30 * (object.mesh.position.z + 15);
-    //         // console.log(map.getRGBPixel(posX, posY));
-    //     }
-    // }
+        // console.log(ground.children);
+        var intersects = object.raycaster.intersectObjects(intersectionMesh.children[0].children);
+        // if(intersects.length != 0) {
+        //     console.log("Hey");
+        //     console.log(intersects[0]);
+        //     var intersect = intersects[0];
+        //     if(intersect.object.material.map.image && intersect.object.material.map.image.complete) {
+        //         // Code for getting the pixel the car is driving on
+        //         // var posX = map.img.width / 30 * (object.mesh.position.x + 15);
+        //         // var posY = map.img.height / 30 * (object.mesh.position.z + 15);
+        //         // console.log(map.getRGBPixel(posX, posY));
+        //     }
+        // }
 
-    // Some sort of output for checking on our neural network
-    //    outLog.innerHTML =
-    //    "<h5> Input:" + input[0].toFixed(2) + " Bias:" + object.brain.layers.input.list[0].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.hidden[0].list[0].connections.inputs[6].weight.toFixed(2) + " and " + object.brain.layers.hidden[0].list[0].connections.inputs[8].weight.toFixed(2) + " Bias:" + object.brain.layers.hidden[0].list[0].bias.toFixed(2) + " | " + " Weights:" + object.brain.layers.output.list[0].connections.inputs[10].weight.toFixed(2) + " and " + object.brain.layers.output.list[0].connections.inputs[12].weight.toFixed(2) + " Bias:" + object.brain.layers.output.list[0].bias.toFixed(2) + " Output:" + output[0].toFixed(2) + "</h5>" +
-    //    "<h5> Input:" + input[1].toFixed(2) + " Bias:" + object.brain.layers.input.list[1].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.hidden[0].list[1].connections.inputs[7].weight.toFixed(2) + " and " + object.brain.layers.hidden[0].list[1].connections.inputs[9].weight.toFixed(2) + " Bias:" + object.brain.layers.hidden[0].list[1].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.output.list[1].connections.inputs[11].weight.toFixed(2) + " and " + object.brain.layers.output.list[1].connections.inputs[13].weight.toFixed(2) + " Bias:" + object.brain.layers.output.list[1].bias.toFixed(2) + " Output:" + output[1].toFixed(2) + "</h5>";
-    // object.brain.propagate(learningRate, target);
-    // object.brain.restore();
+        // Some sort of output for checking on our neural network
+        //    outLog.innerHTML =
+        //    "<h5> Input:" + input[0].toFixed(2) + " Bias:" + object.brain.layers.input.list[0].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.hidden[0].list[0].connections.inputs[6].weight.toFixed(2) + " and " + object.brain.layers.hidden[0].list[0].connections.inputs[8].weight.toFixed(2) + " Bias:" + object.brain.layers.hidden[0].list[0].bias.toFixed(2) + " | " + " Weights:" + object.brain.layers.output.list[0].connections.inputs[10].weight.toFixed(2) + " and " + object.brain.layers.output.list[0].connections.inputs[12].weight.toFixed(2) + " Bias:" + object.brain.layers.output.list[0].bias.toFixed(2) + " Output:" + output[0].toFixed(2) + "</h5>" +
+        //    "<h5> Input:" + input[1].toFixed(2) + " Bias:" + object.brain.layers.input.list[1].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.hidden[0].list[1].connections.inputs[7].weight.toFixed(2) + " and " + object.brain.layers.hidden[0].list[1].connections.inputs[9].weight.toFixed(2) + " Bias:" + object.brain.layers.hidden[0].list[1].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.output.list[1].connections.inputs[11].weight.toFixed(2) + " and " + object.brain.layers.output.list[1].connections.inputs[13].weight.toFixed(2) + " Bias:" + object.brain.layers.output.list[1].bias.toFixed(2) + " Output:" + output[1].toFixed(2) + "</h5>";
+        // object.brain.propagate(learningRate, target);
+        // object.brain.restore();
+    }
 };
 
 var update = function () {
@@ -582,7 +584,7 @@ var update = function () {
         fpsText.innerHTML = "FPS: " + fps.getFPS();
         var delta = clock.getDelta(); // seconds.
     // if(pool && pool.started) {
-        for (car in pool.entities){
+        for (let car in pool.entities){
             moveCar(pool.entities[car],delta);
         }
     // }
@@ -639,8 +641,13 @@ function onKeyDown(e){
     }
 
     if(e.key == "s") {
-        if(poolReady) {
-            pool.Start();
+        if(pool.started){
+            pool.Stop();
+        }
+        else{
+            if(poolReady) {
+                pool.Start();
+            }
         }
     }
     if(e.key == "z") {
