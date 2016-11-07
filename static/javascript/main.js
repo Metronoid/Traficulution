@@ -508,7 +508,6 @@ function onKeyDown(e){
     }
 
     if(e.key == "s") {
-        console.log(pool.started && !pool.stop);
         if(pool.started && !pool.stop){
             pool.Stop();
         }

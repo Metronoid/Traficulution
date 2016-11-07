@@ -173,21 +173,30 @@ function Iterate(g){
 
 	let self = this;
 	CheckMoral(self,self.entities);
-	if(self.stop == false) {
-		if (g == this.itterations - 1) {
-			this.generation++;
-			//downloadCanvas(this.generation + '.png');
-			Generate(self);
-		} else {
-			ResetBatch(self.entities, g + 1);
-		}
-	}else{
-		for (let e in self.entities){
-			self.entities[e].Obliterate();
+	if(self.stop && self.started && self.bestentity != undefined) {
+		for (let e in self.entities) {
+			if (self.entities[e] != self.bestentity) {
+				self.entities[e].Obliterate();
+			}
 		}
 		self.entities = [];
+		self.started = false;
+		self.stopped = true;
 		return;
+	}else{
+		if(!self.stopped) {
+			if (g == this.itterations - 1) {
+				this.generation++;
+				//downloadCanvas(this.generation + '.png');
+				Generate(self);
+			} else {
+				ResetBatch(self.entities, g + 1);
+			}
+		}else{
+			return;
+		}
 	}
+
 
 	// This code is here to see the neural network update live instead of static. after half of the complete timer has passed,
 	// it'll pick out the best car and show the neural network of that car.
