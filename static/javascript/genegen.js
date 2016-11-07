@@ -24,6 +24,9 @@ class Genegen {
 		this.entities = [];
 		this.bestentity = undefined;
 		this.fitnessText = document.getElementById("fitness");
+
+		this.stop = false;
+		this.started = false;
 	}
 
 	Optimize(a, b) {
