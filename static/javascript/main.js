@@ -367,9 +367,8 @@ function onMouseDown( event ) {
     mouse.x = ( event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
     mouse.y = - ( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
 
-    raycaster.setFromCamera( mouse, camera );
-    let stopped = true;
-    if(stopped) {
+    raycaster.setFromCamera(mouse, camera);
+    if(!pool.started) {
 
         let spawnMesh = new THREE.Object3D();
         for(let sp in spawns) {
@@ -382,6 +381,7 @@ function onMouseDown( event ) {
                 if(spawns[sp].mesh.uuid == intersects[0].object.uuid) {
                     let best = this.copy(pool.bestentity.entity);
                     best.Create(spawns.indexOf(spawns[sp]));
+                    pool.entities.push(best);
                 }
             }
         }
