@@ -28,17 +28,8 @@ controls.userPan = false;
 var collisionList = [];
 var spawns = [];
 spawns.push(new Spawn(new THREE.Vector3(13,1,-2.5),-Math.PI/2));
-//spawns.push(new Spawn(new THREE.Vector3(2.5,1,20),-Math.PI));
 spawns.push(new Spawn(new THREE.Vector3(-2.5,1,-13),0));
-//spawns.push(new Spawn(new THREE.Vector3(20,1,-2.5),-Math.PI/2));
- spawns.push(new Spawn(new THREE.Vector3(2.5,1,13),-Math.PI));
-// spawns.push(new Spawn(new THREE.Vector3(-2.5,1,-8),0));
-// spawns.push(new Spawn(new THREE.Vector3(27,1,-2.5),-Math.PI/2));
-// spawns.push(new Spawn(new THREE.Vector3(2.5,1,8),-Math.PI));
-// spawns.push(new Spawn(new THREE.Vector3(-2.5,1,-20),0));
-// spawns.push(new Spawn(new THREE.Vector3(34,1,-2.5),-Math.PI/2));
-// spawns.push(new Spawn(new THREE.Vector3(2.5,1,27),-Math.PI));
-// spawns.push(new Spawn(new THREE.Vector3(-2.5,1,-27),0));
+spawns.push(new Spawn(new THREE.Vector3(2.5,1,13),-Math.PI));
 
 var point = new THREE.Vector3(-27,0,-2.5);
 var ground = new THREE.Object3D();
@@ -72,7 +63,6 @@ iloader.load('/model/intersection.dae', function (result) {
 var lloader = new THREE.ColladaLoader();
 lloader.load('/model/lights.dae', function (result) {
     result.scene.rotation.x = Math.PI*1.5;
-    console.log(result);
     result.scene.traverse(function(child) {
         child.castShadow = true;
     });
@@ -103,8 +93,6 @@ var fitness = function(entity) {
     var moral = 0;
     moral -= entity.mesh.position.distanceTo(point);
     if(moral > -2) {
-        //point.x = -point.x
-        //targetBox.position.set(point.x, 0.3, point.z);
         moral = 10;
         moral -= Math.abs(0.2 - entity.output[0]) * 5;
         moral -= Math.abs(entity.output[1]) * 10;
@@ -127,7 +115,6 @@ var copy = function(entity,spawnPoint)
     newEntity.brain = entity.brain.clone();
     newEntity.brain.setOptimize(false);
     newEntity.moral = entity.moral;
-    //console.log(entity);
     newEntity.mutationGenes = copyArray(entity.mutationGenes);
 
     newEntity.mesh.position.set(entity.mesh.position.x, entity.mesh.position.y, entity.mesh.position.z);
@@ -215,8 +202,6 @@ var mutate = function (oldEntity,mutationType,mutationChance) {
         fillMutationGenes = true;
     }
 
-    //console.log(mutGenes);
-
     let indx = 0;
     let inputConn = entity.brain.layers.input.list;
     for(let n in inputConn){
@@ -234,7 +219,6 @@ var mutate = function (oldEntity,mutationType,mutationChance) {
 
     for (let depth = 0; depth < hiddenLayerAmt.length; depth++) {
         for (let n in hiddenLayerAmt[depth].list) {
-            //hiddenLayerAmt[depth].list[n].bias = mutationType(hiddenLayerAmt[depth].list[n].bias,2,-2,mutationChance);
             for (let c in hiddenLayerAmt[depth].list[n].connections.projected) {
                 if(fillMutationGenes){
                     mutGenes.push(mutationChance);
@@ -247,56 +231,9 @@ var mutate = function (oldEntity,mutationType,mutationChance) {
         }
     }
 
-    // let outputConn = entity.brain.layers.output.list;
-    // for(let n in outputConn.list){
-    //     outputConn.list[n].bias = mutationType(outputConn.list[n].bias,2,-2,mutationChance);
-    // }
 
     return entity;
 }
-
-var cloneBrain = function (brain) {
-    let newBrain = new Perceptron(2,[4,4],2);
-    //console.log(brain);
-    let inputList = brain.layers.input.list;
-    let newInputList = newBrain.layers.input.list;
-    for(let neur = 0; neur < inputList.length; neur++) {
-        let neuron = inputList[neur];
-        let newNeuron = newInputList[neur];
-        newNeuron.bias = neuron.bias;
-
-        let idx = 0;
-        let proj = neuron.connections.projected;
-        let newProj = newNeuron.connections.projected;
-        for(let con = 0; con < Object.keys(proj).length; con++) {
-            let weight = proj[Object.keys(proj)[con]].weight;
-            newProj[Object.keys(newProj)[con]].weight = weight;
-        }
-    }
-
-    for(let depth in brain.layers.hidden) {
-
-        let hiddenList = brain.layers.hidden[depth].list;
-        let newHiddenList = newBrain.layers.hidden[depth].list;
-        for(let neur = 0; neur < hiddenList.length; neur++) {
-            let neuron = hiddenList[neur];
-            let newNeuron = newHiddenList[neur];
-            newNeuron.bias = neuron.bias;
-
-            let idx = 0;
-            let proj = neuron.connections.projected;
-            let newProj = newNeuron.connections.projected;
-            for(let con = 0; con < Object.keys(proj).length; con++) {
-                let weight = proj[Object.keys(proj)[con]].weight;
-                newProj[Object.keys(newProj)[con]].weight = weight;
-            }
-        }
-
-    }
-
-    return newBrain;
-}
-
 
 var pool = new Genegen(seed,fitness,copy,crossoverRandom,mutate);
 var poolReady = false;
@@ -331,16 +268,9 @@ var getCarMesh = function() {
     console.log("All car meshes are in use!");
 }
 
-var resetCarMeshes = function() {
-    for(let car in carPool) {
-        carPool[car].inuse = false;
-    }
-}
-
 var targetBox = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshLambertMaterial({color:0xFFFFFF}));
 targetBox.position.set(point.x, 0.3, point.z);
 scene.add(targetBox);
-
 
 camera.position.z = 15;
 camera.position.y = 30;
@@ -438,24 +368,43 @@ function onMouseDown( event ) {
     mouse.y = - ( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
 
     raycaster.setFromCamera( mouse, camera );
+    let stopped = true;
+    if(stopped) {
 
-    let meshes = new THREE.Object3D();
-    for(let ent in pool.entities) {
-        let children = getChildren(pool.entities[ent].mesh);
-        for(let child in children) {
-            children[child].parentuuid = pool.entities[ent].mesh.uuid;
-            meshes.add(jQuery.extend(true, {}, children[child]));
+        let spawnMesh = new THREE.Object3D();
+        for(let sp in spawns) {
+            spawnMesh.add(jQuery.extend(true, {}, spawns[sp].mesh));
         }
-    }
+        var intersects = raycaster.intersectObjects(spawnMesh.children);
 
-    var intersects = raycaster.intersectObjects(meshes.children);
-     if(intersects[0] != undefined) {
-        let uuid = intersects[0].object.parentuuid;
-         for(let entnr in pool.entities) {
-            if(uuid == pool.entities[entnr].mesh.uuid) {
-                nwstats.updateStats(pool.entities[entnr].brain, pool.entities[entnr].moral);
-                nwstats.pulsate(true);
-                return;
+        if(intersects[0] != undefined) {
+            for(let sp in spawns) {
+                if(spawns[sp].mesh.uuid == intersects[0].object.uuid) {
+                    let best = this.copy(pool.bestentity.entity);
+                    best.Create(spawns.indexOf(spawns[sp]));
+                }
+            }
+        }
+
+    } else {
+        let meshes = new THREE.Object3D();
+        for(let ent in pool.entities) {
+            let children = getChildren(pool.entities[ent].mesh);
+            for(let child in children) {
+                children[child].parentuuid = pool.entities[ent].mesh.uuid;
+                meshes.add(jQuery.extend(true, {}, children[child]));
+            }
+        }
+
+        var intersects = raycaster.intersectObjects(meshes.children);
+        if(intersects[0] != undefined) {
+            let uuid = intersects[0].object.parentuuid;
+            for(let entnr in pool.entities) {
+                if(uuid == pool.entities[entnr].mesh.uuid) {
+                    nwstats.updateStats(pool.entities[entnr].brain, pool.entities[entnr].moral);
+                    nwstats.pulsate(true);
+                    return;
+                }
             }
         }
     }
@@ -474,75 +423,15 @@ function getChildren(mesh) {
     return result;
 }
 
-class ColorMap {
-
-    constructor() {
-        var self = this;
-        self.canvas = document.createElement('canvas');
-        self.context = self.canvas.getContext('2d');
-        self.img = new Image();
-        self.img.src = "img/texture/intersection.png";
-
-        this.img.onload = function() {
-            self.canvas.width = self.img.width;
-            self.canvas.height = self.img.height;
-            self.context.drawImage(self.img, 0, 0);
-            self.data = self.context.getImageData(0, 0, self.canvas.width, self.canvas.height).data;
-        }
-
-
-    }
-
-    getPixel(x, y) {
-        if(this.img.complete); // Image is loaded
-        x = Math.round(x);
-        y = Math.round(y);
-        let pos = (this.canvas.width * y) + x*4;
-        return [this.data[pos], this.data[pos + 1], this.data[pos + 2], this.data[pos + 3]];
-    }
-
-    getRGBPixel(x, y) {
-        let arr = this.getPixel(x, y);
-        return "#" + ("000000" + this.RGBToHex(arr[0], arr[1], arr[2])).slice(-6)
-    }
-
-    RGBToHex(r, g, b) {
-        if (r > 255 || g > 255 || b > 255)
-            throw "Invalid color component";
-        return ((r << 16) | (g << 8) | b).toString(16);
-    }
-
-}
-var map = new ColorMap();
-
-// document.body.appendChild(canvas);
-
 function moveCar(object,delta)
 {
     let speed = 10;
-    // Collision
-    //     for (let c in collisionList) {
-    //         if (collisionList[c].mesh != object.mesh) {
-    //             let collision = object.Collision(collisionList[c].mesh);
-    //             if (collision) {
-    //                 speed = 0;
-    //             }
-    //         }
-    //     }
-
-    //var objDistance = point.distanceTo(object.mesh.position);
-
-
 
     var input = [];
-    //input.push((object.output[0] + 1)/2);
-    //input.push(object.mesh.rotation.y / (Math.PI/2));
     let rotpoint = new THREE.Vector3(point.x,point.y,point.z);
     input.push(rotpoint.applyEuler(object.mesh.rotation).x / 30);
-    //input.push(-1);
     input.push((object.mesh.position.x - point.x)/100);
     input.push((object.mesh.position.z - point.z)/100);
-    //input.push(1);
     // TODO: Add the positive and negative rotation axis for input.
     //input.push((Math.abs(object.mesh.rotation.x / Math.PI)));
     var output = object.brain.activate(input);
@@ -554,26 +443,6 @@ function moveCar(object,delta)
     var outLog = document.getElementById("outLog");
     object.raycaster.set(object.mesh.position, new THREE.Vector3(0, -10, 0));
 
-    // console.log(ground.children);
-    var intersects = object.raycaster.intersectObjects(intersectionMesh.children[0].children);
-    // if(intersects.length != 0) {
-    //     console.log("Hey");
-    //     console.log(intersects[0]);
-    //     var intersect = intersects[0];
-    //     if(intersect.object.material.map.image && intersect.object.material.map.image.complete) {
-    //         // Code for getting the pixel the car is driving on
-    //         // var posX = map.img.width / 30 * (object.mesh.position.x + 15);
-    //         // var posY = map.img.height / 30 * (object.mesh.position.z + 15);
-    //         // console.log(map.getRGBPixel(posX, posY));
-    //     }
-    // }
-
-    // Some sort of output for checking on our neural network
-    //    outLog.innerHTML =
-    //    "<h5> Input:" + input[0].toFixed(2) + " Bias:" + object.brain.layers.input.list[0].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.hidden[0].list[0].connections.inputs[6].weight.toFixed(2) + " and " + object.brain.layers.hidden[0].list[0].connections.inputs[8].weight.toFixed(2) + " Bias:" + object.brain.layers.hidden[0].list[0].bias.toFixed(2) + " | " + " Weights:" + object.brain.layers.output.list[0].connections.inputs[10].weight.toFixed(2) + " and " + object.brain.layers.output.list[0].connections.inputs[12].weight.toFixed(2) + " Bias:" + object.brain.layers.output.list[0].bias.toFixed(2) + " Output:" + output[0].toFixed(2) + "</h5>" +
-    //    "<h5> Input:" + input[1].toFixed(2) + " Bias:" + object.brain.layers.input.list[1].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.hidden[0].list[1].connections.inputs[7].weight.toFixed(2) + " and " + object.brain.layers.hidden[0].list[1].connections.inputs[9].weight.toFixed(2) + " Bias:" + object.brain.layers.hidden[0].list[1].bias.toFixed(2)  + " | " + " Weights:" + object.brain.layers.output.list[1].connections.inputs[11].weight.toFixed(2) + " and " + object.brain.layers.output.list[1].connections.inputs[13].weight.toFixed(2) + " Bias:" + object.brain.layers.output.list[1].bias.toFixed(2) + " Output:" + output[1].toFixed(2) + "</h5>";
-    // object.brain.propagate(learningRate, target);
-    // object.brain.restore();
 };
 
 var update = function () {
@@ -581,11 +450,9 @@ var update = function () {
         controls.update();
         fpsText.innerHTML = "FPS: " + fps.getFPS();
         var delta = clock.getDelta(); // seconds.
-    // if(pool && pool.started) {
         for (car in pool.entities){
             moveCar(pool.entities[car],delta);
         }
-    // }
     render();
 };
 
@@ -692,7 +559,6 @@ function setBestEntity() {
             let bestentity = new Car(Cube(1,0.25,2,0x47475b),0);
             bestentity.brain = Network.fromJSON(brain);
             pool.bestentity = {"entity": bestentity, "fitness": fitness};
-            console.log(pool.bestentity);
         };
         r.readAsText(f);
     } catch(ex) {

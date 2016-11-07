@@ -4,10 +4,6 @@
 class NetworkStats {
 
     constructor() {
-        // $("#network").width(window.innerWidth/4);
-        // $("#network").height(window.innerHeight/3);
-
-
         $("#networkdiv").width(512);
         $("#networkdiv").height(327);
 
@@ -322,12 +318,8 @@ class GenerationStats {
                 if(maxHeight < mediumHeight || maxHeight < minHeight || mediumHeight < minHeight){
                     console.error("gen has not been sorted")
                 }
-                //(this.canvas.height / 1.25) / (Math.abs(this.max)+Math.abs(this.min)) * ((Math.abs(this.max)+Math.abs(this.min))-Math.abs(this.generations[g].max))
-                //a / (b) * ((b)-c) = (a*(b-c))/b
                 this.drawBlock(g * (weight) + (weight / 2), weight, maxHeight, "black");
                 this.drawBlock(g * (weight) + (weight / 2), weight, mediumHeight, "#F2B50F");
-                //this.drawBlock(g * (weight) + (weight/2), weight,mediumHeight,"#4CAF50");
-                //this.drawBlock(g * (weight) + (weight/2), weight,medHeight,"#F2B50F");
                 this.drawBlock(g * (weight) + (weight / 2), weight, minHeight, "#FF5722");
             }
         }

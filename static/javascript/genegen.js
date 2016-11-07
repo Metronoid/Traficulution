@@ -75,7 +75,6 @@ class Genegen {
 		sum += -(pop.length * minScore);
 		let percentage = 100/sum;
 		for(let p in pop){
-			console.log(((pop[p].fitness - minScore) * percentage));
 			for(let i = 0;i < ((pop[p].fitness - minScore) * percentage);i++){
 				tickets.push(pop[p]);
 			}
@@ -168,8 +167,8 @@ function Iterate(g){
 	let self = this;
 	CheckMoral(self,self.entities);
 	if(g == this.itterations-1) {
-		this.generation++;
-		downloadCanvas(this.generation + '.png');
+		// this.generation++;
+		// downloadCanvas(this.generation + '.png');
 		Generate(self);
 	}else {
 		ResetBatch(self.entities, g + 1);
@@ -195,7 +194,6 @@ function Iterate(g){
 }
 
 function Generate(self){
-	console.log("Generate!");
 	function mutateOrNot(entity) {
 		// applies mutation based on mutation probability
 		return Math.random() <= self.mutation && self.mutate ? self.mutate(entity,self.mutationType,self.mutationChance) : entity;
@@ -215,13 +213,10 @@ function Generate(self){
 	// score and sort
 	let pop = sortOnFitness(self.entities);
 	genstats.AddGen(pop);
-	console.log(pop);
 	if(self.bestentity == undefined || pop[0].fitness > self.bestentity.fitness) {
 		self.bestentity = {"fitness": pop[0].fitness, "entity": self.copy(pop[0].entity)};
 	}
-	console.log(self.bestentity);
-    //
-    //
+
 	// // crossover and mutate
 	let newPop = [];
 
@@ -231,10 +226,8 @@ function Generate(self){
 	}
 	sumFitness = sumFitness/pop.length;
 	self.fitnessText.innerHTML = "Best fitness: " + pop[0].fitness.toFixed(2) + " Med fitness: " + sumFitness.toFixed(2);
-	console.log(pop[0].fitness + " and " + sumFitness);
 
 	while (newPop.length < self.size) {
-		// let ent = self.select1(pop);
 		if (
 			self.crossover // if there is a crossover function
 			&& Math.random() <= self.crossoverRate // base crossover on specified probability
@@ -252,9 +245,6 @@ function Generate(self){
 
 	ObliterateBatch(self.entities);
 
-	for(let p in newPop) {
-		//console.log(newPop[p]);
-	}
 	self.entities = newPop;
 
 	CreateBatch(self.entities,0);
